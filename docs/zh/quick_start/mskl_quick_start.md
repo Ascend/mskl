@@ -9,11 +9,12 @@
 
 ### 1.1 建议
 
-本章节以您已完成<a href="https://gitcode.com/Ascend/msot/blob/master/docs/zh/quick_start/op_tool_quick_start.md" target="_blank">《昇腾算子开发工具链快速入门》</a>的全流程操作为前提；若尚未体验，建议先完成该指南以获得更佳的学习效果。
+本章节以您已完成《[昇腾算子开发工具链快速入门](https://gitcode.com/Ascend/msot/blob/26.0.0/docs/zh/quick_start/op_tool_quick_start.md)》的全流程操作为前提；若尚未体验，建议先完成该指南以获得更佳的学习效果。
 
 ### 1.2 环境准备
 
-请严格按照<a href="https://gitcode.com/Ascend/msot/blob/master/docs/zh/common/dev_env_setup.md" target="_blank">《算子工具开发环境安装指导》</a>完成环境安装与工作区配置。
+请严格按照《[算子工具开发环境安装指导](https://gitcode.com/Ascend/msot/blob/26.0.0/docs/zh/common/dev_env_setup.md)》完成环境安装与工作区配置。
+
 即使您已具备类似环境，也需按该指南重新执行一遍，以确保所有依赖组件、环境变量等完整且一致。
 
 ## 2. 操作步骤
@@ -32,7 +33,7 @@ python3 -c "import numpy, sympy, scipy, attrs, psutil, decorator; from packaging
 
 ### 2.2 【前提】算子工程准备完成
 
-按照<a href="https://gitcode.com/Ascend/msot/blob/master/docs/zh/quick_start/op_tool_quick_start.md" target="_blank">《昇腾算子开发工具链快速入门》</a>中的指导，完成2.1节和2.3节。
+按照<a href="https://gitcode.com/Ascend/msot/blob/26.0.0/docs/zh/quick_start/op_tool_quick_start.md" target="_blank">《昇腾算子开发工具链快速入门》</a>中的指导，完成2.1节和2.3节。
 
 ### 2.3 【轻量调用】Python 脚本中 Kernel 轻量化调用（msKL）
 
