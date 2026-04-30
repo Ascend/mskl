@@ -142,4 +142,4 @@ root@ubuntu122:~/ot_demo/workspace/src/AddCustom# python3 mskl_demo.py
 compare success.
 ```
 
-如果执行失败或卡住，可能默认的0卡异常，可以尝试修改`mskl_demo.py`中的`NPU_ID`改用其他可用卡。
+如果执行失败或卡住，可能是默认的0卡异常，可以尝试修改`mskl_demo.py`中的`NPU_ID`改用其他可用卡。
