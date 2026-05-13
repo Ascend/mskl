@@ -326,6 +326,9 @@ class NPULauncher(object):
     def _free_all_dev_ptr(self):
         for _, dev_ptr in self._host_to_gm_map.items():
             driver.free(dev_ptr)
+        self._host_to_gm_map.clear()
+        self._args_info.clear()
+        self._kernel_meta.clear()
 
 
 class NPUDeviceContext:
