@@ -72,6 +72,7 @@ Successfully install mindstudio-kl-xxx
    >
    > - 需要联网环境才能下载，若环境不允许联网或处于离线状态，请先在可联网的环境下载该脚本后拷贝到目标设备。
    > - 若执行命令无响应或出现连接失败、SSL证书错误等问题，请参见[FAQ](https://www.hiascend.com/developer/blog/details/02176213671719317003)。
+   > - 版本号26.0.0可能随软件演进而变化，实际使用时请修改为真实版本号。
 
 2. 执行卸载。
 

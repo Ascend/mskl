@@ -62,13 +62,13 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 **环境准备**<a id="环境准备"></a>
 
 - 请参考[使用前准备](#使用前准备)，完成相关环境变量的配置。
-- 单击[链接](https://gitee.com/ascend/samples/tree/master/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch)获取样例工程，为进行算子检测做准备。
+- 点击[链接](https://gitee.com/ascend/samples/tree/master/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch)获取样例工程，为进行算子检测做准备。
 
     > [!NOTE] 
     > 
     >- 本样例工程以Atlas A2 训练系列产品/Atlas A2 推理系列产品为例。
     >- 下载代码样例时，需执行以下命令指定分支版本。
->
+    >
     >   ```shell
     >   git clone https://gitee.com/ascend/samples.git -b v1.9-8.3.RC1
     >   ```
@@ -119,7 +119,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
             inputs_info=inputs_info, outputs_info=outputs_info, # 可选
             inputs=[input_a, input_b, input_bias], outputs=[output],
             attr=attr, # 可选
-            lib_path="liboptiling.so",  # tiling代码编译产物，具体位置可参考《msopgen_usr_guide》中的“算子包部署>步骤2以默认安装场景为例”中的目录结构
+            lib_path="build_out/op_host/libcust_opmaster_rt2.0.so",  # tiling代码编译产物，具体位置可参考《msopgen_usr_guide》中的“算子包部署>步骤2以默认安装场景为例”中的目录结构
             # soc_version="", # 可选
         )
         blockdim = tiling_output.blockdim
@@ -144,9 +144,45 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
     python3 matmulleakyrelu.py
     ```
 
+> [!NOTE]
+>
+> 若脚本执行失败，报如下错误：
+> 
+> ```text
+> Exception: Check kernel_binary_file /XXX/samples/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch/CustomOp/MatmulLeakyreluCustom.o permission failed.
+> ```
+>
+> 则说明 CustomOp 目录下没有自动生成 MatmulLeakyreluCustom.o 文件，需要手动寻找一下编译结果。执行以下命令寻找.o文件位置：
+>
+> ```shell
+> find . -name "*MatmulLeakyreluCustom*"
+> ```
+>
+> 得到的结果类似如下：
+>
+> ```text
+> ./build_out/op_kernel/ascendc_kernels/binary/ascend910b/matmul_leakyrelu_custom/MatmulLeakyreluCustom_97ef75830e63ebe749e7c029d8d403c5.o
+> ```
+>
+> 此时需要将该.o文件手动拷贝到 CustomOp 目录，执行以下命令（请替换成实际路径）：
+>
+> ```shell
+> cp ./build_out/op_kernel/ascendc_kernels/binary/ascend910b/matmul_leakyrelu_custom/MatmulLeakyreluCustom_97ef75830e63ebe749e7c029d8d403c5.o ./MatmulLeakyreluCustom.o
+> ```
+>
+> 拷贝完成后，再执行 matmulleakyrelu.py 脚本运行算子：
+>
+> ```shell
+> python3 matmulleakyrelu.py
+> ```
+
 ### 输出说明
 
-无。
+输出如下结果，说明算子运行正常：
+
+```text
+    compare success.
+```
 
 ## 自动调优功能介绍
 
@@ -185,6 +221,12 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 > ```shell
 > export MSKL_LOG_LEVEL=0
 > ```
+>
+> 下载代码样例时，需执行以下命令指定分支版本。
+>
+> ```shell
+> git clone https://gitee.com/ascend/catlass.git -b catlass-v1-dev
+> ```
 
 1. 完成算子Kernel开发后，Kernel函数的定义与实现将会呈现在basic_matmul.cpp文件中，如下所示。
 
@@ -204,7 +246,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
     // ...
     ```
 
-2. 参考附录，在examples/00_basic_matmul目录中创建Python脚本文件[basic_matmul_autotune.py](#basic_matmul_autotunepy)与编译脚本文件[jit_build.sh](#jit_buildsh)。
+2. 参考附录，在examples/00_basic_matmul目录中创建Python脚本文件[basic_matmul_autotune.py](#basic_matmul_autotunepy)与编译脚本文件[jit_build.sh](#jit_buildsh)。(下述代码已经在basic_matmul_autotune.py中写好，开发者创建对应文件即可，无需再手动补充一遍)
 
     按照如下要求，定义算子Kernel函数的Python接口：在Python脚本中定义basic_matmul函数，其入参需与C++代码中的Kernel函数保持一致。
 

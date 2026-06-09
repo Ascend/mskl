@@ -39,14 +39,14 @@ Follow the instructions in <a href="https://gitcode.com/Ascend/msot/blob/master/
 > [!NOTE]Description
 >**Introduction to the msKPP Interface Invocation Mechanism**
 > 
-> 1. `mskpp.tiling_func`
+> 1. `mskl.tiling_func`
 > Through this interface, developers can specify the Tiling dynamic library (.so file) and operator type (op_type) to precisely invoke the target Tiling function. Additionally, by passing parameters such as inputs_shape and attr, they can flexibly construct a TilingContext, enabling lightweight Tiling invocation without relying on the ACLNN framework.
 >The execution result of the Tiling function includes blockdim (number of kernel function launches), workspace (workspace memory), and serialized tiling_data structure data, which can be used for Tiling logic verification and also serve as necessary input for subsequent Kernel invocation.
-> 2. `mskpp.get_kernel_from_binary`
+> 2. `mskl.get_kernel_from_binary`
 > Through this API, developers can specify the Kernel binary file (.o file) and its function signature parameters to quickly load and invoke the Kernel.
 > Input/output tensors required by the Kernel can be directly passed as numpy.array. After execution, the output tensor content can be immediately read for precision comparison or functional verification.   
 > 3. Seamless integration with other operator toolchains   
-> Developers only need to launch the mskpp Python script directly via a tool command, for example: `msprof op python3 mskl_demo.py`
+> Developers only need to launch the mskl Python script directly via a tool command, for example: `mskl python3 mskl_demo.py`
 
 #### 2.3.1 Developing the Python Script
 
@@ -61,7 +61,7 @@ Create the file `mskl_demo.py` with the following content:
 
 ```python
 import numpy as np
-import mskpp
+import mskl
 
 # Path to the compiled kernel binary .o file in CANN. Replace with the actual path.
 KERNEL_BINARY_PATH = "/usr/local/Ascend/cann-8.5.0/opp/vendors/customize/op_impl/ai_core/tbe/kernel/ascend910b/add_custom/AddCustom_ab1b6750d7f510985325b603cb06dc8b.o"
@@ -75,7 +75,7 @@ TENSOR_DTYPE = np.float16
 NPU_ID = 0
 
 def add_custom(a, b, c, workspace, tiling_data):
-    kernel = mskpp.get_kernel_from_binary(KERNEL_BINARY_PATH)
+    kernel = mskl.get_kernel_from_binary(KERNEL_BINARY_PATH)
     return kernel(a, b, c, workspace, tiling_data, device_id=NPU_ID)
 
 
@@ -89,7 +89,7 @@ def main():
     golden = (a + b).astype(TENSOR_DTYPE)
 
     # 2. Call TilingFunc to obtain tiling strategy and workspace.
-    tiling_output = mskpp.tiling_func(
+    tiling_output = mskl.tiling_func(
         op_type="AddCustom",
         inputs=[a, b],
         outputs=[c],
@@ -137,7 +137,7 @@ If execution is successful, the output is as follows:
 ```text
 root@ubuntu122:~/ot_demo/workspace/src/AddCustom# python3 mskl_demo.py 
 [INFO ] Load tiling library /usr/local/Ascend/cann-8.5.0/opp/vendors/customize/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so
-[INFO ] Set kernel_type as vec, you can change this value by input [kernel_type] in [mskpp.get_kernel_from_binary] manually.
+[INFO ] Set kernel_type as vec, you can change this value by input [kernel_type] in [mskl.get_kernel_from_binary] manually.
 compare success.
 ```
 

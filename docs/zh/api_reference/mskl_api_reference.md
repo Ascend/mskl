@@ -39,7 +39,7 @@ msKL工具提供的接口可以调用msOpGen工程中的tiling函数以及用户
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p08721713202710"><a name="p08721713202710"></a><a name="p08721713202710"></a>根据输入的模板库Kernel信息，生成Kernel下发代码。</p>
 </td>
 </tr>
-<tr id="row20464124714154"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p174641247101518"><a name="p174641247101518"></a><a name="p174641247101518"></a><a href="#code_gen">compile</a></p>
+<tr id="row20464124714154"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p174641247101518"><a name="p174641247101518"></a><a name="p174641247101518"></a><a href="#compile">compile</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p246494721513"><a name="p246494721513"></a><a name="p246494721513"></a>编译Kernel下发代码，返回一个可执行的Kernel对象。</p>
 </td>
@@ -464,7 +464,7 @@ def autotune(configs: List[Dict], warmup: int = 300, repeat: int = 1, device_ids
 </td>
 <td class="cellrowborder" valign="top" width="65.25%" headers="mcps1.1.5.1.4 "><p id="p7623626182018"><a name="p7623626182018"></a><a name="p7623626182018"></a>采集性能前的设备预热时间。通常情况下，预热时间越长，采集到的算子性能越稳定。</p>
 <p id="p6392151820207"><a name="p6392151820207"></a><a name="p6392151820207"></a>单位：微秒。</p>
-<p id="p4807856193812"><a name="p4807856193812"></a><a name="p4807856193812"></a>默认值：1000，取值范围为1~100000之间的整数。</p>
+<p id="p4807856193812"><a name="p4807856193812"></a><a name="p4807856193812"></a>默认值：300，取值范围为1~100000之间的整数。</p>
 </td>
 </tr>
 <tr id="zh-cn_topic_0000001693276536_row7909131293411"><td class="cellrowborder" valign="top" width="17.16%" headers="mcps1.1.5.1.1 "><p id="p18541126143820"><a name="p18541126143820"></a><a name="p18541126143820"></a>repeat</p>

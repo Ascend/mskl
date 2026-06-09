@@ -38,16 +38,16 @@ python3 -c "import numpy, sympy, scipy, attrs, psutil, decorator; from packaging
 ### 2.3 【轻量调用】Python 脚本中 Kernel 轻量化调用（msKL）
 
 > [!NOTE]   
-> **知识点：msKPP 接口调用机制简介**   
+> **知识点：mskl 接口调用机制简介**   
 >
-> 1. `mskpp.tiling_func` 接口   
+> 1. `mskl.tiling_func` 接口   
 >通过此接口，开发者可指定 Tiling 动态库（.so 文件）与算子类型（op_type），精准调用目标 Tiling 函数；同时，通过传入 inputs_shape、attr 等参数，可灵活构造 TilingContext，实现无需依赖 ACLNN 框架的轻量化 Tiling 调用。   
 > Tiling 函数的执行结果包含 blockdim（核函数启动数量）、workspace（工作空间内存）以及序列化的 tiling_data 结构体数据，既可用于 Tiling 逻辑验证，也可作为后续 Kernel 调用的必要输入。      
-> 2. `mskpp.get_kernel_from_binary` 接口   
+> 2. `mskl.get_kernel_from_binary` 接口   
 >通过此接口，开发者可指定算子的 Kernel 二进制文件（.o 文件）及其函数签名参数，实现 Kernel 的快速加载与调用。
 > Kernel 所需的输入/输出张量可直接传入 numpy.array，执行完成后，可立即读取输出张量内容，用于精度比对或功能验证。   
 > 3. 与其他算子工具链无缝集成   
-> 开发者仅需通过工具命令直接启动 mskpp Python 脚本即可，例如：`msprof op python3 mskl_demo.py`
+> 开发者仅需通过工具命令直接启动 mskl Python 脚本即可，例如：`mskl python3 mskl_demo.py`
 
 #### 2.3.1 开发 Python 调用脚本
 
@@ -62,7 +62,7 @@ vi mskl_demo.py
 
 ```python
 import numpy as np
-import mskpp
+import mskl
 
 # 编译生成的 kernel 二进制.o文件在 CANN 中的路径，请更换为实际路径
 KERNEL_BINARY_PATH = "/usr/local/Ascend/cann-8.5.0/opp/vendors/customize/op_impl/ai_core/tbe/kernel/ascend910b/add_custom/AddCustom_ab1b6750d7f510985325b603cb06dc8b.o"
@@ -76,7 +76,7 @@ TENSOR_DTYPE = np.float16
 NPU_ID = 0
 
 def add_custom(a, b, c, workspace, tiling_data):
-    kernel = mskpp.get_kernel_from_binary(KERNEL_BINARY_PATH)
+    kernel = mskl.get_kernel_from_binary(KERNEL_BINARY_PATH)
     return kernel(a, b, c, workspace, tiling_data, device_id=NPU_ID)
 
 
@@ -90,7 +90,7 @@ def main():
     golden = (a + b).astype(TENSOR_DTYPE)
 
     # 2. 调用 TilingFunc 获取分块策略和工作空间
-    tiling_output = mskpp.tiling_func(
+    tiling_output = mskl.tiling_func(
         op_type="AddCustom",
         inputs=[a, b],
         outputs=[c],
@@ -111,6 +111,9 @@ if __name__ == "__main__":
 ```
 
 #### 2.3.2 对脚本进行适配
+
+> [!NOTE]
+> 以下命令依赖 `$ASCEND_HOME_PATH` 环境变量，该变量指向 CANN 安装路径（通常在安装 CANN 后通过 `source set_env.sh` 配置）。若未设置，请先执行 `source ${CANN安装路径}/set_env.sh`。
 
 执行如下命令，将查询到的 .o 文件绝对路径填入`mskl_demo.py`的 `KERNEL_BINARY_PATH` 变量中：
 
@@ -138,7 +141,7 @@ python3 mskl_demo.py
 ```text
 root@ubuntu122:~/ot_demo/workspace/src/AddCustom# python3 mskl_demo.py 
 [INFO ] Load tiling library /usr/local/Ascend/cann-8.5.0/opp/vendors/customize/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so
-[INFO ] Set kernel_type as vec, you can change this value by input [kernel_type] in [mskpp.get_kernel_from_binary] manually.
+[INFO ] Set kernel_type as vec, you can change this value by input [kernel_type] in [mskl.get_kernel_from_binary] manually.
 compare success.
 ```
 
