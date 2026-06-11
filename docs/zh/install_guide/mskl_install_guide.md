@@ -84,7 +84,7 @@ Successfully install mindstudio-kl-xxx
 
    卸载成功打印如下信息：
 
-   ```ColdFusion
+   ```text
    Successfully uninstalled 1 tool ({tools_name})
    ```
 

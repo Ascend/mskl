@@ -519,7 +519,7 @@ def basic_matmul(problem_shape, a, layout_a, b, layout_b, c, layout_c):
 **函数原型**
 
 ```py
-gen_file = mskl.Launcher(config).code_gen()
+def code_gen(self, gen_file)
 ```
 
 **参数说明**
@@ -557,7 +557,7 @@ gen_file = mskl.Launcher(config).code_gen()
 
 ```py
 config = mskl.KernelInvokeConfig(kernel_file, kernel_name) 
-gen_file = mskl.Launcher(config).code_gen() 
+mskl.Launcher(config).code_gen(gen_file) 
 ```
 
 **相关类/结构体定义**
@@ -589,7 +589,10 @@ class Launcher:
 **函数原型**
 
 ```py
-kernel = compile(build_script, gen_file)
+def compile(build_script: str,
+            launch_src_file: str,
+            output_bin_path: str = "_gen_module.so",
+            use_cache: bool = False) -> CompiledKernel
 ```
 
 **参数说明**
@@ -615,7 +618,7 @@ kernel = compile(build_script, gen_file)
 <p id="p83481217117"><a name="p83481217117"></a><a name="p83481217117"></a>数据类型：str。</p>
 </td>
 </tr>
-<tr id="row21578635315"><td class="cellrowborder" valign="top" width="17.16%" headers="mcps1.1.5.1.1 "><p id="p91571169532"><a name="p91571169532"></a><a name="p91571169532"></a>gen_file</p>
+<tr id="row21578635315"><td class="cellrowborder" valign="top" width="17.16%" headers="mcps1.1.5.1.1 "><p id="p91571169532"><a name="p91571169532"></a><a name="p91571169532"></a>launch_src_file</p>
 </td>
 <td class="cellrowborder" valign="top" width="10.07%" headers="mcps1.1.5.1.2 "><p id="p149601220152718"><a name="p149601220152718"></a><a name="p149601220152718"></a>输入</p>
 </td>
@@ -793,7 +796,10 @@ def run_executable(m, n, k, device_id):
 **函数原型**
 
 ```py
-executable = compile_executable(build_script, src_file)
+def compile_executable(build_script: str,
+                       src_file: str,
+                       output_bin_path: str = "_gen_executable",
+                       use_cache: bool = False) -> CompiledExecutable
 ```
 
 **参数说明**
