@@ -29,7 +29,7 @@ from ..utils.launcher_utils import check_runtime_impl
 
 
 def is_builtin_basic_type_instance(obj):
-    return isinstance(obj, int) or isinstance(obj, float)
+    return isinstance(obj, (int, float))
 
 
 def is_ctypes_class_instance(obj):
@@ -66,7 +66,6 @@ def pytype_to_cpp(pytype):
         "c_uint16": "uint16_t",
         "c_uint32": "uint32_t",
         "c_uint64": "uint64_t",
-
         # py built-in types
         "int": "int",
         "float": "float",
@@ -103,7 +102,6 @@ def format_of(pytype):
         "c_uint16": "H",
         "c_uint32": "I",
         "c_uint64": "K",
-
         # py built-in types
         "int": "i",
         "float": "f",
@@ -146,7 +144,6 @@ def parse_kernel_args_by_stack():
 
 
 class KernelLauncher:
-
     def __init__(self, config: KernelInvokeConfig):
         """
         a class that generates launch source code for a kernel
@@ -158,7 +155,7 @@ class KernelLauncher:
         self.decl_args = None
         self.template_args = []
         self.kernel_name = config.kernel_name
-        self.kernel_src_file = config.kernel_src_file
+        self.kernel_src_file = os.path.realpath(config.kernel_src_file)
 
         if context.autotune_in_progress:
             # stack parsing will fail in autotune scenario. therefore, use args saved in context instead.
@@ -187,6 +184,7 @@ class KernelLauncher:
 
         Note:
         """
+
         def _check_input(file_path: str):
             safe_check.check_variable_type(file_path, str)
             checker = None
@@ -203,7 +201,7 @@ class KernelLauncher:
         args_decl = []
         args_deref = []
         arg_parse_list = []
-        args_format = ['K', 'K', 'K'] # for blockdim, l2ctrl, stream
+        args_format = ['K', 'K', 'K']  # for blockdim, l2ctrl, stream
 
         for i, arg in enumerate(self.decl_args):
             # template_param
@@ -223,34 +221,36 @@ class KernelLauncher:
                 namespace = arg.get_namespace() if has_get_namespace(arg) else ''
                 args_decl.append(namespace + arg.__class__.__name__ + f" *arg{i};")
                 args_deref.append(f"*arg{i}")
-                args_format.append(f"K")
+                args_format.append("K")
             elif isinstance(arg, np.ndarray):
                 # numpy数组，申请GM空间，传递指针地址
                 args_decl.append(f"__gm__ uint8_t *arg{i};")
                 args_deref.append(f"arg{i}")
-                args_format.append(f"K")
+                args_format.append("K")
             elif is_torch_tensor_instance(arg):
                 # torch tensor，传递指针地址
                 args_decl.append(f"__gm__ uint8_t *arg{i};")
                 args_deref.append(f"arg{i}")
-                args_format.append(f"K")
+                args_format.append("K")
             elif isinstance(arg, list):
-                raise Exception(f"type \"list\" is unsupported yet. use ctypes array instead.")
+                raise Exception("type \"list\" is unsupported yet. use ctypes array instead.")
             else:
                 # 用户自定义类型，包括模板库数据类型数组，申请GM空间，传递指针地址
                 args_decl.append(f"__gm__ uint8_t *arg{i};")
                 args_deref.append(f"arg{i}")
-                args_format.append(f"K")
+                args_format.append("K")
 
         template_args = '<' + ', '.join(self.template_args) + '>' if len(self.template_args) > 0 else ''
 
-        src = KERNEL_TEMPLATE.format(kernel_src_file=self.kernel_src_file,
-                              kernel_name=self.kernel_name,
-                              args_decl=new_line.join(e for e in args_decl if e is not None),
-                              args_format=''.join(e for e in args_format if e is not None),
-                              args_ref=', ' + ', '.join(arg_parse_list) if len(arg_parse_list) > 0 else '',
-                              template_args=template_args,
-                              args=', '.join(args_deref) if len(args_deref) > 0 else '')
+        src = KERNEL_TEMPLATE.format(
+            kernel_src_file=self.kernel_src_file,
+            kernel_name=self.kernel_name,
+            args_decl=new_line.join(e for e in args_decl if e is not None),
+            args_format=''.join(e for e in args_format if e is not None),
+            args_ref=', ' + ', '.join(arg_parse_list) if len(arg_parse_list) > 0 else '',
+            template_args=template_args,
+            args=', '.join(args_deref) if len(args_deref) > 0 else '',
+        )
 
         with os.fdopen(os.open(gen_file, safe_check.OPEN_FLAGS, safe_check.SAVE_DATA_FILE_AUTHORITY), 'w') as f:
             f.truncate()
@@ -260,7 +260,6 @@ class KernelLauncher:
 
 
 class TilingLauncher:
-
     def __init__(self, config: TilingConfig):
         """
         a class that generates launch source code for a kernel
@@ -271,13 +270,15 @@ class TilingLauncher:
         self.config = config
 
     def code_gen(self, gen_file):
-        src = OPGEN_TILING_TEMPLATE.format(node_io_num=self.config.node_io_num,
-                                           ir_instance_num=self.config.ir_instance_num,
-                                           tds=self.config.tds,
-                                           soc_version=self.config.soc_version,
-                                           op_type=self.config.op_type,
-                                           lib_path=self.config.lib_path,
-                                           attrs=self.config.attrs)
+        src = OPGEN_TILING_TEMPLATE.format(
+            node_io_num=self.config.node_io_num,
+            ir_instance_num=self.config.ir_instance_num,
+            tds=self.config.tds,
+            soc_version=self.config.soc_version,
+            op_type=self.config.op_type,
+            lib_path=self.config.lib_path,
+            attrs=self.config.attrs,
+        )
 
         if os.path.exists(gen_file):
             logger.debug(f"{gen_file} exists, will overwrite it")
@@ -286,8 +287,9 @@ class TilingLauncher:
             try:
                 os.remove(gen_file)
             except Exception as e:
-                raise OSError(f'remove {gen_file} failed, please check permission and remove it manually, '
-                              f'err is {e}') from e
+                raise OSError(
+                    f'remove {gen_file} failed, please check permission and remove it manually, err is {e}'
+                ) from e
         with os.fdopen(os.open(gen_file, safe_check.OPEN_FLAGS, safe_check.SAVE_DATA_FILE_AUTHORITY), 'w') as f:
             f.truncate()
             f.write(src)
@@ -296,7 +298,6 @@ class TilingLauncher:
 
 
 class KernelBinaryLauncher:
-
     def __init__(self, config: KernelBinaryInvokeConfig):
         """
         a class that generates launch source code for a kernel
@@ -310,16 +311,17 @@ class KernelBinaryLauncher:
 
     def code_gen(self, gen_file):
         if context.op_type is None:
-            raise Exception('Cannot generate binary launch file, op_type is None, '
-                            'please call mskl.tiling_func first')
+            raise Exception('Cannot generate binary launch file, op_type is None, please call mskl.tiling_func first')
         is_runtime_exist = check_runtime_impl()
         template = OPGEN_KERNEL_TEMPLATE_RT if is_runtime_exist else OPGEN_KERNEL_TEMPLATE_ACL_RT
-        src = template.format(kernel_name=self.config.kernel_name,
-                              kernel_binary_file=self.config.kernel_binary_file,
-                              tiling_key=self.config.tiling_key,
-                              magic=self.config.magic,
-                              op_type=context.op_type,
-                              enable_printf=self.config.enable_printf)
+        src = template.format(
+            kernel_name=self.config.kernel_name,
+            kernel_binary_file=self.config.kernel_binary_file,
+            tiling_key=self.config.tiling_key,
+            magic=self.config.magic,
+            op_type=context.op_type,
+            enable_printf=self.config.enable_printf,
+        )
         if os.path.exists(gen_file):
             logger.debug(f"{gen_file} exists, will overwrite it")
             if not FileChecker(gen_file, 'file').check_input_file():
@@ -327,8 +329,9 @@ class KernelBinaryLauncher:
             try:
                 os.remove(gen_file)
             except Exception as e:
-                raise OSError(f'remove {gen_file} failed, please check permission and remove it manually, '
-                              f'err is {e}') from e
+                raise OSError(
+                    f'remove {gen_file} failed, please check permission and remove it manually, err is {e}'
+                ) from e
         with os.fdopen(os.open(gen_file, safe_check.OPEN_FLAGS, safe_check.SAVE_DATA_FILE_AUTHORITY), 'w') as f:
             f.truncate()
             f.write(src)
@@ -338,7 +341,6 @@ class KernelBinaryLauncher:
 
 # some launcher will call parse_context_kernel_args(), which requires specific callstack
 class Launcher:
-
     def __init__(self, config):
         if isinstance(config, KernelInvokeConfig):
             self.launcher = KernelLauncher(config)
@@ -648,7 +650,7 @@ rtError_t rtKernelLaunchWithHandleV2(void *hdl, const uint64_t tilingKey, uint32
 rtError_t rtGetC2cCtrlAddr(uint64_t *addr, uint32_t *fftsLen);
 rtError_t rtGetSocVersion(char *version, const uint32_t maxLen);
 }}
- 
+
 namespace Adx {{
 void AdumpPrintWorkSpace(const void *workSpaceAddr, const size_t dumpWorkSpaceSize,
                          rtStream_t stream, const char *opType);
@@ -972,19 +974,19 @@ aclError aclrtBinaryUnLoad(aclrtBinHandle binHandle);
 
 aclError aclrtBinaryLoadFromFile(const char* binPath, aclrtBinaryLoadOptions *options, aclrtBinHandle *binHandle);
 
-aclError aclrtLaunchKernelWithConfig(aclrtFuncHandle funcHandle, uint32_t blockDim, aclrtStream stream, 
+aclError aclrtLaunchKernelWithConfig(aclrtFuncHandle funcHandle, uint32_t blockDim, aclrtStream stream,
                                          aclrtLaunchKernelCfg *cfg, aclrtArgsHandle argsHandle, void *reserve);
 
 aclError aclrtKernelArgsInit(aclrtFuncHandle funcHandle, aclrtArgsHandle *argsHandle);
 
 aclError aclrtBinaryGetFunctionByEntry(aclrtBinHandle binHandle, uint64_t funcEntry, aclrtFuncHandle *funcHandle);
 
-aclError aclrtKernelArgsAppend(aclrtArgsHandle argsHandle, void *param, size_t paramSize, 
+aclError aclrtKernelArgsAppend(aclrtArgsHandle argsHandle, void *param, size_t paramSize,
                                    aclrtParamHandle *paramHandle);
 
 aclError aclrtKernelArgsFinalize(aclrtArgsHandle argsHandle);
 }}
- 
+
 namespace Adx {{
 void AdumpPrintWorkSpace(const void *workSpaceAddr, const size_t dumpWorkSpaceSize,
                          aclrtStream stream, const char *opType);
@@ -1026,10 +1028,10 @@ private:
     bool RegisterKernel(const OpgenKernelConfig& kernelConfig, std::string const &filename)
     {{
         // 1 magic，ffts不用配置，ffts會通過meta段（aclnn）或者json文件获取
-        CHECK_RT_RESULT(CheckResult(aclrtBinaryLoadFromFile(filename.c_str(), nullptr, &binHandle_), 
+        CHECK_RT_RESULT(CheckResult(aclrtBinaryLoadFromFile(filename.c_str(), nullptr, &binHandle_),
                                     "aclrtBinaryLoadFromFile"))
         // 2 kernelName 不能加_mix_aic/_mix_aiv
-        CHECK_RT_RESULT(CheckResult(aclrtBinaryGetFunctionByEntry(binHandle_, kernelConfig.tilingKey, &funcHandle_), 
+        CHECK_RT_RESULT(CheckResult(aclrtBinaryGetFunctionByEntry(binHandle_, kernelConfig.tilingKey, &funcHandle_),
                                     "aclrtBinaryGetFunctionByEntry"))
         CHECK_RT_RESULT(CheckResult(aclrtKernelArgsInit(funcHandle_, &argsHandle_), "aclrtKernelArgsInit"))
         return true;
@@ -1051,8 +1053,8 @@ private:
         aclrtParamHandle paramHandle;
         aclrtKernelArgsAppend(argsHandle_, kernelArgs_.data(), kernelArgs_.size() * 8, &paramHandle);
         aclrtKernelArgsFinalize(argsHandle_);
-        CHECK_RT_RESULT(CheckResult(aclrtLaunchKernelWithConfig(funcHandle_, kernelConfig.blockDim, 
-                                                                    kernelConfig.stream, nullptr, argsHandle_, nullptr), 
+        CHECK_RT_RESULT(CheckResult(aclrtLaunchKernelWithConfig(funcHandle_, kernelConfig.blockDim,
+                                                                    kernelConfig.stream, nullptr, argsHandle_, nullptr),
                                     "aclrtLaunchKernelWithConfig"))
 
         if ({enable_printf}) {{

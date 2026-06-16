@@ -17,7 +17,7 @@
 # -------------------------------------------------------------------------
 import os
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from mskl.launcher import compiler
 from mskl.launcher.context import context
@@ -46,24 +46,31 @@ class ReturnCode:
 
 class TestCompiler(unittest.TestCase):
     def test_compile_tiling(self):
-        with patch("subprocess.run") as mock_run, \
-                patch("importlib.util.spec_from_file_location") as mock_location, \
-                patch("importlib.util.module_from_spec") as mock_spec, \
-                patch("os.chmod") as mock_chmod, \
-                patch("os.getenv") as mock_getenv:
+        with (
+            patch("subprocess.run") as mock_run,
+            patch("importlib.util.spec_from_file_location") as mock_location,
+            patch("importlib.util.module_from_spec") as mock_spec,
+            patch("os.chmod") as mock_chmod,
+            patch("os.getenv") as mock_getenv,
+            patch("mskl.launcher.compiler.FileChecker") as mock_checker,
+        ):
             mock_run.return_value = ReturnCode()
             mock_location.return_value = Spec()
             mock_spec.return_value = TempTilingFunc()
             mock_chmod.return_value = True
             mock_getenv.return_value = os.getcwd()
-            self.assertEqual(compiler.compile_tiling('_gen_tiling.cpp', '_gen_tiling.so'),
-                             TempTilingFunc()._tiling_func)
+            mock_checker.return_value.check_input_file.return_value = True
+            self.assertEqual(
+                compiler.compile_tiling('_gen_tiling.cpp', '_gen_tiling.so'), TempTilingFunc()._tiling_func
+            )
 
     def test_compile_kernel_binary(self):
-        with patch("subprocess.run") as mock_run, \
-                patch("os.getenv") as mock_getenv, \
-                patch("os.chmod") as mock_chmod, \
-                patch("mskl.launcher.compiler.CompiledKernel._check_constructor_input") as mock_check:
+        with (
+            patch("subprocess.run") as mock_run,
+            patch("os.getenv") as mock_getenv,
+            patch("os.chmod") as mock_chmod,
+            patch("mskl.launcher.compiler.CompiledKernel._check_constructor_input") as mock_check,
+        ):
             mock_run.return_value = ReturnCode()
             mock_getenv.return_value = os.getcwd()
             mock_chmod.return_value = True
@@ -77,14 +84,15 @@ class TestCompiler(unittest.TestCase):
             self.assertEqual(mock_check.call_count, 1)
 
     def test_compile_executable(self):
-        with patch("subprocess.run") as mock_run, \
-                patch("os.path.realpath") as mock_realpath, \
-                patch("os.path.exists") as mock_exists, \
-                patch("os.chmod") as mock_chmod, \
-                patch("mskl.utils.safe_check.check_variable_type") as mock_check_variable_type, \
-                patch("mskl.utils.safe_check.FileChecker.check_input_file") as mock_check_input_file, \
-                patch("mskl.launcher.compiler.CompiledExecutable._check_constructor_input") as mock_check:
-
+        with (
+            patch("subprocess.run") as mock_run,
+            patch("os.path.realpath") as mock_realpath,
+            patch("os.path.exists") as mock_exists,
+            patch("os.chmod") as mock_chmod,
+            patch("mskl.utils.safe_check.check_variable_type") as mock_check_variable_type,
+            patch("mskl.utils.safe_check.FileChecker.check_input_file") as mock_check_input_file,
+            patch("mskl.launcher.compiler.CompiledExecutable._check_constructor_input") as mock_check,
+        ):
             mock_run.return_value = ReturnCode()
             mock_realpath.return_value = '_gen_binary_launch.cpp'
             mock_exists.return_value = True
@@ -92,8 +100,6 @@ class TestCompiler(unittest.TestCase):
             mock_check_variable_type.return_value = True
             mock_check_input_file.return_value = True
             mock_check.return_value = True
-
-
 
             context.prelaunch_flag = False
             # 验证流程能够正常执行结束
@@ -108,5 +114,4 @@ class TestCompiler(unittest.TestCase):
             compiler.compile_executable('jit_build.sh', '_gen_binary_launch.cpp', use_cache=True)
 
             mock_run.return_value.returncode = 1
-            self.assertRaises(Exception, compiler.compile_executable,
-                'jit_build.sh', '_gen_binary_launch.cpp')
+            self.assertRaises(Exception, compiler.compile_executable, 'jit_build.sh', '_gen_binary_launch.cpp')

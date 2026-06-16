@@ -90,6 +90,10 @@ disable = [
   "raise-missing-from",
   "broad-except",
   "bare-except",
+  "broad-exception-raised",           # W0719: 抛出宽泛异常
+  "too-many-lines",                   # C0302: 模块行数过多
+  "redefined-builtin",                # W0622: 重定义内置函数
+  "attribute-defined-outside-init",   # W0201: 属性在 __init__ 外定义
 
   # 导入相关
   "wrong-import-order",
@@ -117,8 +121,13 @@ exclude_dirs = [
   "__pycache__",
 ]
 
-# 启用所有安全检查
-skips = []
+# 跳过的规则（编译工具必需的功能）
+# B404: subprocess模块导入警告 - 编译工具必需
+# B603: subprocess调用警告 - 使用列表参数，已通过FileChecker校验路径
+skips = [
+  "B404",
+  "B603",
+]
 
 # 报告格式
 format = "screen"

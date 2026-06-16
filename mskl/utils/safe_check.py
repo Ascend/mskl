@@ -20,14 +20,15 @@ import os
 import stat
 from mskl.utils import logger
 
-MAX_FILE_SIZE = 10 * 1024 ** 2
-MAX_LIB_SIZE = 10 * 1024 ** 3
+MAX_FILE_SIZE = 10 * 1024**2
+MAX_LIB_SIZE = 10 * 1024**3
 SAVE_DATA_FILE_AUTHORITY = stat.S_IWUSR | stat.S_IRUSR
 DATA_DIRECTORY_AUTHORITY = 0o750
 OPEN_FLAGS = os.O_WRONLY | os.O_CREAT
-DIR_NAME_LENGTH_LIMIT = 1024
-FILE_NAME_LENGTH_LIMIT = 200
+DIR_NAME_LENGTH_LIMIT = 4096
+FILE_NAME_LENGTH_LIMIT = 255
 INPUT_BINARY_FILE_MAX_SIZE = 100 * 1024 * 1024
+
 
 def check_input_file(path, threshold=MAX_FILE_SIZE):
     if not os.path.isfile(path):
@@ -53,9 +54,13 @@ def check_path_owner_consistent(path):
 def check_group_others_w_permission(path):
     mode = os.stat(path).st_mode
     if mode & stat.S_IWGRP:
-        logger.warning(f'Path {path} is insecure because users in the same groups or in the other groups have write permission.')
+        logger.warning(
+            f'Path {path} is insecure because users in the same groups or in the other groups have write permission.'
+        )
     if mode & stat.S_IWOTH:
-        logger.warning(f'Path {path} is insecure because users in the same groups or in the other groups have write permission.')
+        logger.warning(
+            f'Path {path} is insecure because users in the same groups or in the other groups have write permission.'
+        )
 
 
 def check_variable_type(var, expected_type):
@@ -66,6 +71,7 @@ def check_variable_type(var, expected_type):
 def check_exist(path):
     if not os.path.exists(path):
         raise OSError(f'Path {path} is not exist')
+
 
 class FileChecker:
     def __init__(self, path, file_type, threshold=INPUT_BINARY_FILE_MAX_SIZE):
@@ -84,8 +90,9 @@ class FileChecker:
             logger.error(f"Path:{self.absolute_path} length is too long.")
             return False
         if self.is_soft_link_recusively():
-            logger.warning(f"Path:{self.absolute_path} contains soft link which may cause security problems,"
-                         f" please check.")
+            logger.warning(
+                f"Path:{self.absolute_path} contains soft link which may cause security problems, please check."
+            )
         if self.file_type != "dir" and os.path.isdir(self.absolute_path):
             logger.error(f"Path:{self.absolute_path} is dir, not a file.")
             return False
@@ -110,14 +117,21 @@ class FileChecker:
         return self.check_group_others_w_permission() and self.check_input_file()
 
     def is_string_char_valid(self):
-        invalid_chars = {'\n': '\\n', '\f': '\\f', '\r': '\\r', '\b': '\\b', '\t': '\\t', '\v': '\\v',
-            '\u007F': '\\u007F'}
-        for key in invalid_chars:
+        invalid_chars = {
+            '\n': '\\n',
+            '\f': '\\f',
+            '\r': '\\r',
+            '\b': '\\b',
+            '\t': '\\t',
+            '\v': '\\v',
+            '\u007f': '\\u007F',
+        }
+        for key, escaped in invalid_chars.items():
             if key in self.absolute_path:
-                logger.error(f"Path:{self.absolute_path} contains {invalid_chars[key]}, which is invalid.")
+                logger.error(f"Path:{self.absolute_path} contains {escaped}, which is invalid.")
                 return False
         return True
-    
+
     def is_soft_link_recusively(self):
         while self.absolute_path.endswith('/'):
             self.absolute_path = self.absolute_path[:-1]
@@ -141,7 +155,7 @@ class FileChecker:
             if len(dir_name) > FILE_NAME_LENGTH_LIMIT:
                 return False
         return True
-    
+
     def check_path_permission(self, file_mode):
         # 读取文件状态信息
         file_stat = os.stat(self.absolute_path)
@@ -167,14 +181,20 @@ class FileChecker:
             return False
         # 检查组权限是否允许写操作
         if (group_permission & os.W_OK) != 0:
-            logger.warning(f"Path:{self.absolute_path} is insecure because users in the same groups or in the other groups have write permission.")
+            logger.warning(
+                f"Path:{self.absolute_path} is insecure because users in the same groups or in the other groups have write permission."
+            )
         # 检查其他用户是否有写权限
         if (other_permission & os.W_OK) != 0:
-            logger.warning(f"Path:{self.absolute_path} is insecure because users in the same groups or in the other groups have write permission.")
+            logger.warning(
+                f"Path:{self.absolute_path} is insecure because users in the same groups or in the other groups have write permission."
+            )
 
         # 检查文件所有者是否与当前用户一致
         if uid != 0 and uid != file_stat.st_uid and file_stat.st_uid != 0:
-            logger.warning(f"Path:{self.absolute_path} is not owned by the current user, which may cause security problems.")
+            logger.warning(
+                f"Path:{self.absolute_path} is not owned by the current user, which may cause security problems."
+            )
         return True
 
     def check_file_size_valid(self):
@@ -185,7 +205,11 @@ class FileChecker:
     def check_group_others_w_permission(self):
         mode = os.stat(self.absolute_path).st_mode
         if mode & stat.S_IWGRP:
-            logger.warning(f"Path:{self.absolute_path} is insecure because users in the same groups or in the other groups have write permission.")
+            logger.warning(
+                f"Path:{self.absolute_path} is insecure because users in the same groups or in the other groups have write permission."
+            )
         if mode & stat.S_IWOTH:
-            logger.warning(f"Path:{self.absolute_path} is insecure because users in the same groups or in the other groups have write permission.")
+            logger.warning(
+                f"Path:{self.absolute_path} is insecure because users in the same groups or in the other groups have write permission."
+            )
         return True

@@ -16,7 +16,7 @@
 # See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
 
-import subprocess
+import subprocess  # nosec B404
 import os
 from typing import Generic, TypeVar
 import importlib.util
@@ -27,8 +27,20 @@ from ..utils import safe_check, logger
 from ..utils.safe_check import FileChecker
 from ..utils.launcher_utils import get_cann_path
 
-safe_compile_options = ['-Wall', '-fPIC', '-fstack-protector-all', '-Wl,-z,relro', '-Wl,-z,now', '-Wl,-z,noexecstack',
-                        '-s', '-O2', '-D_FORTIFY_SOURCE=2', '-fvisibility=hidden', '-ftrapv', '-fstack-check']
+safe_compile_options = [
+    '-Wall',
+    '-fPIC',
+    '-fstack-protector-all',
+    '-Wl,-z,relro',
+    '-Wl,-z,now',
+    '-Wl,-z,noexecstack',
+    '-s',
+    '-O2',
+    '-D_FORTIFY_SOURCE=2',
+    '-fvisibility=hidden',
+    '-ftrapv',
+    '-fstack-check',
+]
 T = TypeVar("T")
 
 
@@ -36,6 +48,7 @@ class KernelInterface(Generic[T]):
     """
     Kernel interface class, providing a way to launch function in the form: kernel[blockdim](x, y, z)
     """
+
     launch: T
 
     def __getitem__(self, blockdim) -> T:
@@ -56,9 +69,11 @@ class CompiledKernel(KernelInterface[T]):
 
     def __call__(self, *args, **kwargs):
         if context.tiling_output is None:
-            raise Exception('There are two ways to trigger this exception: '
-                            '1.You may want to launch kernel in this form: kernel[blockdim](x, y, z). '
-                            '2.Call mskl.tiling_func before launch kernel.')
+            raise Exception(
+                'There are two ways to trigger this exception: '
+                '1.You may want to launch kernel in this form: kernel[blockdim](x, y, z). '
+                '2.Call mskl.tiling_func before launch kernel.'
+            )
         self.launch(blockdim=context.tiling_output.blockdim, *args, **kwargs)
 
     def launch(self, *args, blockdim: int, **kwargs):
@@ -83,8 +98,18 @@ class CompiledKernel(KernelInterface[T]):
             context.blockdim = blockdim
             context.kernel_args = args
 
-        self.__run__(blockdim=blockdim, l2ctrl=0, stream=stream, warmup=None, device_id=device_id,
-                     profiling=False, timeout=timeout, kernel_name=kernel_name, repeat=repeat, *args)
+        self.__run__(
+            blockdim=blockdim,
+            l2ctrl=0,
+            stream=stream,
+            warmup=None,
+            device_id=device_id,
+            profiling=False,
+            timeout=timeout,
+            kernel_name=kernel_name,
+            repeat=repeat,
+            *args,
+        )
 
     def _check_constructor_input(self, output_bin_path: str, kernel_name: str):
         safe_check.check_variable_type(output_bin_path, str)
@@ -106,10 +131,7 @@ class CompiledKernel(KernelInterface[T]):
         safe_check.check_variable_type(kernel_name, str)
 
 
-def _check_compie_input(build_script: str,
-                        launch_src_file: str,
-                        output_bin_path: str,
-                        use_cache: bool):
+def _check_compie_input(build_script: str, launch_src_file: str, output_bin_path: str, use_cache: bool):
     safe_check.check_variable_type(build_script, str)
     checker = FileChecker(build_script, "file")
     if not checker.check_input_file():
@@ -130,6 +152,7 @@ def _check_compie_input(build_script: str,
 class ThreadSafeSet:
     def __init__(self):
         import threading
+
         self._set = set()
         self._lock = threading.Lock()
 
@@ -156,9 +179,10 @@ class ThreadSafeSet:
 
             # 当动态库名为非默认时，提示warning告知用户生成的动态库名已被修改
             if os.path.basename(path) != "_gen_module.so" and not context.autotune_in_progress:
-                logger.warning("Repeatedly importing dynamic library with the same name {} will fail in Python. "
-                               "Update the name to {}"
-                               .format(os.path.basename(path), os.path.basename(candidate)))
+                logger.warning(
+                    "Repeatedly importing dynamic library with the same name {} will fail in Python. "
+                    "Update the name to {}".format(os.path.basename(path), os.path.basename(candidate))
+                )
             return candidate
 
 
@@ -168,10 +192,9 @@ class ThreadSafeSet:
 output_bin_path_set = ThreadSafeSet()
 
 
-def compile(build_script: str,
-            launch_src_file: str,
-            output_bin_path: str = "_gen_module.so",
-            use_cache: bool = False) -> CompiledKernel:
+def compile(
+    build_script: str, launch_src_file: str, output_bin_path: str = "_gen_module.so", use_cache: bool = False
+) -> CompiledKernel:
     """
     Compile a kernel and return a launchable kernel object.
 
@@ -196,14 +219,13 @@ def compile(build_script: str,
             raise Exception("The executable generated from build script does not exist.")
         return CompiledKernel(abs_output_bin_path, context.kernel_name)
 
-    global output_bin_path_set
     abs_output_bin_path = output_bin_path_set.add(abs_output_bin_path)
 
     context.build_script = build_script
     context.launch_src_file = abs_launch_src_path
 
     compile_cmd = ["bash", build_script, abs_launch_src_path, abs_output_bin_path]
-    result = subprocess.run(compile_cmd, capture_output=True, text=True, timeout=600)
+    result = subprocess.run(compile_cmd, capture_output=True, text=True, timeout=600, check=False)
     if result.returncode != 0:
         raise Exception("Compile failed.\nCommand info: " + ' '.join(compile_cmd) + "\n{}".format(result.stderr))
 
@@ -218,19 +240,40 @@ def compile_tiling(cpp_path: str, so_path: str):
         try:
             os.remove(so_path)
         except Exception as e:
-            raise OSError(f'remove {so_path} failed, you can remove {os.path.dirname(so_path)} manually and try again, '
-                          f'error message is {e}') from e
+            raise OSError(
+                f'remove {so_path} failed, you can remove {os.path.dirname(so_path)} manually and try again, '
+                f'error message is {e}'
+            ) from e
 
     cann_path = get_cann_path()
-    args = ['g++', cpp_path, f'-I{sysconfig.get_path("include")}', '-o', so_path, '-shared',
-            f'-I{cann_path}/include', f'-L{cann_path}/lib64', '-ltiling_api', '-ldl',
-            '-lgraph_base', '-lgraph', '-lc_sec', '-lregister', '-lopp_registry', '-lascendalog', '-lplatform']
+    args = [
+        'g++',
+        cpp_path,
+        f'-I{sysconfig.get_path("include")}',
+        '-o',
+        so_path,
+        '-shared',
+        f'-I{cann_path}/include',
+        f'-L{cann_path}/lib64',
+        '-ltiling_api',
+        '-ldl',
+        '-lgraph_base',
+        '-lgraph',
+        '-lc_sec',
+        '-lregister',
+        '-lopp_registry',
+        '-lascendalog',
+        '-lplatform',
+    ]
     args.extend(safe_compile_options)
-    res = subprocess.run(args, capture_output=True, text=True, timeout=600)
+    res = subprocess.run(args, capture_output=True, text=True, timeout=600, check=False)
     if res.returncode != 0:
         raise Exception(f'Compile {so_path} failed.\nArgs: {args}\nError info: {res.stderr}')
     os.chmod(so_path, safe_check.SAVE_DATA_FILE_AUTHORITY)
 
+    checker = FileChecker(so_path, "file")
+    if not checker.check_input_file():
+        raise Exception(f"Check the tiling so {so_path} permission failed.")
     spec = importlib.util.spec_from_file_location("_mskl_tiling_launcher", so_path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -245,15 +288,28 @@ def compile_kernel_binary(src_file: str, so_path: str) -> CompiledKernel:
         try:
             os.remove(so_path)
         except Exception as e:
-            raise OSError(f'remove {so_path} failed, you can remove {os.path.dirname(so_path)} manually and try again, '
-                          f'error message is {e}') from e
+            raise OSError(
+                f'remove {so_path} failed, you can remove {os.path.dirname(so_path)} manually and try again, '
+                f'error message is {e}'
+            ) from e
 
     cann_path = get_cann_path()
-    args = ['g++', src_file, f'-I{sysconfig.get_path("include")}', f'-I{cann_path}/include',
-            f'-L{cann_path}/lib64', '-shared', '-o', so_path, '-ldl', '-lascendcl', '-lruntime',
-            '-lascend_dump']
+    args = [
+        'g++',
+        src_file,
+        f'-I{sysconfig.get_path("include")}',
+        f'-I{cann_path}/include',
+        f'-L{cann_path}/lib64',
+        '-shared',
+        '-o',
+        so_path,
+        '-ldl',
+        '-lascendcl',
+        '-lruntime',
+        '-lascend_dump',
+    ]
     args.extend(safe_compile_options)
-    res = subprocess.run(args, capture_output=True, text=True, timeout=600)
+    res = subprocess.run(args, capture_output=True, text=True, timeout=600, check=False)
     if res.returncode != 0:
         cmd = ' '.join(args)
         raise Exception(f'Compile {so_path} failed.\nCmd: {cmd}\nError info: {res.stderr}')
@@ -302,7 +358,7 @@ class CompiledExecutable:
         )
 
         logger.debug("The cmd = {}".format(cmd))
-        res = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+        res = subprocess.run(cmd, capture_output=True, text=True, timeout=600, check=False)
 
         if res.returncode != 0:
             raise Exception('Run executable failed.\ncmd: ' + ' '.join(cmd) + "\n{}".format(res.stderr))
@@ -316,10 +372,9 @@ class CompiledExecutable:
         return ""
 
 
-def compile_executable(build_script: str,
-                       src_file: str,
-                       output_bin_path: str = "_gen_executable",
-                       use_cache: bool = False) -> CompiledExecutable:
+def compile_executable(
+    build_script: str, src_file: str, output_bin_path: str = "_gen_executable", use_cache: bool = False
+) -> CompiledExecutable:
     """
     Compile and return an executable object.
 
@@ -367,7 +422,7 @@ def compile_executable(build_script: str,
         return CompiledExecutable(abs_output_bin_path)
 
     compile_cmd = ["bash", build_script, abs_src_path, abs_output_bin_path]
-    result = subprocess.run(compile_cmd, capture_output=True, text=True, timeout=120)
+    result = subprocess.run(compile_cmd, capture_output=True, text=True, timeout=120, check=False)
     if result.returncode != 0:
         raise Exception("Compile failed.\nCommand info: " + ' '.join(compile_cmd) + "\n{}".format(result.stderr))
 

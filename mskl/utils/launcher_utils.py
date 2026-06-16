@@ -24,6 +24,11 @@ def get_cann_path() -> str:
     cann_path = os.getenv('ASCEND_HOME_PATH')
     if cann_path is None or not os.path.isdir(cann_path):
         raise Exception('ASCEND_HOME_PATH is invalid, please check your environment variables')
+    checker = FileChecker(cann_path, "dir")
+    if not checker.check_input_file():
+        raise Exception(
+            f'ASCEND_HOME_PATH {cann_path} permission check failed, please verify path ownership and permissions.'
+        )
     return cann_path
 
 
@@ -31,8 +36,10 @@ def check_runtime_impl():
     cann_path = get_cann_path()
     if os.path.exists(os.path.join(cann_path, "lib64/libruntime.so")):
         import ctypes
+
         runtime_lib = ctypes.CDLL(os.path.join(cann_path, "lib64/libruntime.so"), mode=ctypes.RTLD_GLOBAL)
-        if hasattr(runtime_lib, "rtKernelLaunchWithHandleV2") and callable(getattr(runtime_lib,
-                                                                                   "rtKernelLaunchWithHandleV2")):
+        if hasattr(runtime_lib, "rtKernelLaunchWithHandleV2") and callable(
+            getattr(runtime_lib, "rtKernelLaunchWithHandleV2")
+        ):
             return True
     return False

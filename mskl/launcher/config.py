@@ -24,8 +24,15 @@ from ..utils import safe_check, logger
 from ..utils.safe_check import FileChecker
 from .context import context
 from ..utils.launcher_utils import get_cann_path
-from ..utils.autotune_utils import (is_torch_tensor_instance, safe_prod, is_torch_or_numpy_tensor, canonical_tensor,
-                                    ChainHandler, pad_list_slice, load_json)
+from ..utils.autotune_utils import (
+    is_torch_tensor_instance,
+    safe_prod,
+    is_torch_or_numpy_tensor,
+    canonical_tensor,
+    ChainHandler,
+    pad_list_slice,
+    load_json,
+)
 
 
 class KernelInvokeConfig:
@@ -49,9 +56,9 @@ class KernelInvokeConfig:
 
 
 class TilingConfig:
-    INT64_MIN = -2 ** 63  # -9223372036854775808
-    INT64_MAX = 2 ** 63 - 1  # 9223372036854775807
-    FLOAT_MAX = 3.4028235e+38
+    INT64_MIN = -(2**63)  # -9223372036854775808
+    INT64_MAX = 2**63 - 1  # 9223372036854775807
+    FLOAT_MAX = 3.4028235e38
     LINE_PREFIX = '\n                                '  # for cpp line format
     STR_PATTERN = r'^[a-zA-Z0-9_]+$'  # 验证字符串是否只包含字母、数字和下划线
     DTYPE_TO_GETYPE = {
@@ -195,11 +202,20 @@ class TilingConfig:
     }
     DEFAULT_FORMAT = FMT_TO_GEFMT['nd']
 
-    def __init__(self, op_type: str, inputs: list = None, outputs: list = None, lib_path: str = None,
-                 inputs_info: list = None, outputs_info: list = None, attr=None, soc_version: str = None):
+    def __init__(
+        self,
+        op_type: str,
+        inputs: list = None,
+        outputs: list = None,
+        lib_path: str = None,
+        inputs_info: list = None,
+        outputs_info: list = None,
+        attr=None,
+        soc_version: str = None,
+    ):
         # op_type 做透传处理
         if not self._is_valid_key_str(op_type):
-            raise ValueError(f'op_type should be a string composed of [0-9, a-z, A-Z, _]')
+            raise ValueError('op_type should be a string composed of [0-9, a-z, A-Z, _]')
         self.op_type = op_type
         self._parse_io_params(inputs, outputs, inputs_info, outputs_info)
         self._parse_attr(attr)
@@ -273,15 +289,18 @@ class TilingConfig:
         def _verify_float(v, param_name) -> str:
             TilingConfig._check_type(v, float, param_name)
             if not TilingConfig._is_not_overflow(v):
-                raise OverflowError(f'{param_name} value overflows, maybe value is infinity, NaN '
-                                    f'or lager than {TilingConfig.FLOAT_MAX}')
+                raise OverflowError(
+                    f'{param_name} value overflows, maybe value is infinity, NaN or lager than {TilingConfig.FLOAT_MAX}'
+                )
             return f'{v}'
 
         def _verify_int(v, param_name) -> str:
             TilingConfig._check_type(v, int, param_name)
             if not TilingConfig._is_not_overflow(v):
-                raise OverflowError(f'{param_name} value overflows, it should be one of '
-                                    f'[{TilingConfig.INT64_MIN}, {TilingConfig.INT64_MAX}]')
+                raise OverflowError(
+                    f'{param_name} value overflows, it should be one of '
+                    f'[{TilingConfig.INT64_MIN}, {TilingConfig.INT64_MAX}]'
+                )
             return f'{v}'
 
         def _verify_str(v, param_name) -> str:
@@ -302,8 +321,9 @@ class TilingConfig:
             # 二维数组只支持int
             inner_str_list = []
             for _, v_val in enumerate(v):
-                fmt = ','.join(_verify_int(inner_val, f'{param_name}[{inner_idx}]') \
-                               for inner_idx, inner_val in enumerate(v_val))
+                fmt = ','.join(
+                    _verify_int(inner_val, f'{param_name}[{inner_idx}]') for inner_idx, inner_val in enumerate(v_val)
+                )
                 inner_str_list.append(f"{{{fmt}}}")
             return f"{{{','.join(inner_str_list)}}}"
 
@@ -353,16 +373,15 @@ class TilingConfig:
             raise ValueError(f'attr["{k}"]\'s elements are not all same type')
         # 处理二维数组
         if isinstance(v[0], list):
-            if not all(all(isinstance(i, int) and self._is_not_overflow(i) for i in inner_list)
-                       for inner_list in v):
+            if not all(all(isinstance(i, int) and self._is_not_overflow(i) for i in inner_list) for inner_list in v):
                 raise ValueError(f'attr["{k}"] two-dimensional array only supports int type')
-            v_template = ','.join(f"{{{','.join(f'{i}' for i in inner_list)}}}"
-                                  for inner_list in v)
+            v_template = ','.join(f"{{{','.join(f'{i}' for i in inner_list)}}}" for inner_list in v)
             return f'{{{v_template}}}'
         # 处理一维数组
         if not self._is_basic_type(v[0]):
-            raise ValueError(f'attr["{k}"] one-dimensional array\'s elements type should be one of '
-                             f'{{int, bool, str, float}}')
+            raise ValueError(
+                f'attr["{k}"] one-dimensional array\'s elements type should be one of {{int, bool, str, float}}'
+            )
         return f"{{{','.join(self._parse_basic_types_to_str(i) for i in v)}}}"
 
     # attr key值必须是str
@@ -371,14 +390,15 @@ class TilingConfig:
         for k, v in attr.items():
             self._check_type(k, str, f'attr["{k}"]')
             if not self._is_valid_key_str(k):
-                raise ValueError(f'Key of attr should be a string composed of [0-9, a-z, A-Z, _]')
+                raise ValueError('Key of attr should be a string composed of [0-9, a-z, A-Z, _]')
             if v is None or (isinstance(v, list) and not v):
                 raise ValueError(f'attr["{k}"] cannot be None or empty')
             v_template = None
             if self._is_basic_type(v):
                 if not self._is_not_overflow(v):
-                    raise OverflowError(f'attr["{k}"]\'s int/float value range should be one of '
-                                        f'cpp\'s int64_t/float value range')
+                    raise OverflowError(
+                        f'attr["{k}"]\'s int/float value range should be one of cpp\'s int64_t/float value range'
+                    )
                 if isinstance(v, str) and v != '' and not TilingConfig._is_valid_key_str(v):
                     raise ValueError(f'attr["{k}"]\'s str value should be a string composed of [0-9, a-z, A-Z, _]')
                 v_template = self._parse_basic_types_to_str(v)
@@ -414,7 +434,7 @@ class TilingConfig:
         elif isinstance(attr, list):
             self._parse_attr_list(attr)
         else:
-            raise ValueError(f'attr should be dict or list')
+            raise ValueError('attr should be dict or list')
 
     def _get_cpu_tensor(self, param_name, t):
         def _create_snapshot(tensor_dict) -> dict:
@@ -423,8 +443,8 @@ class TilingConfig:
                 'tensor': tensor_dict['tensor'],
                 'ori_format': tensor_dict['ori_format'],
                 'format': tensor_dict['format'],
-                'ori_shape': [i for i in tensor_dict['ori_shape']],
-                'shape': [i for i in tensor_dict['shape']],
+                'ori_shape': list(tensor_dict['ori_shape']),
+                'shape': list(tensor_dict['shape']),
                 'dtype': tensor_dict['dtype'],
                 'data_path': '',
             }
@@ -533,8 +553,10 @@ class TilingConfig:
             elif dtype != '':
                 ge_type = self.DTYPE_TO_GETYPE[dtype]
                 if detail['dtype'] != '' and self.DTYPE_TO_GETYPE[detail['dtype']] != ge_type:
-                    logger.warning(f'{param_name} dtype: {detail["dtype"]} is different from what you specified: '
-                                   f'{dtype}, may cause exception')
+                    logger.warning(
+                        f'{param_name} dtype: {detail["dtype"]} is different from what you specified: '
+                        f'{dtype}, may cause exception'
+                    )
                 detail['dtype'] = ge_type
             else:
                 detail['dtype'] = self.DTYPE_TO_GETYPE[detail['dtype']]
@@ -575,15 +597,15 @@ class TilingConfig:
         res = []
         for i, t in enumerate(tensors):
             if t is None and not infos[i]:
-                raise ValueError(f'{param_name}[{i}] and {info_name}[{i}] are both None, this is not allowed in '
-                                 f'tensor list. When you need two instances, please assign sth like [x1, x2], not '
-                                 f'[x1, None, x2]')
+                raise ValueError(
+                    f'{param_name}[{i}] and {info_name}[{i}] are both None, this is not allowed in '
+                    f'tensor list. When you need two instances, please assign sth like [x1, x2], not '
+                    f'[x1, None, x2]'
+                )
             elif t is not None:
-                res.append(self._get_one_tensor(f'{param_name}[{i}]',
-                                                f'{info_name}[{i}]', t, infos[i]))
+                res.append(self._get_one_tensor(f'{param_name}[{i}]', f'{info_name}[{i}]', t, infos[i]))
             else:
-                res.append(self._get_one_tensor_by_dict(f'{param_name}[{i}]',
-                                                        f'{info_name}[{i}]', infos[i]))
+                res.append(self._get_one_tensor_by_dict(f'{param_name}[{i}]', f'{info_name}[{i}]', infos[i]))
         return res
 
     def _parse_tensor(self, tensors, tensor_detail_list, tensor_info, is_input):
@@ -596,11 +618,9 @@ class TilingConfig:
             tmp_list = []
             info = tensor_info[idx]
             if isinstance(value, list) or isinstance(info, list):
-                tmp_list = self._parse_tensor_list(f'{param_name}[{idx}]', f'{info_name}[{idx}]',
-                                                   value, info)
+                tmp_list = self._parse_tensor_list(f'{param_name}[{idx}]', f'{info_name}[{idx}]', value, info)
             elif value is not None or info:
-                tmp_list.append(self._get_one_tensor(f'{param_name}[{idx}]', f'{info_name}[{idx}]',
-                                                     value, info))
+                tmp_list.append(self._get_one_tensor(f'{param_name}[{idx}]', f'{info_name}[{idx}]', value, info))
             tensor_detail_list.append(tmp_list)
 
     def _verify_one_tensor_info(self, param_name, info):
@@ -665,8 +685,9 @@ class TilingConfig:
                     raise PermissionError(f'{param_name}["data_path"] check permission failed')
                 info['data_path'] = repr(os.path.abspath(data_path))[1:-1]
 
-        ch = ChainHandler([verify_fmt, verify_ori_format, verify_shape, verify_ori_shape, verify_dtype,
-                           verify_data_path])
+        ch = ChainHandler(
+            [verify_fmt, verify_ori_format, verify_shape, verify_ori_shape, verify_dtype, verify_data_path]
+        )
         ch.run()
 
     def _verify_tensor_info(self, infos, is_input):
@@ -692,9 +713,16 @@ class TilingConfig:
 
     def _gen_tds(self):
         supported_types = {
-            'ge::DT_INT8', 'ge::DT_INT16', 'ge::DT_INT32', 'ge::DT_INT64',
-            'ge::DT_UINT8', 'ge::DT_UINT16', 'ge::DT_UINT32', 'ge::DT_UINT64',
-            'ge::DT_FLOAT', 'ge::DT_DOUBLE'
+            'ge::DT_INT8',
+            'ge::DT_INT16',
+            'ge::DT_INT32',
+            'ge::DT_INT64',
+            'ge::DT_UINT8',
+            'ge::DT_UINT16',
+            'ge::DT_UINT32',
+            'ge::DT_UINT64',
+            'ge::DT_FLOAT',
+            'ge::DT_DOUBLE',
         }
 
         def _shape_str(shape) -> str:
@@ -702,19 +730,33 @@ class TilingConfig:
 
         def _tensor_to_td(is_input, tensor):
             if not is_input:
-                return (f"{self.LINE_PREFIX}.AddOutputTd({td_idx}, {t['dtype']}, "
-                        f"{t['ori_format']}, {t['format']}, "
-                        f"gert::StorageShape{{{_shape_str(t['ori_shape'])}, {_shape_str(t['shape'])}}})")
+                return (
+                    f"{self.LINE_PREFIX}.AddOutputTd({td_idx}, {t['dtype']}, "
+                    f"{t['ori_format']}, {t['format']}, "
+                    f"gert::StorageShape{{{_shape_str(t['ori_shape'])}, {_shape_str(t['shape'])}}})"
+                )
             last_param = ''
             if tensor['data_path'] != '':
-                escaped_path = tensor['data_path'].replace('"', '\\"')
+                escaped_path = (
+                    tensor['data_path']
+                    .replace('\\', '\\\\')
+                    .replace('"', '\\"')
+                    .replace('\n', '\\n')
+                    .replace('\t', '\\t')
+                    .replace('\r', '\\r')
+                )
                 last_param = f", string{{\"{escaped_path}\"}}"
             elif tensor['dtype'] in supported_types and tensor['addr'] != 0:
+                if not isinstance(tensor['addr'], int) or tensor['addr'] < 0:
+                    raise ValueError(f"Invalid addr value: {tensor['addr']}, must be non-negative integer")
                 last_param = f", (void*){tensor['addr']}"
-            return (f"{self.LINE_PREFIX}.AddInputTd({td_idx}, {tensor['dtype']}, "
-                    f"{tensor['ori_format']}, {tensor['format']}, "
-                    f"gert::StorageShape{{{_shape_str(tensor['ori_shape'])}, {_shape_str(tensor['shape'])}}}"
-                    f"{last_param})")
+            return (
+                f"{self.LINE_PREFIX}.AddInputTd({td_idx}, {tensor['dtype']}, "
+                f"{tensor['ori_format']}, {tensor['format']}, "
+                f"gert::StorageShape{{{_shape_str(tensor['ori_shape'])}, {_shape_str(tensor['shape'])}}}"
+                f"{last_param})"
+            )
+
         td_idx = 0
         for ten in self.inputs_list:
             for t in ten:
@@ -761,8 +803,8 @@ class TilingConfig:
                 raise ValueError(f"Length of {para_info} is larger than {max_length}")
         if not tensors and not infos:
             raise Exception(f"The {para} and {para_info} cannot be None or empty list at same time")
-        ten = [i for i in tensors] if tensors is not None else []
-        info = [i for i in infos] if infos is not None else []
+        ten = list(tensors) if tensors is not None else []
+        info = list(infos) if infos is not None else []
         length = max(len(ten), len(info))
         ten = pad_list_slice(ten, length)
         info = pad_list_slice(info, length)
@@ -793,7 +835,7 @@ class KernelBinaryInvokeConfig:
         'vec': 0x41415246,
         'cube': 0x41494343,
     }
-    UINT64_MAX = 2 ** 64 - 1  # 18446744073709551615
+    UINT64_MAX = 2**64 - 1  # 18446744073709551615
 
     def __init__(self, kernel_binary_file: str, kernel_type: str = None, tiling_key: int = None):
         self.kernel_name = 'kernel_binary'
@@ -825,7 +867,7 @@ class KernelBinaryInvokeConfig:
         # 优先使用用户填的算子类型判断，310p在生成代码时填固定值
         self.magic = 0
         if kernel_type is not None:
-            if kernel_type not in KernelBinaryInvokeConfig.KERNEL_TYPE_TO_MAGIC.keys():
+            if kernel_type not in KernelBinaryInvokeConfig.KERNEL_TYPE_TO_MAGIC:
                 raise ValueError(f"kernel_type should in {KernelBinaryInvokeConfig.KERNEL_TYPE_TO_MAGIC.keys()}")
             self.magic = self.KERNEL_TYPE_TO_MAGIC[kernel_type]
 
@@ -838,8 +880,10 @@ class KernelBinaryInvokeConfig:
             return
         res, json_data = load_json(json_path)
         if not res:
-            logger.warning(f'Read json {json_path} failed, AscendC::printf and AscendC::DumpTensor'
-                           f' will be ineffective. {json_data}')
+            logger.warning(
+                f'Read json {json_path} failed, AscendC::printf and AscendC::DumpTensor'
+                f' will be ineffective. {json_data}'
+            )
             return
         if not json_data or json_data.get("debugOptions", None) is None:
             return
