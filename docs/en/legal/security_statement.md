@@ -24,7 +24,7 @@ It is recommended that users enable ASLR (Level 2), also known as **full Address
 
  2. Users need to properly control permissions during installation and usage. It is recommended to configure settings by referring to the file permission reference.
 
-## File Access Control
+**File Access Control**
 
 | Type                               | Maximum Linux Permission Reference |
 | ---------------------------------- | ---------------------------------- |

@@ -31,5 +31,5 @@ Enter "y", and the installation package will automatically complete the upgrade 
 To uninstall, use the following command:
 
 ```sh
-pip3 uninstall mindstudio_kl-xxxxx.whl 
+pip3 uninstall mindstudio-kl
 ```

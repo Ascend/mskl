@@ -49,7 +49,7 @@ See also [msKL External API Reference](docs/en/api_reference/mskl_api_reference.
 
 ## ❓ FAQ
 
-For common issues and solutions, See also [msKL FAQ](docs/en/support/faq.md).
+For common issues and solutions, See also [msKL FAQ](docs/en/support/mskl_faq.md).
 
 ## 🛠️ Contribution Guide
 

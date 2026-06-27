@@ -13,7 +13,7 @@ MindStudio Kernel Performance Prediction (kernel invocation tool, msKL) provides
 
 Before developing operators, you need to install the driver firmware, CANN Toolkit software package, and the ops operator package. Refer to the *[CANN Software Installation Guide](https://www.hiascend.com/document/detail/en/canncommercial/83RC1/softwareinst/instg/instg_quick.html?Mode=PmIns&InstallType=local&OS=openEuler&Software=cannToolKit)*. This section does not provide installation examples. After configuring the relevant environment variables, you can directly use the lightweight kernel invocation function.
 
-- To use the [auto-tuning](#auto-tuning-feature-introduction) function, you need to download the Ascend C Template Library from the [link](https://gitcode.com/cann/catlass).
+- To use the [auto-tuning](#auto-tuning-feature-introduction) function, you need to download the Ascend C Template Library from the [sample](https://gitcode.com/cann/catlass).
 - For secondary development, ensure that the input data is trusted and secure.
 
 **Constraints**
@@ -40,7 +40,7 @@ Some current operator open-source repositories use the project template provided
 - If an operator of the same type (op_type) has been previously deployed in CANN, and the user modifies the tiling function and recompiles it, the operator must be redeployed in the CANN environment.
 - When calling the tiling_func and get_kernel_from_binary interfaces, the system generates the following intermediate files in the mindstudio_mskl_gen folder under the current directory. These files are for development and locating purposes only and do not require user attention. Do not modify the contents of this folder or its sub-files to avoid causing functional abnormalities in the tool.
 
-    ```tex
+    ```shell
     (p39) root@ubuntu:~/project/add_custom/CustomOp$ ll mindstudio_mskl_gen/
     total 388
     drwxr-x---  2 root root    314 Jul 24 09:40 ./
@@ -62,13 +62,13 @@ This chapter uses the matmulleakyrelu operator project as an example to introduc
 **Environment Preparation**<a id="environment-preparation"></a>
 
 - Refer to [Preparation Before Use](#preparation-before-use) to configure the relevant environment variables.
-- Click the [link](https://gitee.com/ascend/samples/tree/master/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch) to obtain the sample project in preparation for operator detection.
+- Click the [sample](https://gitee.com/ascend/samples/tree/master/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch) to obtain the sample project in preparation for operator detection.
 
     > [!NOTE] Note
     > 
     >- This sample project uses the Atlas A2 Training Series/Atlas A2 Inference Series as an example.
     >- When downloading the code sample, you need to run the following command to specify the branch version.
->
+    >
     >   ```shell
     >   git clone https://gitee.com/ascend/samples.git -b v1.9-8.3.RC1
     >   ```

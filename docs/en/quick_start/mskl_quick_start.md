@@ -9,11 +9,11 @@ This document demonstrates the core functionality of the msKL tool based on the 
 
 ### 1.1 Recommendations
 
-This section assumes you have completed the full workflow of the [Ascend Operator Development Toolchain Quick Start](https://gitcode.com/Ascend/msot/blob/master/docs/en/quick_start/op_tool_quick_start.md). If you have not yet experienced it, it is recommended that you read this guide first for a better learning outcome.
+This section assumes you have completed the full workflow of the [Ascend Operator Development Toolchain Quick Start](https://gitcode.com/Ascend/msot/blob/26.0.0/docs/en/quick_start/op_tool_quick_start.md). If you have not yet experienced it, it is recommended that you read this guide first for a better learning outcome.
 
 ### 1.2 Environment Preparation
 
-Please strictly follow the <a href="https://gitcode.com/Ascend/msot/blob/master/docs/en/common/dev_env_setup.md" target="_blank">Operator Tool Development Environment Setup Guide</a> to complete environment installation and workspace configuration.
+Please strictly follow the <a href="https://gitcode.com/Ascend/msot/blob/26.0.0/docs/en/common/dev_env_setup.md" target="_blank">Operator Tool Development Environment Setup Guide</a> to complete environment installation and workspace configuration.
 Even if you already have a similar environment, you must re-execute the steps in this guide to ensure all dependent components, environment variables, etc., are complete and consistent.
 
 ## 2. Procedure
@@ -32,7 +32,7 @@ If an error is reported, refer to [Section 1.2](#12-environment-preparation) for
 
 ### 2.2 [Prerequisite] Operator Project Preparation Completed
 
-Follow the instructions in <a href="https://gitcode.com/Ascend/msot/blob/master/docs/en/quick_start/op_tool_quick_start.md" target="_blank">Ascend Operator Development Toolchain Quick Start</a> to complete Sections 2.1 and 2.3.
+Follow the instructions in <a href="https://gitcode.com/Ascend/msot/blob/26.0.0/docs/en/quick_start/op_tool_quick_start.md" target="_blank">Ascend Operator Development Toolchain Quick Start</a> to complete Sections 2.1 and 2.3.
 
 ### 2.3 [Lightweight Call] Lightweight Kernel Call in Python Scripts (msKL)
 

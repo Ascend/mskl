@@ -68,7 +68,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
     > 
     >- 本样例工程以Atlas A2 训练系列产品/Atlas A2 推理系列产品为例。
     >- 下载代码样例时，需执行以下命令指定分支版本。
->
+    >
     >   ```shell
     >   git clone https://gitee.com/ascend/samples.git -b v1.9-8.3.RC1
     >   ```
