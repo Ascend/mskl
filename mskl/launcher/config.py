@@ -35,6 +35,11 @@ from ..utils.autotune_utils import (
 )
 
 
+def _escape_cpp_string(s: str) -> str:
+    """Escape a string for safe embedding in a C++ double-quoted string literal."""
+    return s.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r').replace('\t', '\\t')
+
+
 class KernelInvokeConfig:
     """
     A configuration descriptor for a possible kernel developed based on an Act example
@@ -361,12 +366,12 @@ class TilingConfig:
             # load liboptiling.so in cann as default
             cann_path = get_cann_path()
             tiling_so = os.path.join(cann_path, "lib64/liboptiling.so")
-            self.lib_path = repr(tiling_so)[1:-1] if os.path.exists(tiling_so) else ''
+            self.lib_path = _escape_cpp_string(tiling_so) if os.path.exists(tiling_so) else ''
         elif lib_path == '':
             raise ValueError('lib_path should not be empty')
         else:
             # 透传给runtime接口校验
-            self.lib_path = repr(os.path.realpath(lib_path))[1:-1]
+            self.lib_path = _escape_cpp_string(os.path.realpath(lib_path))
 
     def _parse_attr_list_type(self, k, v) -> str:
         if not self._are_all_same_type(v):
@@ -850,7 +855,7 @@ class KernelBinaryInvokeConfig:
         self.kernel_binary_file = os.path.realpath(kernel_binary_file)
         if not FileChecker(self.kernel_binary_file, "file").check_input_file():
             raise Exception(f"Check kernel_binary_file {self.kernel_binary_file} permission failed.")
-        self.kernel_binary_file = repr(self.kernel_binary_file)[1:-1]
+        self.kernel_binary_file = _escape_cpp_string(self.kernel_binary_file)
 
     def _set_tiling_key(self, tiling_key):
         if context.tiling_output is None and tiling_key is None:

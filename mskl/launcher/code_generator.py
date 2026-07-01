@@ -20,7 +20,7 @@ import os
 import inspect
 import ctypes
 import numpy as np
-from .config import KernelInvokeConfig, TilingConfig, KernelBinaryInvokeConfig
+from .config import KernelInvokeConfig, TilingConfig, KernelBinaryInvokeConfig, _escape_cpp_string
 from .context import context
 from ..utils import logger, safe_check
 from ..utils.autotune_utils import is_torch_tensor_instance
@@ -243,7 +243,7 @@ class KernelLauncher:
         template_args = '<' + ', '.join(self.template_args) + '>' if len(self.template_args) > 0 else ''
 
         src = KERNEL_TEMPLATE.format(
-            kernel_src_file=self.kernel_src_file,
+            kernel_src_file=_escape_cpp_string(self.kernel_src_file),
             kernel_name=self.kernel_name,
             args_decl=new_line.join(e for e in args_decl if e is not None),
             args_format=''.join(e for e in args_format if e is not None),
