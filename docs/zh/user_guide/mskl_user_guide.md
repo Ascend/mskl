@@ -64,8 +64,8 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 - 请参考[使用前准备](#使用前准备)，完成相关环境变量的配置。
 - 点击[链接](https://gitee.com/ascend/samples/tree/master/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch)获取样例工程，为进行算子检测做准备。
 
-    > [!NOTE] 
-    > 
+    > [!NOTE]
+    >
     >- 本样例工程以Atlas A2 训练系列产品/Atlas A2 推理系列产品为例。
     >- 下载代码样例时，需执行以下命令指定分支版本。
     >
@@ -97,7 +97,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
         kernel_binary_file = "MatmulLeakyreluCustom.o"    #不同的硬件和操作系统展示的.o文件的名称稍有不同，具体路径请参考《msopgen_usr_guide》中的“查看算子仿真图”章节里“参数说明”表 -reloc参数
         kernel = mskl.get_kernel_from_binary(kernel_binary_file, 'mix')
         return kernel(input_a, input_b, input_bias, output, workspace, tiling_data)
-    
+
     if __name__ == "__main__":
         # input/output tensor
         M = 1024
@@ -128,7 +128,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
         workspace = np.zeros(workspace_size).astype(np.uint8) # workspace需要用户自行申请
         # 调用Kernel函数
         run_kernel(input_a, input_b, input_bias, output, workspace, tiling_data)
-    
+
         # 校验输出
         alpha = 0.001
         golden = (np.matmul(input_a.astype(np.float32), input_b.astype(np.float32)) + input_bias).astype(np.float32)
@@ -147,7 +147,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 > [!NOTE]
 >
 > 若脚本执行失败，报如下错误：
-> 
+>
 > ```text
 > Exception: Check kernel_binary_file /XXX/samples/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch/CustomOp/MatmulLeakyreluCustom.o permission failed.
 > ```
@@ -208,14 +208,14 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
 自动调优流程包括Kernel级自动调优和应用级自动调优两种，具体流程请参见[图1](#fig985071581517)，具体操作请参见[Kernel级自动调优样例](#section778122211315)和[应用级自动调优样例](#section14971258122)。
 
-**图 1**  自动调优流程示意图<a id="fig985071581517"></a>  
+**图 1**  自动调优流程示意图<a id="fig985071581517"></a>
 ![](../figures/自动调优流程示意图.png "自动调优流程示意图")
 
 **Kernel级自动调优样例<a id="section778122211315"></a>**
 
-本章节以模板库catlass-v1-dev分支的[examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/catlass-v1-dev/examples/00_basic_matmul/basic_matmul.cpp)为例，介绍如何利用msKL工具提供的接口实现Kernel级自动调优。
+本章节以模板库v1.0.0版本的[examples/00_basic_matmul](https://gitcode.com/cann/catlass/blob/v1.0.0/examples/00_basic_matmul/basic_matmul.cpp)为例，介绍如何利用msKL工具提供的接口实现Kernel级自动调优。
 
-> [!NOTE]   
+> [!NOTE]
 > 在运行过程中出现任何异常，可通过设置环境变量的方式来查看debug日志以及保留中间文件，便于问题定位。
 >
 > ```shell
@@ -225,7 +225,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 > 下载代码样例时，需执行以下命令指定分支版本。
 >
 > ```shell
-> git clone https://gitee.com/ascend/catlass.git -b catlass-v1-dev
+> git clone https://gitcode.com/cann/catlass.git -b v1.0.0
 > ```
 
 1. 完成算子Kernel开发后，Kernel函数的定义与实现将会呈现在basic_matmul.cpp文件中，如下所示。
@@ -253,7 +253,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
     ```python
     # basic_matmul_autotune.py
     import mskl
-    
+
     def get_kernel():
         kernel_file = ".basic_matmul.cpp"
         kernel_name = "BasicMatmul"
@@ -262,7 +262,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
         gen_file = mskl.Launcher(config).code_gen()
         kernel = mskl.compile(build_script=build_script, launch_src_file=gen_file)
         return kernel
-    
+
     def basic_matmul(problem_shape, a, layout_a, b, layout_b, c, layout_c):
         # This function's input arguments must exactly match the kernel function.
         kernel = get_kernel()
@@ -339,7 +339,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
     using L0TileShape = GemmShape<128, 256, 64>; // tunable
     ```
 
-    > [!NOTE]   
+    > [!NOTE]
     > 除tunable标识的方法之外，还可以通过换行，在需要整行替换的代码行末尾使用**// tunable: 别名（L0Shape）**方式标记。其中，别名用于搜索空间索引。
     >
     > ```CPP
@@ -349,7 +349,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
 6. 通过autotune接口的configs入参定义参数搜索空间，每一类参数组合会替换算子Kernel代码中被标记的代码行，然后进行编译、运行并完成Kernel性能采集。搜索空间定义示例可参考如下所示。
 
-    > [!NOTE] 
+    > [!NOTE]
     >- 参数替换需合理，不能造成编译或运行错误。
     >- 参数替换原则如下（以configs中的第一行为例）：
     >    1. 先替换// tunable: L0Shape方式标记的参数，将标记代码行（MatmulShape<128, 256, 64>）整行替换为configs中的value字符串（MatmulShape<128, 256, 64>）。
@@ -377,7 +377,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 7. 执行basic_matmul_autotune.py文件运行算子，获得每种参数组合的耗时及最佳调优参数集合。以下仅展示可能的一种命令行输出结果。
 
     ```python
-    # python3 basic_matmul_autotune.py 
+    # python3 basic_matmul_autotune.py
     No.0: 22.562μs, {'L1TileShape': 'GemmShape<128, 256, 256>', 'L0TileShape': 'GemmShape<128, 256, 64>'}
     No.1: 22.109μs, {'L1TileShape': 'GemmShape<128, 256, 128>', 'L0TileShape': 'GemmShape<128, 256, 64>'}
     No.2: 17.778μs, {'L1TileShape': 'GemmShape<128, 128, 256>', 'L0TileShape': 'GemmShape<128, 128, 64>'}
@@ -398,26 +398,26 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
 **应用级自动调优样例<a id="section14971258122"></a>**
 
-本章节以模板库master分支的[examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/master/examples/00_basic_matmul/basic_matmul.cpp)为例，介绍如何利用msKL工具提供的接口实现对应用级的自动调优。
+本章节以模板库v1.3.1版本的[examples/00_basic_matmul](https://gitcode.com/cann/catlass/blob/v1.3.1/examples/00_basic_matmul/basic_matmul.cpp)为例，介绍如何利用msKL工具提供的接口实现对应用级的自动调优。
 
-> [!NOTE]   
+> [!NOTE]
 > 在运行过程中出现任何异常，可通过设置环境变量的方式来查看debug日志以及保留中间文件，便于问题定位。
 >
 > ```shell
 > export MSKL_LOG_LEVEL=0
 > ```
 
-1. 参考[examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/master/examples/00_basic_matmul/basic_matmul.cpp)示例，使用模板库Device层接口完成算子实现，并分别在115、117行末尾添加**// tunable**注释，用于替换"="号后的代码内容。
+1. 参考[examples/00_basic_matmul](https://gitcode.com/cann/catlass/blob/v1.3.1/examples/00_basic_matmul/basic_matmul.cpp)示例，使用模板库Device层接口完成算子实现，并分别在87、89行末尾添加**// tunable**注释，用于替换"="号后的代码内容。
 
     ```cpp
     ...
-    115 using L1TileShape = GemmShape<128, 256, 256>; // tunable
-    116   
-    117 using L0TileShape = GemmShape<128, 256, 64>; // tunable
+    87 using L1TileShape = GemmShape<128, 256, 256>; // tunable
+    88
+    89 using L0TileShape = GemmShape<128, 256, 64>; // tunable
     ...
     ```
 
-2. 在[examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/master/examples/00_basic_matmul/basic_matmul.cpp)目录中创建Python脚本文件[basic_matmul_executable_autotune.py](#basic_matmul_executable_autotunepy)与编译脚本文件[jit_build_executable.sh](#jit_build_executablesh)。
+2. 在[examples/00_basic_matmul](https://gitcode.com/cann/catlass/blob/v1.3.1/examples/00_basic_matmul/basic_matmul.cpp)目录中创建Python脚本文件[basic_matmul_executable_autotune.py](#basic_matmul_executable_autotunepy)与编译脚本文件[jit_build_executable.sh](#jit_build_executablesh)。
 
     可根据实际需要修改basic_matmul_executable_autotune.py脚本中autotune_v2接口传入的configs参数以搜索自定义tiling参数组合。
 
@@ -607,7 +607,7 @@ import mskl
     {'L1TileShape': 'GemmShape<64, 64, 1024>', 'L0TileShape': 'GemmShape<64, 64, 256>'},
 ], warmup_times=10)
 def run_executable(m, n, k, device_id):
-    kernel_file = "../../00_basic_matmul/basic_matmul.cpp"
+    kernel_file = "basic_matmul.cpp"
     build_script = "jit_build_executable.sh" # executable compile script
     executable = mskl.compile_executable(build_script=build_script, src_file=kernel_file, use_cache=False)
     return executable(m, n, k, device_id)
@@ -651,11 +651,11 @@ bisheng -O2 -std=c++17 -xcce --cce-aicore-arch=dav-c220 \
     -I$ASCEND_HOME_PATH/include \
     -I$ASCEND_HOME_PATH/include/experiment/runtime \
     -I$ASCEND_HOME_PATH/include/experiment/msprof \
-    -I../../../include \
-    -I../../common \
+    -I../../include \
+    -I../common \
     -L${ASCEND_HOME_PATH}/lib64 \
     -Wno-macro-redefined -Wno-ignored-attributes \
-    -lruntime -lstdc++ -lascendcl -lm -ltiling_api -lplatform -lc_sec -ldl -lnnopbase \
+    -lruntime -lstdc++ -lascendcl -lm -ltiling_api -lplatform -lc_sec -ldl -lnnopbase -lunified_dlog \
     $LAUNCH_SRC_FILE -o $OUTPUT_LIB_FILE
 exit $?
 ```
