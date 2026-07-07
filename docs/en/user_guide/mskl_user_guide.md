@@ -170,10 +170,7 @@ When performing performance tuning on template library operators, it is often ne
 
 **Auto-tuning Workflow**
 
-The auto-tuning workflow includes two types: Kernel-level autotuning and Application-level autotuning. For the specific workflow, refer to [Figure 1](#fig985071581517). For detailed operations, refer to [Kernel-level Autotuning Example](#section778122211315) and [Application-level Autotuning Example](#section14971258122).
-
-**Figure 1** Auto-tuning workflow diagram <a id="fig985071581517"></a>  
-![](../figures/自动调优流程示意图.png "Auto-tuning workflow diagram")
+The auto-tuning workflow includes two types: Kernel-level autotuning and Application-level autotuning. For detailed operations, refer to [Kernel-level Autotuning Example](#section778122211315) and [Application-level Autotuning Example](#section14971258122).
 
 **Kernel-level Auto-tuning Example <a id="section778122211315"></a>**
 
