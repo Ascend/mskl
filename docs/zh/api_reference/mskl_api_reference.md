@@ -277,7 +277,7 @@ output = np.zeros([M, N]).astype(np.float32)
 tiling_output = mskl.tiling_func(
     op_type="MatmulLeakyreluCustom",
     inputs=[input_a, input_b, input_bias], outputs=[output],
-    lib_path="liboptiling.so",  # tiling代码编译产物 
+    lib_path="liboptiling.so",  # tiling函数编译产物 
 )
 ```
 
@@ -398,7 +398,8 @@ def get_kernel_from_binary(kernel_binary_file: str, kernel_type: str = None, til
 </tbody>
 </table>
 
-> [!NOTE]   
+> [!NOTE]
+> 
 > Kernel对象类型为CompiledKernel，支持如下方式调用Kernel：kernel[blockdim](arg1, arg2, ..., timeout=-1, device_id=0, repeat=1)，实际调用时，需保证CompiledKernel函数的入参和调用Kernel时的入参一致。
 
 **调用示例**

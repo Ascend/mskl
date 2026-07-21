@@ -1,8 +1,8 @@
 # MindStudio Kernel Launch 常见问题
 
-## 安装类
+## 1. 安装类
 
-### 安装 whl 包时提示找不到文件
+### 1.1 安装 whl 包时提示找不到文件
 
 **问题现象**
 
@@ -44,7 +44,7 @@ ERROR: Could not find a version that satisfies the requirement mindstudio_kl
     pip3 install --upgrade pip
     ```
 
-### 在线安装时提示网络连接失败
+### 1.2 在线安装时提示网络连接失败
 
 **问题现象**
 
@@ -65,9 +65,9 @@ curl: (7) Failed to connect to ... port 443: Connection refused
 
 ---
 
-## 环境类
+## 2. 环境类
 
-### import mskl 时报 ModuleNotFoundError
+### 2.1 import mskl 时报 ModuleNotFoundError
 
 **问题现象**
 
@@ -99,7 +99,7 @@ msKL 未安装或安装的 Python 环境与当前使用的 Python 不一致。
 
     确保两者在同一环境下（如都在虚拟环境或系统 Python 中）。
 
-### 运行环境预检时提示 Python 包版本不满足
+### 2.2 运行环境预检时提示 Python 包版本不满足
 
 **问题现象**
 
@@ -137,9 +137,9 @@ AssertionError
 
 ---
 
-## 运行类
+## 3. 运行类
 
-### 运行 Kernel 时提示权限错误
+### 3.1 运行 Kernel 时提示权限错误
 
 **问题现象**
 
@@ -164,7 +164,7 @@ $ umask 0022
 u=rwx,g=rx,o=rx
 ```
 
-### 调用算子时提示设备异常或卡住不动
+### 3.2 调用算子时提示设备异常或卡住不动
 
 **问题现象**
 
@@ -201,7 +201,7 @@ u=rwx,g=rx,o=rx
 
     确认目标卡状态正常且未被其他任务占用。
 
-### tiling_func 调用报错：找不到 tiling 函数
+### 3.3 tiling_func 调用报错：找不到 tiling 函数
 
 **问题现象**
 
@@ -234,7 +234,7 @@ u=rwx,g=rx,o=rx
 
 3. 若算子曾经部署过且修改了 tiling 函数，需要在 CANN 环境中重新部署算子。
 
-### get_kernel_from_binary 找不到 .o 文件
+### 3.4 get_kernel_from_binary 找不到 .o 文件
 
 **问题现象**
 
@@ -265,9 +265,9 @@ u=rwx,g=rx,o=rx
 
 ---
 
-## 调优类
+## 4. 调优类
 
-### 自动调优运行很慢，如何处理？
+### 4.1 自动调优运行很慢，如何处理？
 
 **问题现象**
 
@@ -301,7 +301,7 @@ u=rwx,g=rx,o=rx
     export MSKL_LOG_LEVEL=0
     ```
 
-### 自动调优结果中所有参数组合耗时相近，无法选出最优
+### 4.2 自动调优结果中所有参数组合耗时相近，无法选出最优
 
 **问题现象**
 
@@ -321,7 +321,7 @@ autotune 输出的各组参数耗时几乎相同，`Best config` 与其余组合
     @mskl.autotune(configs=[...], warmup=2000, repeat=5)
     ```
 
-### 自动调优过程中报编译错误
+### 4.3 自动调优过程中报编译错误
 
 **问题现象**
 
@@ -341,9 +341,9 @@ autotune 输出的各组参数耗时几乎相同，`Best config` 与其余组合
 
 ---
 
-## 编译类
+## 5. 编译类
 
-### 执行 build.py 编译失败
+### 5.1 执行 build.py 编译失败
 
 **问题现象**
 
@@ -373,7 +373,7 @@ $ python3 build.py
     source $ASCEND_HOME_PATH/set_env.sh
     ```
 
-### 编译生成的 .o 文件名与文档示例不一致
+### 5.2 编译生成的 .o 文件名与文档示例不一致
 
 **问题现象**
 
@@ -395,9 +395,9 @@ find . -name "*.o"
 
 ---
 
-## 兼容性类
+## 6. 兼容性类
 
-### CANN 版本与 msKL 版本不匹配
+### 6.1 CANN 版本与 msKL 版本不匹配
 
 **问题现象**
 
