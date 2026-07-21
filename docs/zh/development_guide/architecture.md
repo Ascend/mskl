@@ -6,7 +6,7 @@ MindStudio Kernel Launcher（msKL）是一个面向昇腾AI处理器的算子Ker
 
 ## 2. 目录结构总览
 
-```
+```text
 mskl/
 ├── build.py                    # 构建/测试入口脚本
 ├── setup.py                    # whl 包打包配置
@@ -79,7 +79,7 @@ mskl/
 
 **数据流：**
 
-```
+```text
 用户 Python 脚本
     │
     ├─ tiling_func(op_type, inputs, ...)
@@ -115,7 +115,7 @@ mskl/
 
 **数据流：**
 
-```
+```text
 用户 @mskl.autotune(configs=[...]) 装饰的函数
     │
     ├─ [tuner.py] Autotuner.pre_launch() → 预启动一次，捕获 kernel 上下文
@@ -157,7 +157,7 @@ mskl/
 
 ## 4. 模块依赖关系
 
-```
+```text
 mskl/__init__.py
     ├── mskl.launcher (算子调用)
     │       ├── config.py         ← 独立

@@ -57,7 +57,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
 ### 使用示例
 
-本章节以matmulleakyrelu算子工程为例，介绍如何利用msKL工具提供的tiling_func和get_kernel_from_binary接口调用msOpGen工程中的tiling函数以及用户自定义的Kernel函数，其他类型的算子操作均可参考此流程进行操作。
+本章节以MatmulLeakyRelu算子工程为例，介绍如何利用msKL工具提供的tiling_func和get_kernel_from_binary接口调用msOpGen工程中的tiling函数以及用户自定义的Kernel函数，其他类型的算子操作均可参考此流程进行操作。
 
 **环境准备**<a id="环境准备"></a>
 
@@ -119,7 +119,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
             inputs_info=inputs_info, outputs_info=outputs_info, # 可选
             inputs=[input_a, input_b, input_bias], outputs=[output],
             attr=attr, # 可选
-            lib_path="build_out/op_host/libcust_opmaster_rt2.0.so",  # tiling代码编译产物，具体位置可参考《msopgen_usr_guide》中的“算子包部署>步骤2以默认安装场景为例”中的目录结构
+            lib_path="build_out/op_host/libcust_opmaster_rt2.0.so",  # tiling函数编译产物，具体位置可参考《msopgen_usr_guide》中的“算子包部署>步骤2以默认安装场景为例”中的目录结构
             # soc_version="", # 可选
         )
         blockdim = tiling_output.blockdim
@@ -340,9 +340,10 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
     ```
 
     > [!NOTE]
+    > 
     > 除tunable标识的方法之外，还可以通过换行，在需要整行替换的代码行末尾使用**// tunable: 别名（L0Shape）**方式标记。其中，别名用于搜索空间索引。
     >
-    > ```CPP
+    > ```cpp
     > using L0TileShape =
     > MatmulShape<128, 256, 64>; // tunable: L0Shape
     > ```
@@ -350,6 +351,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 6. 通过autotune接口的configs入参定义参数搜索空间，每一类参数组合会替换算子Kernel代码中被标记的代码行，然后进行编译、运行并完成Kernel性能采集。搜索空间定义示例可参考如下所示。
 
     > [!NOTE]
+    > 
     >- 参数替换需合理，不能造成编译或运行错误。
     >- 参数替换原则如下（以configs中的第一行为例）：
     >    1. 先替换// tunable: L0Shape方式标记的参数，将标记代码行（MatmulShape<128, 256, 64>）整行替换为configs中的value字符串（MatmulShape<128, 256, 64>）。
@@ -401,6 +403,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 本章节以模板库v1.3.1版本的[examples/00_basic_matmul](https://gitcode.com/cann/catlass/blob/v1.3.1/examples/00_basic_matmul/basic_matmul.cpp)为例，介绍如何利用msKL工具提供的接口实现对应用级的自动调优。
 
 > [!NOTE]
+> 
 > 在运行过程中出现任何异常，可通过设置环境变量的方式来查看debug日志以及保留中间文件，便于问题定位。
 >
 > ```shell
