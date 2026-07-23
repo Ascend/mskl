@@ -1,0 +1,43 @@
+{
+    "files.watcherExclude": {
+        ".cache/**": true,
+        "{build,build_ut,output,artifacts,dist}/**": true,
+        "**/*.egg-info/**": true,
+        "**/{.venv,node_modules,__pycache__,.pytest_cache,.ruff_cache,.mypy_cache}/**": true
+    },
+    "search.exclude": {
+        ".cache/**": true,
+        "{build,build_ut,output,artifacts,dist}/**": true,
+        "**/*.egg-info/**": true,
+        "**/{.venv,node_modules,__pycache__,.pytest_cache,.ruff_cache,.mypy_cache}/**": true
+    },
+    "files.exclude": {
+        ".cache": true,
+        "**/*.egg-info": true,
+        "**/{__pycache__,.pytest_cache,.ruff_cache,.mypy_cache}": true
+    },
+    "terminal.integrated.scrollback": 10000,
+    "git.detectSubmodules": false,
+    "git.autoRepositoryDetection": false,
+    "python.defaultInterpreterPath": "python3",
+    "python.terminal.activateEnvironment": false,
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}"
+    ],
+    "python.analysis.exclude": [
+        "**/node_modules",
+        "**/__pycache__",
+        "**/.*",
+        ".venv",
+        "build",
+        "build_ut",
+        "output",
+        "artifacts",
+        "dist"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+        "test/launcher",
+        "test/op_tune"
+    ]
+}

@@ -1,11 +1,36 @@
-__pycache__
-.vscode/
+# IDE
 .idea/
+.vscode/settings.local.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+pip-wheel-metadata/
+test.log
+test_output_*.cpp
+
+# Build outputs
 build/
 build_ut/
 output/
-cmake-build-debug/
+artifacts/
 dist/
-mskl.egg-info/
+*.so
+*.pyd
 
+# Cache and local snapshots
+.cache/
 .codemate
+.devcontainer/.host-gitconfig
+
+# Pre-commit tools
+gitleaks

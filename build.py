@@ -175,9 +175,15 @@ class BuildManager:
         if build_version:
             logging.info("--build-version: %s", build_version)
 
+        extra_options = {}
         for option in self.parsed_arguments.extra:
             key, _, value = option.partition('=')
+            extra_options[key] = value
             logging.info("--extra: %s = %s", key, value)
+
+        if extra_options.get('only_down_deps') == 'true':
+            logging.info("only_down_deps=true, exiting after dependency download.")
+            return
 
         if 'test' in self.parsed_arguments.command:
             self._run_unit_tests()
