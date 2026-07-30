@@ -1,52 +1,65 @@
-# MindStudio Kernel Launcher 开发指南
+# msKL 开发指南
 
 <br>
 
-## 1. 代码仓架构
+本文档介绍 msKL（MindStudio Kernel Launcher）的开发环境搭建、编译构建及 UT 单元测试方法。
 
-在开始开发之前，建议先阅读 [《msKL 代码仓架构说明》](./architecture.md)，了解项目的目录结构、核心子系统（算子调用/自动调优）、模块依赖关系和数据流。
+## 1. 前置条件
 
-## 2. 开发环境准备
+### 1.1 知识准备
 
-请按照以下文档进行环境配置：[《算子工具开发环境安装指导》](https://gitcode.com/Ascend/msot/blob/master/docs/zh/common/dev_env_setup.md)。
+开发前请先阅读《[msKL 代码仓架构说明](./architecture.md)》，了解代码框架及核心流程。
 
-## 3. 编译打包
+### 1.2 环境准备
 
-### 3.1 编译命令
+按照《[msKL 安装指南 — 源码安装](../install_guide/mskl_install_guide.md#231-环境准备)》章节完成编译和测试环境的搭建。
 
-在项目根目录下执行以下命令进行 mskl 编译：
+> **说明：** 环境镜像的构建方法及配套软件版本由 MindStudio 统一镜像制作指南维护，本仓库不重复定义。
 
-```shell
-python build.py
+## 2. 编译构建
+
+在项目根目录执行：
+
+```bash
+python3 build.py
 ```
 
-### 3.2 编译结果说明
+#### 构建产物
 
-编译结果生成到 output 目录下：
+构建成功后，输出将生成在 `artifacts` 目录下。
+
+#### 清理构建
+
+如需全量重新编译，删除构建目录后重新执行上述步骤：
+
+```bash
+rm -rf build
+```
+
+## 3. 单元测试
+
+### 3.1 执行测试
+
+```bash
+python3 build.py test
+```
+
+全部通过时输出类似如下示例：
 
 ```text
-output/
-|-- mindstudio_kl-26.0.0-py3-none-any.whl  # 安装包
-```
-
-### 3.3 清理/重新编译
-
-重新执行[第 3.1 节](#31-编译命令)即可，编译结果安装包会自动刷新。
-
-## 4. 执行 UT 测试
-
-在项目根目录下执行以下命令执行 UT 用例：
-
-```shell
-python build.py test
-```
-
-如果输出类似如下，且运行的用例数和通过用例数相同，即表示成功：
-
-```text
-[----------] 59 tests from CoreApi (8ms total) 
+[----------] 59 tests from CoreApi (8ms total)
 ```
 
 ```text
 ========== 59 passed in 2.05s ==========
+```
+
+> **判定标准：** 运行的用例数与 `passed` 的用例数一致即为通过。若存在 `failed` 用例，请根据日志定位失败原因。
+
+### 3.2 清理测试环境
+
+删除 UT 构建目录后重新执行测试：
+
+```bash
+rm -rf build_ut
 ```

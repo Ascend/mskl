@@ -187,7 +187,7 @@ mskl.utils ← 独立（被 launcher 和 optune 共同依赖）
 
 ## 6. 构建与测试
 
-- **编译打包：** `python build.py` → 生成 `output/mindstudio_kl-{version}-py3-none-any.whl`
+- **编译打包：** `python3 build.py` → 生成 `output/mindstudio_kl-{version}-py3-none-any.whl`
 - **安装：** `pip3 install output/mindstudio_kl-*.whl`
-- **运行 UT 测试：** `python build.py test` → 使用 pytest 执行全量单测
+- **运行 UT 测试：** `python3 build.py test` → 使用 pytest 执行全量单测
 - **测试框架：** pytest，配置见 `test/pytest.ini`
