@@ -31,16 +31,18 @@
 #   能够感知到这些工具链的存在。
 #
 # 执行顺序（按依赖关系排列）：
-#   1. fix_cache_ownership     - 修复 z_cache.sh 创建的缓存目录权限
-#   2. fix_file_watcher_limit  - 提升 inotify max_user_watches 至 524288
-#   3. configure_user_bin      - 建立用户级命令目录，重映射 npm prefix
-#   4. configure_python311     - 在 shell 启动文件中启用 Python 3.11
-#   5. sync_git_identity       - 从宿主同步 Git 用户名和邮箱
-#   6. append_dev_hint_once    - 向 .bash_profile 追加常用开发命令提示
-#   7. install_pre_commit_hook - 自动安装 pre-commit Git Hook
-#   8. install_gitleaks        - 从 OBS 下载 gitleaks 二进制（pre-commit 依赖）
-#   9. ignore_vscode_settings  - 隔离个人化 VS Code settings 修改
-#   10. install_git_safe_pull_alias - 安装可处理 skip-worktree 文件的拉取命令
+#   1. configure_yum_mirror    - 切换至 HTTP 协议的华为云 openEuler 软件源
+#   2. fix_cache_ownership     - 修复 z_cache.sh 创建的缓存目录权限
+#   3. fix_file_watcher_limit  - 提升 inotify max_user_watches 至 524288
+#   4. configure_user_bin      - 建立用户级命令目录，重映射 npm prefix
+#   5. ensure_shared_bin_path  - 补齐 root 用户的共享命令路径
+#   6. configure_python311     - 在 shell 启动文件中启用 Python 3.11
+#   7. sync_git_identity       - 从宿主同步 Git 用户名和邮箱
+#   8. append_dev_hint_once    - 向 .bash_profile 追加常用开发命令提示
+#   9. install_pre_commit_hook - 自动安装 pre-commit Git Hook
+#   10. warmup_pre_commit_async - 后台预创建 pre-commit Hook 环境
+#   11. ignore_vscode_settings - 隔离个人化 VS Code settings 修改
+#   12. install_git_safe_pull_alias - 安装可处理 skip-worktree 文件的拉取命令
 #
 # =============================================================================
 
@@ -60,6 +62,106 @@ log() {
 # 输出统一格式的告警日志到 stderr；告警默认不终止后续初始化。
 warn() {
     printf '[post-create] warning: %s\n' "$*" >&2
+}
+
+# 以统一格式执行并展示初始化步骤。即使某一步失败也继续后续流程，避免单项
+# 非关键配置阻止开发者进入容器；耗时用于识别初始化过程中的慢步骤。
+run_step() {
+    local step_number="$1"
+    local total_steps="$2"
+    local step_title="$3"
+    local step_function="$4"
+    local step_label
+    local exit_code
+    local started_at=$SECONDS
+    local elapsed
+
+    printf -v step_label '%02d/%02d' "$step_number" "$total_steps"
+    printf '\n'
+    log "------------------------------------------------------------------------"
+    log "[STEP $step_label] START | $step_title"
+
+    if "$step_function"; then
+        elapsed=$((SECONDS - started_at))
+        log "[STEP $step_label] DONE  | $step_title (${elapsed}s)"
+    else
+        exit_code=$?
+        elapsed=$((SECONDS - started_at))
+        warn "[STEP $step_label] FAILED | $step_title (${elapsed}s, exit: $exit_code)"
+    fi
+
+    # run_step 自身始终成功，确保某一步失败后仍执行剩余初始化任务。
+    return 0
+}
+
+# =============================================================================
+# configure_yum_mirror —— 配置华为云 openEuler 软件源
+# =============================================================================
+#
+# 背景与问题：
+#   基础镜像默认使用 https://repo.openeuler.org，部分开发网络访问该地址较慢。
+#   华为云 openEuler 镜像站提供相同的仓库目录结构，可直接保留当前发行版、
+#   仓库分区和 $basearch 路径，仅替换站点前缀。
+#
+# 解决方案：
+#   将 openEuler 官方源及 HTTPS 华为云源统一替换为：
+#     http://mirrors.huaweicloud.com/openeuler
+#   修改前保留一次原始 repo 文件备份；仅在配置发生变化时清理 dnf/yum 元数据。
+#   本地 file:// GPG Key 配置保持不变，软件包签名校验仍然启用。
+configure_yum_mirror() {
+    local repo_dir="/etc/yum.repos.d"
+    local mirror_base="http://mirrors.huaweicloud.com/openeuler"
+    local repo_files=("$repo_dir"/*.repo)
+    local repo_file
+    local backup_file
+    local changed=0
+
+    if [ ! -e "${repo_files[0]}" ]; then
+        warn "no yum repo files found in $repo_dir; skipping mirror configuration"
+        return 0
+    fi
+
+    for repo_file in "${repo_files[@]}"; do
+        if ! grep -Eq 'https?://repo\.openeuler\.org|https://mirrors\.huaweicloud\.com/openeuler|https?://repo\.huaweicloud\.com/openeuler' "$repo_file"; then
+            continue
+        fi
+
+        backup_file="${repo_file}.post-create.bak"
+        if [ ! -e "$backup_file" ]; then
+            sudo cp -a "$repo_file" "$backup_file" || {
+                warn "failed to back up yum repo file: $repo_file"
+                return 1
+            }
+        fi
+
+        sudo sed -E -i \
+            -e "s#https?://repo\.openeuler\.org#${mirror_base}#g" \
+            -e "s#https://mirrors\.huaweicloud\.com/openeuler#${mirror_base}#g" \
+            -e "s#https?://repo\.huaweicloud\.com/openeuler#${mirror_base}#g" \
+            "$repo_file" || {
+                warn "failed to update yum repo file: $repo_file"
+                return 1
+            }
+        changed=1
+    done
+
+    if ! grep -Eq '^[[:space:]]*baseurl=http://mirrors\.huaweicloud\.com/openeuler/' "${repo_files[@]}"; then
+        warn "Huawei Cloud yum mirror was not found in active repo configuration"
+        return 1
+    fi
+
+    if [ "$changed" -eq 1 ]; then
+        if command -v dnf >/dev/null 2>&1; then
+            sudo dnf clean all >/dev/null 2>&1 || warn "failed to clean dnf metadata"
+        elif command -v yum >/dev/null 2>&1; then
+            sudo yum clean all >/dev/null 2>&1 || warn "failed to clean yum metadata"
+        fi
+        log "yum mirror changed to $mirror_base"
+    else
+        log "yum mirror already uses $mirror_base"
+    fi
+
+    log "configure_yum_mirror succeeded"
 }
 
 # append_path_once：
@@ -340,6 +442,83 @@ install_pre_commit_hook() {
 }
 
 # =============================================================================
+# warmup_pre_commit_async —— 后台预创建 pre-commit Hook 环境
+# =============================================================================
+#
+# 背景与问题：
+#   pre-commit 首次运行时需要下载 Hook 仓库并创建各自的运行环境，耗时较长。
+#   如果等到开发者第一次提交时才执行，会明显阻塞提交流程。
+#
+# 解决方案：
+#   pre-commit Hook 安装完成后，在后台执行 `pre-commit install-hooks`，并与
+#   后续 clangd 安装等初始化任务并行。该命令只准备 Hook 环境，不执行检查，
+#   也不会修改工作区文件。后台进程的标准输入、输出和错误均与
+#   postCreateCommand 分离，避免阻塞容器初始化完成。
+#
+# 资源与并发控制：
+#   1. 使用 nice 和 ionice 降低 CPU、磁盘调度优先级，减少对交互操作的影响。
+#   2. flock 可用时持有非阻塞锁，防止脚本重复执行后同时启动多个预热任务。
+#   3. 详细结果写入缓存目录中的日志，预热失败不影响容器正常使用。
+warmup_pre_commit_async() {
+    if ! command -v pre-commit >/dev/null 2>&1; then
+        warn "pre-commit is not available; skipping async warmup"
+        return 0
+    fi
+
+    local repo_root
+    repo_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
+    if [ -z "$repo_root" ]; then
+        warn "workspace is not a Git repository; skipping async warmup"
+        return 0
+    fi
+
+    if [ ! -f "$repo_root/.pre-commit-config.yaml" ]; then
+        warn "pre-commit config is not available; skipping async warmup"
+        return 0
+    fi
+
+    local warmup_dir="$HOME/.cache"
+    local log_file="$warmup_dir/pre-commit-warmup.log"
+    local lock_file="$warmup_dir/pre-commit-warmup.lock"
+    mkdir -p "$warmup_dir"
+
+    (
+        # 忽略启动 shell 结束时可能发送的 HUP，并断开所有终端输入输出。
+        trap '' HUP
+        cd "$repo_root" || exit 0
+
+        if command -v flock >/dev/null 2>&1; then
+            exec 9>"$lock_file"
+            if ! flock -n 9; then
+                log "pre-commit environment warmup is already running"
+                exit 0
+            fi
+        fi
+
+        # ionice 调整失败时继续运行；nice 在常规 Linux 环境中始终可用。
+        if command -v ionice >/dev/null 2>&1; then
+            ionice -c 3 -p "$$" 2>/dev/null || true
+        fi
+
+        # 确保 $HOME/.local/bin 在 PATH 前端，使用与用户交互式 shell
+        # 一致的 pre-commit 二进制（Python 3.11），避免版本不匹配导致
+        # 预热环境与用户实际使用的 Python 版本不一致而重新下载。
+        export PATH="$HOME/.local/bin:$PATH"
+
+        log "pre-commit environment warmup started"
+        if nice -n 10 pre-commit install-hooks; then
+            log "pre-commit environment warmup succeeded"
+        else
+            warn "pre-commit environment warmup failed"
+        fi
+    ) </dev/null >>"$log_file" 2>&1 &
+
+    local warmup_pid
+    warmup_pid=$!
+    log "pre-commit environment warmup started in background (pid: $warmup_pid, log: $log_file)"
+}
+
+# =============================================================================
 # fix_cache_ownership —— 修复缓存目录权限
 # =============================================================================
 #
@@ -477,6 +656,7 @@ fix_file_watcher_limit() {
 
     warn "failed to increase inotify max_user_watches; VS Code file watching may not work correctly"
 }
+
 # =============================================================================
 # ignore_vscode_settings —— 隔离个人化 VS Code Settings 修改
 # =============================================================================
@@ -548,46 +728,33 @@ install_git_safe_pull_alias() {
     log "install_git_safe_pull_alias succeeded"
 }
 
-# =============================================================================
-# install_gitleaks —— Gitleaks 秘密扫描二进制下载
-# =============================================================================
-#
-# 背景与问题：
-#   pre-commit 配置中的 gitleaks-offline-scan hook 执行 `./gitleaks protect`，
-#   期望仓库根目录存在 gitleaks 二进制文件。如果缺失，git commit 时
-#   pre-commit hook 会因 "Executable ./gitleaks not found" 而失败。
-#
-# 解决方案：
-#   从华为 OBS 镜像站下载预编译的 gitleaks 二进制到 /workspace/gitleaks，
-#   确保 devcontainer 创建后立即可用，无需开发者手工下载。
-#
-# 降级策略：
-#   wget 下载失败时只告警，不阻塞容器创建。
-#   开发者仍可手工下载或使用 git commit --no-verify 绕过。
-install_gitleaks() {
-    local target="/workspace/gitleaks"
-    local base_url="https://inst.obs.cn-north-4.myhuaweicloud.com/env/mirror"
-    local arch=""
-    local url=""
+# 输出醒目的完成标识，便于开发者在 Dev Containers 启动日志中快速确认状态。
+print_ready_banner() {
+    local green=$'\033[1;32m'
+    local reset=$'\033[0m'
 
-    # 根据 CPU 架构选择对应的二进制目录
-    case "$(uname -m)" in
-        x86_64)  arch="x86_64" ;;
-        aarch64) arch="aarch64" ;;
-        *)       arch="x86_64" ;;  # 默认回退到 x86_64
-    esac
-    url="${base_url}/${arch}/gitleaks"
+    cat <<EOF
 
-    log "downloading gitleaks (${arch}) from OBS..."
-    if wget --no-host-directories -c --no-check-certificate \
-        -O "$target" "$url" 2>/dev/null; then
-        chmod +x "$target"
-        log "gitleaks installed successfully: $($target --version 2>/dev/null || echo 'version unknown')"
-    else
-        warn "failed to download gitleaks (${arch}) from OBS; git commit may fail on pre-commit hook"
-        warn "URL attempted: ${url}"
-        rm -f "$target"
-    fi
++------------------------------------------------------------------------------+
+|                                                                              |
+|${green}       ____  _____    _    ______   __                                        ${reset}|
+|${green}      |  _ \| ____|  / \  |  _ \ \ / /                                        ${reset}|
+|${green}      | |_) |  _|   / _ \ | | | \ V /                                         ${reset}|
+|${green}      |  _ <| |___ / ___ \| |_| || |                                          ${reset}|
+|${green}      |_| \_\_____/_/   \_\____/ |_|                                          ${reset}|
+|                                                                              |
+|  +------------------------------------------------------------------------+  |
+|  |  DEV CONTAINER                                          STATUS: ${green}READY${reset}  |  |
+|  +------------------------------------------------------------------------+  |
+|                                                                              |
+|     ENVIRONMENT   ${green}READY${reset} FOR DEVELOPMENT                                      |
+|     WORKSPACE     /workspace                                                 |
+|                                                                              |
+|     Initialization complete. Start coding, building, and shipping.           |
+|                                                                              |
++------------------------------------------------------------------------------+
+
+EOF
 }
 
 # =============================================================================
@@ -595,20 +762,23 @@ install_gitleaks() {
 # =============================================================================
 #
 # 按依赖顺序执行：先修复目录权限，再写用户配置，最后安装 Git 辅助能力。
-# 各模块尽量自行降级并输出 warning，非关键项失败不阻止容器启动。
+# run_step 为每一步输出序号、状态和耗时，非关键项失败不阻止容器启动。
 
-log "post-create setup started"
+total_steps=14
+log "Dev Container initialization started ($total_steps steps)"
 
-fix_cache_ownership
-fix_file_watcher_limit
-configure_user_bin
-ensure_shared_bin_path
-configure_python311
-sync_git_identity
-append_dev_hint_once
-install_pre_commit_hook
-install_gitleaks
-ignore_vscode_settings
-install_git_safe_pull_alias
+run_step 1  "$total_steps" "Configure Huawei Cloud yum mirror"    configure_yum_mirror
+run_step 2  "$total_steps" "Fix cache directory ownership"       fix_cache_ownership
+run_step 3  "$total_steps" "Configure file watcher limit"        fix_file_watcher_limit
+run_step 4  "$total_steps" "Configure user command paths"        configure_user_bin
+run_step 5  "$total_steps" "Configure shared command paths"      ensure_shared_bin_path
+run_step 6  "$total_steps" "Configure Python 3.11"                configure_python311
+run_step 7  "$total_steps" "Synchronize Git identity"            sync_git_identity
+run_step 8  "$total_steps" "Install developer shell hints"       append_dev_hint_once
+run_step 9  "$total_steps" "Install pre-commit Git Hook"          install_pre_commit_hook
+run_step 10 "$total_steps" "Start pre-commit environment warmup"  warmup_pre_commit_async
+run_step 11 "$total_steps" "Configure workspace Git settings"    ignore_vscode_settings
+run_step 12 "$total_steps" "Install Git safe-pull command"        install_git_safe_pull_alias
 
 log "post-create setup finished"
+print_ready_banner

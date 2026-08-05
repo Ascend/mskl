@@ -53,7 +53,7 @@ else
   : > "$SCRIPT_DIR/.host-gitconfig"
 fi
 
-# ---- 准备 uv 缓存挂载源 ----
+# ---- 准备缓存挂载源 ----
 # devcontainer.json 将该目录 bind mount 到 /home/mindstudio/.cache/uv。
 # bind mount 的 source 必须在 docker create 前存在；initializeCommand 以宿主
 # 当前用户执行，因此新建目录天然归当前用户所有。
