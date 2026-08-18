@@ -1,20 +1,24 @@
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
+
 os.makedirs("output", exist_ok=True)
+with open('README.md', encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(
-    name = 'mindstudio-kl',
-    version = os.environ.get('WHL_VERSION', '26.0.0'),
-    author =' mskl',
-    author_email = 'mskl',
-    description = 'mskl',
-    long_description = open('README.md', encoding='utf-8').read(),
-    long_description_content_type = 'text/markdown',
-    url = 'https://gitcode.com/Ascend/mskl',
-    packages = ['mskl'],
-    include_package_data = True,
-    classifiers = [
+    name='mindstudio-kl',
+    version=os.environ.get('WHL_VERSION', '26.0.0'),
+    author=' mskl',
+    author_email='mskl',
+    description='mskl',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    url='https://gitcode.com/Ascend/mskl',
+    packages=find_packages(),
+    include_package_data=True,
+    license='Mulan PSL v2',
+    classifiers=[
         'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
     options={
@@ -22,5 +26,5 @@ setup(
             'dist_dir': 'output',
         }
     },
-    python_requires = '>=3.6'
+    python_requires='>=3.6',
 )
