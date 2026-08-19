@@ -21,10 +21,11 @@ import unittest
 import pathlib
 import stat
 import tempfile
+import shutil
 import numpy as np
 
 from test.utils.test_base import TestBase  # pylint: disable=E0611
-from mskl.launcher.config import KernelInvokeConfig, TilingConfig, KernelBinaryInvokeConfig
+from mskl.launcher.config import KernelInvokeConfig, TilingConfig, KernelBinaryInvokeConfig, _escape_cpp_string
 
 
 class MockTilingOutput:
@@ -102,6 +103,25 @@ class TestTilingConfig(unittest.TestCase):
         )
         self.assertEqual(len(config.outputs_list), 1)
 
+    def test_tiling_config_data_path_escaped_once(self):
+        # data_path 含反斜杠/双引号，应统一由 _escape_cpp_string 转义，并直接嵌入生成的tds中（不二次转义）
+        tmp = tempfile.mkdtemp()
+        try:
+            data_path = os.path.join(tmp, 'data "quote"\\dir.bin')
+            with open(data_path, 'w', encoding='utf-8') as f:
+                f.write('')
+            config = TilingConfig(
+                op_type="TestOp",
+                inputs=[self.test_input],
+                outputs=[self.test_output],
+                inputs_info=[{"shape": [128, 128], "dtype": "float32", "format": "nd", "data_path": data_path}],
+            )
+            escaped = _escape_cpp_string(os.path.abspath(data_path))
+            self.assertEqual(config.inputs_list[0][0]['data_path'], escaped)
+            self.assertIn(f'string{{"{escaped}"}}', config.tds)
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
     def test_tiling_config_with_soc_version(self):
         config = TilingConfig(
             op_type="TestOp", inputs=[self.test_input], outputs=[self.test_output], soc_version="Ascend910B"
@@ -134,6 +154,56 @@ class TestTilingConfig(unittest.TestCase):
 
     def test_tiling_config_empty_lib_path(self):
         self.assertRaises(ValueError, TilingConfig, "TestOp", [self.test_input], [self.test_output], lib_path="")
+
+    def test_tiling_config_auto_search_liboptiling_by_workspace(self):
+        ws = './_test_mskl_cfg_ws'
+        so_path = os.path.join(
+            ws,
+            'build_out/_CPack_Packages/Linux/External/custom.run/packages/vendors/customize/'
+            'op_impl/ai_core/tbe/op_tiling/liboptiling.so',
+        )
+        try:
+            if os.path.exists(ws):
+                shutil.rmtree(ws, ignore_errors=True)
+            os.makedirs(os.path.dirname(so_path), exist_ok=True)
+            with open(so_path, 'w', encoding='utf-8') as f:
+                f.write('test so')
+            config = TilingConfig(op_type="TestOp", inputs=[self.test_input], outputs=[self.test_output], workspace=ws)
+            self.assertIn(os.path.realpath(so_path), config.lib_path)
+        finally:
+            if os.path.exists(ws):
+                shutil.rmtree(ws, ignore_errors=True)
+
+    def test_tiling_config_explicit_lib_path_priority_over_workspace(self):
+        ws = './_test_mskl_cfg_ws'
+        with tempfile.NamedTemporaryFile(suffix='.so', delete=False) as f:
+            lib_path = f.name
+        try:
+            if os.path.exists(ws):
+                shutil.rmtree(ws, ignore_errors=True)
+            os.makedirs(ws, exist_ok=True)
+            config = TilingConfig(
+                op_type="TestOp",
+                inputs=[self.test_input],
+                outputs=[self.test_output],
+                lib_path=lib_path,
+                workspace=ws,
+            )
+            self.assertEqual(config.lib_path, lib_path.replace('\\', '\\\\'))
+        finally:
+            os.remove(lib_path)
+            if os.path.exists(ws):
+                shutil.rmtree(ws, ignore_errors=True)
+
+    def test_tiling_config_invalid_workspace(self):
+        self.assertRaises(
+            Exception,
+            TilingConfig,
+            "TestOp",
+            [self.test_input],
+            [self.test_output],
+            workspace='./_not_exist_mskl_ws_dir',
+        )
 
     def test_tiling_config_invalid_op_type(self):
         # 只测试真正会触发的情况

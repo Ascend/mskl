@@ -23,7 +23,7 @@ import numpy as np
 from ..utils import safe_check, logger
 from ..utils.safe_check import FileChecker
 from .context import context
-from ..utils.launcher_utils import get_cann_path
+from ..utils.launcher_utils import get_cann_path, search_tiling_so, get_workspace_path
 from ..utils.autotune_utils import (
     is_torch_tensor_instance,
     safe_prod,
@@ -217,6 +217,7 @@ class TilingConfig:
         outputs_info: list = None,
         attr=None,
         soc_version: str = None,
+        workspace: str = None,
     ):
         # op_type 做透传处理
         if not self._is_valid_key_str(op_type):
@@ -224,7 +225,7 @@ class TilingConfig:
         self.op_type = op_type
         self._parse_io_params(inputs, outputs, inputs_info, outputs_info)
         self._parse_attr(attr)
-        self._parse_lib_path(lib_path)
+        self._parse_lib_path(lib_path, workspace)
         self._parse_soc_version(soc_version)
 
     @staticmethod
@@ -361,9 +362,14 @@ class TilingConfig:
             elif (t is not None) and (not is_torch_or_numpy_tensor(t)):
                 raise ValueError(f'Type of {para}[{idx}] should be torch.Tensor, numpy.ndarray or the list of above')
 
-    def _parse_lib_path(self, lib_path: str):
+    def _parse_lib_path(self, lib_path: str, workspace: str = None):
         if lib_path is None:
-            # load liboptiling.so in cann as default
+            # 未显式传入lib_path时，在整个workspace目录下递归搜索liboptiling.so
+            # （存在多个时优先打包产物_CPack_Packages/op_tiling下的部署包），搜索失败则回退到cann默认的liboptiling.so
+            tiling_so = search_tiling_so(get_workspace_path(workspace))
+            if tiling_so is not None:
+                self.lib_path = _escape_cpp_string(os.path.realpath(tiling_so))
+                return
             cann_path = get_cann_path()
             tiling_so = os.path.join(cann_path, "lib64/liboptiling.so")
             self.lib_path = _escape_cpp_string(tiling_so) if os.path.exists(tiling_so) else ''
@@ -688,7 +694,7 @@ class TilingConfig:
                 checker = FileChecker(data_path, 'file')
                 if not checker.check_input_file():
                     raise PermissionError(f'{param_name}["data_path"] check permission failed')
-                info['data_path'] = repr(os.path.abspath(data_path))[1:-1]
+                info['data_path'] = _escape_cpp_string(os.path.abspath(data_path))
 
         ch = ChainHandler(
             [verify_fmt, verify_ori_format, verify_shape, verify_ori_shape, verify_dtype, verify_data_path]
@@ -742,14 +748,9 @@ class TilingConfig:
                 )
             last_param = ''
             if tensor['data_path'] != '':
-                escaped_path = (
-                    tensor['data_path']
-                    .replace('\\', '\\\\')
-                    .replace('"', '\\"')
-                    .replace('\n', '\\n')
-                    .replace('\t', '\\t')
-                    .replace('\r', '\\r')
-                )
+                # data_path 已由 _escape_cpp_string 统一完成转义（反斜杠/双引号/换行/制表符等），
+                # 直接嵌入C++字符串字面量，避免二次转义导致路径错误
+                escaped_path = tensor['data_path']
                 last_param = f", string{{\"{escaped_path}\"}}"
             elif tensor['dtype'] in supported_types and tensor['addr'] != 0:
                 if not isinstance(tensor['addr'], int) or tensor['addr'] < 0:

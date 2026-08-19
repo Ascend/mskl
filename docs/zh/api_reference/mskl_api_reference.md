@@ -65,14 +65,15 @@ msKL工具提供的接口可以调用msOpGen工程中的tiling函数以及用户
 
 调用用户的tiling函数。
 
-> [!NOTE]   
+> [!NOTE]
 > tiling_func不支持调用《[基础数据结构和接口参考](https://www.hiascend.com/document/detail/zh/canncommercial/83RC1/API/basicdataapi/atlasopapi_07_00001.html)》中的GetCompileInfo接口。
 
 **函数原型**
 
 ```python
-def tiling_func(op_type: str, inputs: list, outputs: list, lib_path: str,
-                inputs_info: list = None, outputs_info: list = None, attr=None, soc_version: str = None) -> TilingOutput
+def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_path: str = None,
+                inputs_info: list = None, outputs_info: list = None, attr=None,
+                soc_version: str = None, workspace: str = None) -> TilingOutput
 ```
 
 **参数说明**
@@ -201,8 +202,18 @@ def tiling_func(op_type: str, inputs: list, outputs: list, lib_path: str,
 </td>
 <td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p14829330143515"><a name="p14829330143515"></a><a name="p14829330143515"></a>可选参数。</p>
 </td>
-<td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="p16858115495219"><a name="p16858115495219"></a><a name="p16858115495219"></a>msOpGen工程编译生成的liboptiling.so文件的路径，可在工程目录下通过<strong id="b8137203510342"><a name="b8137203510342"></a><a name="b8137203510342"></a>find . -name 'liboptiling.so'</strong>进行查找。msKL工具会按已部署算子、<strong id="b1026950296"><a name="b1026950296"></a><a name="b1026950296"></a>.so</strong>文件的查找顺序获取用户tiling函数。</p>
+<td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="p16858115495219"><a name="p16858115495219"></a><a name="p16858115495219"></a>msOpGen工程编译生成的liboptiling.so文件的路径。若不配置该参数，msKL工具会自动在<strong id="b8137203510342"><a name="b8137203510342"></a><a name="b8137203510342"></a>workspace</strong>目录下递归搜索liboptiling.so文件（存在多个时优先选择<strong id="b1026950296"><a name="b1026950296"></a><a name="b1026950296"></a>_CPack_Packages</strong>或<strong id="b1026950297"><a name="b1026950297"></a><a name="b1026950297"></a>op_tiling</strong>目录下的部署包）；若未搜索到，再回退使用已部署在CANN环境中的算子。若显式配置该参数，则以该参数指定的路径为准，不再执行自动搜索。</p>
 <p id="p2026182761114"><a name="p2026182761114"></a><a name="p2026182761114"></a>数据类型：str。</p>
+</td>
+</tr>
+<tr id="row198901511"><td class="cellrowborder" valign="top" width="17.16%" headers="mcps1.1.5.1.1 "><p id="p198901511"><a name="p198901511"></a><a name="p198901511"></a>workspace</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.05%" headers="mcps1.1.5.1.2 "><p id="p198901512"><a name="p198901512"></a><a name="p198901512"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p198901513"><a name="p198901513"></a><a name="p198901513"></a>可选参数。</p>
+</td>
+<td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="p198901514"><a name="p198901514"></a><a name="p198901514"></a>算子工程根目录路径，例如msOpGen工程的CustomOp目录。若不配置该参数，默认使用当前目录。msKL工具会在该目录下递归搜索<strong id="b198901515"><a name="b198901515"></a><a name="b198901515"></a>liboptiling.so</strong>文件和路径包含<strong id="b198901516"><a name="b198901516"></a><a name="b198901516"></a>kernel</strong>目录的kernel .o文件，供tiling_func和get_kernel_from_binary使用。</p>
+<p id="p198901516"><a name="p198901516"></a><a name="p198901516"></a>数据类型：str。</p>
 </td>
 </tr>
 <tr id="row331912112322"><td class="cellrowborder" valign="top" width="17.16%" headers="mcps1.1.5.1.1 "><p id="p18319161123219"><a name="p18319161123219"></a><a name="p18319161123219"></a>soc_version</p>
@@ -277,7 +288,7 @@ output = np.zeros([M, N]).astype(np.float32)
 tiling_output = mskl.tiling_func(
     op_type="MatmulLeakyreluCustom",
     inputs=[input_a, input_b, input_bias], outputs=[output],
-    lib_path="liboptiling.so",  # tiling函数编译产物 
+    lib_path="liboptiling.so",  # tiling函数编译产物
 )
 ```
 
@@ -290,7 +301,7 @@ tiling_output = mskl.tiling_func(
 **函数原型**
 
 ```python
-def get_kernel_from_binary(kernel_binary_file: str, kernel_type: str = None, tiling_key: int = None) -> CompiledKernel
+def get_kernel_from_binary(kernel_binary_file: str = None, kernel_type: str = None, tiling_key: int = None) -> CompiledKernel
 ```
 
 **参数说明**
@@ -310,9 +321,9 @@ def get_kernel_from_binary(kernel_binary_file: str, kernel_type: str = None, til
 </td>
 <td class="cellrowborder" valign="top" width="10.07%" headers="mcps1.1.5.1.2 "><p id="p1239865692418"><a name="p1239865692418"></a><a name="p1239865692418"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p224816370358"><a name="p224816370358"></a><a name="p224816370358"></a>必选参数。</p>
+<td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p224816370358"><a name="p224816370358"></a><a name="p224816370358"></a>可选参数。</p>
 </td>
-<td class="cellrowborder" valign="top" width="65.25%" headers="mcps1.1.5.1.4 "><p id="p858655320395"><a name="p858655320395"></a><a name="p858655320395"></a>算子kernel.o路径，可以在工程目录下执行<strong id="b23211229105614"><a name="b23211229105614"></a><a name="b23211229105614"></a>find . -name '*.o'</strong>命令进行查找。</p>
+<td class="cellrowborder" valign="top" width="65.25%" headers="mcps1.1.5.1.4 "><p id="p858655320395"><a name="p858655320395"></a><a name="p858655320395"></a>算子kernel.o路径。若不配置该参数，msKL工具会自动在tiling_func的<strong id="b23211229105614"><a name="b23211229105614"></a><a name="b23211229105614"></a>workspace</strong>目录下递归搜索路径包含<strong id="b23211229105616"><a name="b23211229105616"></a><a name="b23211229105616"></a>kernel</strong>目录的<strong id="b23211229105617"><a name="b23211229105617"></a><a name="b23211229105617"></a>*.o</strong>文件；若搜索到多个，则按<strong id="b23211229105618"><a name="b23211229105618"></a><a name="b23211229105618"></a>算子名(op_type) → 设备soc → 同目录json(dtype/format/shape)</strong>自动选取目标kernel .o文件。</p>
 <p id="p960565114599"><a name="p960565114599"></a><a name="p960565114599"></a>数据类型：str。</p>
 </td>
 </tr>
@@ -399,7 +410,7 @@ def get_kernel_from_binary(kernel_binary_file: str, kernel_type: str = None, til
 </table>
 
 > [!NOTE]
-> 
+>
 > Kernel对象类型为CompiledKernel，支持如下方式调用Kernel：kernel[blockdim](arg1, arg2, ..., timeout=-1, device_id=0, repeat=1)，实际调用时，需保证CompiledKernel函数的入参和调用Kernel时的入参一致。
 
 **调用示例**
@@ -557,8 +568,8 @@ def code_gen(self, gen_file)
 **调用示例**
 
 ```py
-config = mskl.KernelInvokeConfig(kernel_file, kernel_name) 
-mskl.Launcher(config).code_gen(gen_file) 
+config = mskl.KernelInvokeConfig(kernel_file, kernel_name)
+mskl.Launcher(config).code_gen(gen_file)
 ```
 
 **相关类/结构体定义**
@@ -572,7 +583,7 @@ class KernelInvokeConfig:
         pass
 # 用户仅能传KernelInvokeConfig类型
 class Launcher:
-    def __init__(self, config: KernelInvokeConfig): 
+    def __init__(self, config: KernelInvokeConfig):
       ...
         a class that generates launch source code for a kernel
 

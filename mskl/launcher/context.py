@@ -16,6 +16,7 @@
 # See the Mulan PSL v2 for more details.
 # -------------------------------------------------------------------------
 
+
 class Context:
     """
     Maintain context of modules(code_generator, compile, etc.)
@@ -28,8 +29,10 @@ class Context:
         self._launch_src_file = None
         self._build_script = None
         self._blockdim = None
-        self._tiling_output = None  # mskl.launcher.opgen_workflow.TilingOutput
-        self._op_type = None  # str like AddCustom
+        self._tiling_output = None
+        self._op_type = None
+        self._workspace = None
+        self._io_info = None
         self._autotune_in_progress = False
         self._prelaunch_flag = False
 
@@ -142,8 +145,40 @@ class Context:
     def op_type(self, value):
         self._op_type = value
 
+    @property
+    def workspace(self):
+        return self._workspace
+
+    @workspace.setter
+    def workspace(self, value):
+        self._workspace = value
+
+    @property
+    def io_info(self):
+        # {'inputs': [{'dtype','format','shape'},...], 'outputs': [...]}，用于kernel .o自动匹配
+        return self._io_info
+
+    @io_info.setter
+    def io_info(self, value):
+        self._io_info = value
+
     def reset(self):
-        self.__init__()
+        # 重置实例状态，避免直接调用 __init__（pylint C2801）
+        self._config = None
+        self._kernel_name = None
+        self._kernel_src_file = None
+        self._launch_src_file = None
+        self._build_script = None
+        self._blockdim = None
+        self._tiling_output = None
+        self._op_type = None
+        self._workspace = None
+        self._io_info = None
+        self._autotune_in_progress = False
+        self._prelaunch_flag = False
+        self._decl_args = None
+        self._template_args = None
+        self._kernel_args = None
 
 
 context = Context()
