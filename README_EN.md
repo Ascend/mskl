@@ -10,6 +10,8 @@
 
 </div>
 
+English | [简体中文](README.md)
+
 ## ✨ Latest News
 
 <span style="font-size:14px;">

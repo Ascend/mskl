@@ -66,7 +66,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
     > [!NOTE]
     >
-    >- 本样例工程以Atlas A2 训练系列产品/Atlas A2 推理系列产品为例。
+    >- 本样例工程以昇腾A2系列产品为例。
     >- 下载代码样例时，需执行以下命令指定分支版本。
     >
     >   ```shell
@@ -194,7 +194,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
 ### 注意事项
 
-- 自动调优功能仅支持Atlas A2 训练系列产品/Atlas A2 推理系列产品。
+- 自动调优功能仅支持昇腾A2系列产品。
 - 单Device仅支持使用单个msKL工具进行自动调优，且不推荐同时运行其他算子程序。
 - 需确保先import mskl再import acl，否则需要在运行前设置环境变量。
 
