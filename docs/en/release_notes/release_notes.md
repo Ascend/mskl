@@ -24,12 +24,20 @@ No compatibility changes.
 
 ### 26.0.0
 
-No new features.
+This release is a maintenance release that primarily includes stability improvements and bug fixes. It introduces no new externally available features.
 
 ### 8.3.0
 
 First release, with the following features:
 
-1. Provides the tiling_func and get_kernel_from_binary interfaces, supporting calls to tiling functions in the msOpGen project and user-defined Kernel functions for quick debugging.
+1. Provides the `tiling_func` and `get_kernel_from_binary` interfaces, supporting calls to tiling functions in the msOpGen project and user-defined Kernel functions for quick debugging.
 
 2. Provides a series of autotune interfaces, supporting code replacement, compilation, execution, and performance comparison for template library operators, facilitating efficient tuning.
+
+## Known Issues
+
+None.
+
+## Deprecated Interfaces
+
+None.
