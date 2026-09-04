@@ -42,6 +42,7 @@ Follow the instructions in Section 2.3 of <a href="https://gitcode.com/Ascend/ms
 ### 2.3 [Lightweight Call] Lightweight Kernel Call in Python Scripts (msKL)
 
 > [!NOTE]
+> 
 > **Key Point: Introduction to the mskl Interface Invocation Mechanism**
 >
 > 1. The `mskl.tiling_func` interface
@@ -117,6 +118,7 @@ if __name__ == "__main__":
 #### 2.3.2 Adapting the Script
 
 > [!NOTE]
+> 
 > The following commands depend on the `$ASCEND_HOME_PATH` environment variable, which points to the CANN installation path and is usually configured by running `source set_env.sh` after CANN is installed. If it is not set, run `source ${CANN installation path}/set_env.sh` first.
 
 Run the following command, and fill the absolute path of the found .o file into the `KERNEL_BINARY_PATH` variable in `mskl_demo.py`:

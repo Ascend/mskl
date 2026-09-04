@@ -41,7 +41,8 @@
 
 ### 2.3 【轻量调用】Python 脚本中 Kernel 轻量化调用（msKL）
 
-> [!NOTE]   
+> [!NOTE]
+> 
 > **知识点：mskl 接口调用机制简介**   
 >
 > 1. `mskl.tiling_func` 接口   
@@ -117,6 +118,7 @@ if __name__ == "__main__":
 #### 2.3.2 对脚本进行适配
 
 > [!NOTE]
+> 
 > 以下命令依赖 `$ASCEND_HOME_PATH` 环境变量，该变量指向 CANN 安装路径（通常在安装 CANN 后通过 `source set_env.sh` 配置）。若未设置，请先执行 `source ${CANN安装路径}/set_env.sh`。
 
 执行如下命令，将查询到的 .o 文件绝对路径填入`mskl_demo.py`的 `KERNEL_BINARY_PATH` 变量中：

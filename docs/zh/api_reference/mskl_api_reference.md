@@ -65,7 +65,8 @@ msKL工具提供的接口可以调用msOpGen工程中的tiling函数以及用户
 
 调用用户的tiling函数。
 
-> [!NOTE]   
+> [!NOTE]
+> 
 > tiling_func不支持调用《[基础数据结构和接口参考](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/910/maintenref/basicdataapi/atlasopapi_07_00001.html)》中的GetCompileInfo接口。
 
 **函数原型**

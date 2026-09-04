@@ -64,7 +64,7 @@ This chapter uses the MatmulLeakyRelu operator project as an example to introduc
 - Refer to [Preparation Before Use](#preparation-before-use) to configure the relevant environment variables.
 - Click the [sample](https://gitee.com/ascend/samples/tree/master/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch) to obtain the sample project in preparation for operator detection.
 
-    > [!NOTE] Note
+    > [!NOTE]
     >
     >- This sample project uses the Atlas A2 Training Series/Atlas A2 Inference Series as an example.
     >- When downloading the code sample, you need to run the following command to specify the branch version.
@@ -144,7 +144,7 @@ This chapter uses the MatmulLeakyRelu operator project as an example to introduc
     python3 matmulleakyrelu.py
     ```
 
-> [!NOTE] Note
+> [!NOTE]
 >
 > If the script fails and displays the following error:
 >
@@ -215,7 +215,8 @@ The auto-tuning workflow includes two types: Kernel-level autotuning and Applica
 
 This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/catlass-v1-dev/examples/00_basic_matmul/basic_matmul.cpp) from the catlass-v1-dev branch of the template library as an example to introduce how to use the interfaces provided by the msKL tool to implement kernel-level auto-tuning.
 
-> [!NOTE] Note
+> [!NOTE]
+> 
 > If any exception occurs during execution, you can view debug logs and retain intermediate files by setting environment variables to facilitate problem locating.
 >
 > ```shell
@@ -339,7 +340,7 @@ This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlas
     using L0TileShape = GemmShape<128, 256, 64>; // tunable
     ```
 
-    > [!NOTE] Note
+    > [!NOTE]
     >
     > In addition to the tunable marking method, you can also use a line break and add `// tunable: Alias (L0Shape)` at the end of the code line that requires full-line replacement. The alias is used for search space indexing.
     >
@@ -350,7 +351,7 @@ This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlas
 
 6. Define the parameter search space through the `configs` input parameter of the autotune interface. Each parameter combination will replace the marked code lines in the operator kernel code, followed by compilation, execution, and kernel performance collection. An example of search space definition can be referenced as shown below.
 
-    > [!NOTE] Note
+    > [!NOTE]
     >
     >- Parameter replacement must be reasonable and must not cause compilation or runtime errors.
     >- The parameter replacement principles are as follows (using the first row in `configs` as an example):
@@ -402,7 +403,7 @@ This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlas
 
 This chapter uses [examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/master/examples/00_basic_matmul/basic_matmul.cpp) from the master branch of the template library as an example to introduce how to use the interfaces provided by the msKL tool to implement application-level auto-tuning.
 
-> [!NOTE] Note
+> [!NOTE]
 >
 > If any exception occurs during operation, you can view debug logs and retain intermediate files by setting environment variables to facilitate problem locating.
 >

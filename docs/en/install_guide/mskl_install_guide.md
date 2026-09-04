@@ -6,7 +6,7 @@
 
 This tool is integrated into CANN. If CANN is already installed and you do not need to update this tool, you can use it directly without following the installation steps in this document.
 
-If CANN is not yet installed in your environment, see the [CANN Quick Installation](https://www.hiascend.com/cann/download) guide to install the Ascend NPU driver and CANN software (including Toolkit and the ops package), and configure the environment variables.
+If CANN is not yet installed in your environment, see the [CANN Quick Installation](https://www.hiascend.com/en/cann/download) guide to install the Ascend NPU driver and CANN software (including Toolkit and the ops package), and configure the environment variables.
 
 If you need to upgrade this tool separately or use the latest version, you can install it in the following three ways: [online installation](#21-online-installation), [offline installation](#22-offline-installation), [source installation](#23-source-installation).
 
@@ -14,11 +14,11 @@ If you need to upgrade this tool separately or use the latest version, you can i
 
 ### 2.1 Online Installation
 
-If your device has internet access, you can automatically download and install the tool with a single command. Visit the MindStudio [download](https://www.hiascend.com/developer/software/mindstudio/download) page in the Ascend Community, select the corresponding CANN version, and choose online installation as the installation method. The system will guide you through the subsequent steps.
+If your device has internet access, you can automatically download and install the tool with a single command. Visit the MindStudio [download](https://www.hiascend.com/en/developer/software/mindstudio/download) page in the Ascend Community, select the corresponding CANN version, and choose online installation as the installation method. The system will guide you through the subsequent steps.
 
 ### 2.2 Offline Installation
 
-For devices in environments without external network access, such as enterprise intranets, first download the complete offline installation package on a machine with internet access, then transfer it to the target device for installation. Refer to the Ascend Community MindStudio [download](https://www.hiascend.com/developer/software/mindstudio/download) page, select the corresponding CANN version, choose offline installation as the installation method, and obtain the corresponding installation package and operation guide.
+For devices in environments without external network access, such as enterprise intranets, first download the complete offline installation package on a machine with internet access, then transfer it to the target device for installation. Refer to the Ascend Community MindStudio [download](https://www.hiascend.com/en/developer/software/mindstudio/download) page, select the corresponding CANN version, choose offline installation as the installation method, and obtain the corresponding installation package and operation guide.
 
 ### 2.3 Source Installation
 
@@ -102,4 +102,4 @@ You can uninstall it by following these steps:
 
 Upgrading means "uninstall first, then install". Directly execute the installation command, and the tool will automatically uninstall the old version and guide you through the overwrite installation.
 
-You can use the `pip3 show mindstudio-kl` command to view the version information in the current environment and then select the version to upgrade to. When upgrading, pay attention to the version compatibility. For details, see the [Version Description](https://gitcode.com/Ascend/release-management/blob/master/MindStudio/26.1.0/release_notes.md).
+You can use the `pip3 show mindstudio-kl` command to view the version information in the current environment and then select the version to upgrade to. When upgrading, pay attention to the version compatibility. For details, see the [Version Description](https://gitcode.com/Ascend/release-management/blob/master/MindStudio/26.1.0/release_notes_en.md).

@@ -64,7 +64,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 - 请参考[使用前准备](#使用前准备)，完成相关环境变量的配置。
 - 点击[链接](https://gitee.com/ascend/samples/tree/master/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch)获取样例工程，为进行算子检测做准备。
 
-    > [!NOTE] 
+    > [!NOTE]
     > 
     >- 本样例工程以Atlas A2 训练系列产品/Atlas A2 推理系列产品为例。
     >- 下载代码样例时，需执行以下命令指定分支版本。
@@ -215,7 +215,8 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
 本章节以模板库catlass-v1-dev分支的[examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/catlass-v1-dev/examples/00_basic_matmul/basic_matmul.cpp)为例，介绍如何利用msKL工具提供的接口实现Kernel级自动调优。
 
-> [!NOTE]   
+> [!NOTE]
+> 
 > 在运行过程中出现任何异常，可通过设置环境变量的方式来查看debug日志以及保留中间文件，便于问题定位。
 >
 > ```shell
