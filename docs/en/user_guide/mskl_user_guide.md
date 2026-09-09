@@ -4,24 +4,24 @@
 
 MindStudio Kernel Performance Prediction (kernel invocation tool, msKL) provides the capabilities to invoke msOpGen operator projects and perform auto-tuning based on the Ascend C Template Library. The detailed descriptions are as follows:
 
-- [Feature Introduction of Invoking msOpGen Operator Projects](#feature-introduction-of-invoking-msopgen-operator-projects): The tiling_func and get_kernel_from_binary interfaces provided by the msKL tool can directly invoke msOpGen operator projects.
+- [Feature Introduction of Invoking msOpGen Operator Projects](#feature-introduction-of-invoking-msopgen-operator-projects): The `tiling_func` and `get_kernel_from_binary` interfaces provided by the msKL tool can directly invoke msOpGen operator projects.
 - [Feature Introduction of Auto-tuning](#auto-tuning-feature-introduction): msKL provides the capabilities to generate, compile, and run template library kernel launch code, as well as the ability to replace code within a kernel and perform auto-tuning.
 
 ## Preparation Before Use
 
 **Environment Preparation**
 
-Before developing operators, you need to install the driver firmware, CANN Toolkit software package, and the ops operator package. Refer to the *[CANN Software Installation Guide](https://www.hiascend.com/document/detail/en/canncommercial/83RC1/softwareinst/instg/instg_quick.html?Mode=PmIns&InstallType=local&OS=openEuler&Software=cannToolKit)*. This section does not provide installation examples. After configuring the relevant environment variables, you can directly use the lightweight kernel invocation function.
+Before developing operators, you need to install the driver firmware, CANN Toolkit software package, and the ops operator package. Refer to the *[CANN Software Installation Guide](https://www.hiascend.com/en/cann/download)*. This section does not provide installation examples. After configuring the relevant environment variables, you can directly use the lightweight kernel invocation function.
 
-- To use the [auto-tuning](#auto-tuning-feature-introduction) function, you need to download the Ascend C Template Library from the [link](https://gitcode.com/cann/catlass).
+- To use the [auto-tuning](#auto-tuning-feature-introduction) function, you need to download the Ascend C Template Library from the [sample](https://gitcode.com/cann/catlass).
 - For secondary development, ensure that the input data is trusted and secure.
 
 **Constraints**
 
-- For security and the principle of least privilege, the tools in this repository should not be operated using high-privilege accounts such as root. It is recommended to install and execute them with a regular user account.
+- For security and the principle of least privilege, the tools in this repository should not be operated using high-privilege accounts such as root. You are advised to install and execute them with a regular user account.
 - Before using the operator development tools, ensure that the executing user's umask value is greater than or equal to 0027. Otherwise, the directory and files containing the collected performance data will have excessive permissions.
-- Before using the operator tools, ensure the principle of least privilege is applied (e.g., prohibit write permissions for 'other' users, and prohibit permissions like 666 or 777).
-- It is not recommended to configure or run custom scripts located in other users' directories to avoid the risk of privilege escalation.
+- Before using the operator tools, ensure the principle of least privilege is applied (for example, prohibit write permissions for 'other' users, and prohibit permissions like 666 or 777).
+- You are advised not to configure or run custom scripts located in other users' directories to avoid the risk of privilege escalation.
 - When downloading the code sample, execute the following command to specify the branch version.
 
     ```shell
@@ -32,15 +32,15 @@ Before developing operators, you need to install the driver firmware, CANN Toolk
 
 ### Function Description
 
-Some current operator open-source repositories use the project template provided by msOpGen. However, invoking operators based on this template is relatively complex and makes lightweight operator debugging difficult. To address such issues, we can use the tiling_func and get_kernel_from_binary interfaces provided by the msKL tool to directly invoke the tiling function and user-defined kernel function within the msOpGen project.
+Some current operator open-source repositories use the project template provided by msOpGen. However, invoking operators based on this template is relatively complex and makes lightweight operator debugging difficult. To address such issues, we can use the `tiling_func` and `get_kernel_from_binary` interfaces provided by the msKL tool to directly invoke the tiling function and user-defined kernel function within the msOpGen project.
 
 ### Precautions
 
-- When using this feature, the operator input and output only support numpy.Tensor and torch.Tensor.
+- When using this feature, the operator input and output only support `numpy.Tensor` and `torch.Tensor`.
 - If an operator of the same type (op_type) has been previously deployed in CANN, and the user modifies the tiling function and recompiles it, the operator must be redeployed in the CANN environment.
-- When calling the tiling_func and get_kernel_from_binary interfaces, the system generates the following intermediate files in the mindstudio_mskl_gen folder under the current directory. These files are for development and locating purposes only and do not require user attention. Do not modify the contents of this folder or its sub-files to avoid causing functional abnormalities in the tool.
+- When calling the `tiling_func` and `get_kernel_from_binary` interfaces, the system generates the following intermediate files in the `mindstudio_mskl_gen` folder under the current directory. These files are for development and locating purposes only and do not require user attention. Do not modify the contents of this folder or its sub-files to avoid causing functional abnormalities in the tool.
 
-    ```tex
+    ```shell
     (p39) root@ubuntu:~/project/add_custom/CustomOp$ ll mindstudio_mskl_gen/
     total 388
     drwxr-x---  2 root root    314 Jul 24 09:40 ./
@@ -57,18 +57,18 @@ Some current operator open-source repositories use the project template provided
 
 ### Usage Example
 
-This chapter uses the matmulleakyrelu operator project as an example to introduce how to use the tiling_func and get_kernel_from_binary interfaces provided by the msKL tool to call the tiling function in the msOpGen project and the user-defined Kernel function. Operations for other types of operators can refer to this workflow.
+This chapter uses the MatmulLeakyRelu operator project as an example to introduce how to use the `tiling_func` and `get_kernel_from_binary` interfaces provided by the msKL tool to call the tiling function in the msOpGen project and the user-defined Kernel function. Operations for other types of operators can refer to this workflow.
 
 **Environment Preparation**<a id="environment-preparation"></a>
 
 - Refer to [Preparation Before Use](#preparation-before-use) to configure the relevant environment variables.
-- Click the [link](https://gitee.com/ascend/samples/tree/master/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch) to obtain the sample project in preparation for operator detection.
+- Click the [sample](https://gitee.com/ascend/samples/tree/master/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch) to obtain the sample project in preparation for operator detection.
 
-    > [!NOTE] Note
-    > 
+    > [!NOTE]
+    >
     >- This sample project uses the Atlas A2 Training Series/Atlas A2 Inference Series as an example.
     >- When downloading the code sample, you need to run the following command to specify the branch version.
->
+    >
     >   ```shell
     >   git clone https://gitee.com/ascend/samples.git -b v1.9-8.3.RC1
     >   ```
@@ -78,7 +78,7 @@ This chapter uses the matmulleakyrelu operator project as an example to introduc
 1. Refer to the sample project in [Environment Preparation](#environment-preparation), run the `install.sh` script in the `${git_clone_path}/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch` directory to generate a custom operator project, and implement the operator on the Host side and Kernel side.
 
     ```shell
-    bash install.sh -v Ascendxxxyy    # Replace xxxyy with the actual chip model.
+    bash install.sh -v Ascendxxxyy    # Replace xxxyy with the actual chip model
     ```
 
 2. Switch to the custom operator project directory.
@@ -87,19 +87,19 @@ This chapter uses the matmulleakyrelu operator project as an example to introduc
     cd CustomOp
     ```
 
-3. Edit the operator launch script matmulleakyrelu.py.
+3. Edit the operator launch script `matmulleakyrelu.py`.
 
     ```python
     import numpy as np
     import mskl
-    # The input parameters of this function must be consistent with those of the Kernel function.
+    # The input parameters of this function must be consistent with those of the Kernel function
     def run_kernel(input_a, input_b, input_bias, output, workspace, tiling_data):
-        kernel_binary_file = "MatmulLeakyreluCustom.o"    # The names of .o files may vary slightly across different hardware and operating systems. For specific paths, refer to the -reloc parameter in the "Parameter Description" table in the "Viewing the Operator Simulation Graph" chapter of the msopgen_usr_guide.
+        kernel_binary_file = "MatmulLeakyreluCustom.o"    # The names of .o files may vary slightly across different hardware and operating systems. For specific paths, refer to the -reloc parameter in the "Parameter Description" table in the "Viewing the Operator Simulation Graph" chapter of the msopgen_usr_guide
         kernel = mskl.get_kernel_from_binary(kernel_binary_file, 'mix')
         return kernel(input_a, input_b, input_bias, output, workspace, tiling_data)
-    
+
     if __name__ == "__main__":
-        # input/output tensor
+        # Input/output tensor
         M = 1024
         N = 640
         K = 256
@@ -107,29 +107,29 @@ This chapter uses the matmulleakyrelu operator project as an example to introduc
         input_b = np.random.randint(1, 10, [K, N]).astype(np.float16)
         input_bias = np.random.randint(1, 10, [N]).astype(np.float32)
         output = np.zeros([M, N]).astype(np.float32)
-        # shape info
+        # Shape info
         inputs_info = [{"shape": [M, K], "dtype": "float16", "format": "ND"},
                        {"shape": [K, N], "dtype": "float16", "format": "ND"},
                        {"shape": [N], "dtype": "float32", "format": "ND"}]
         outputs_info = [{"shape": [M, N], "dtype": "float32", "format": "ND"}]
         attr = {}
-        # Call the tiling function.
+        # Call the tiling function
         tiling_output = mskl.tiling_func(
             op_type="MatmulLeakyreluCustom",
             inputs_info=inputs_info, outputs_info=outputs_info, # Optional
             inputs=[input_a, input_b, input_bias], outputs=[output],
             attr=attr, # Optional
-            lib_path="liboptiling.so",  # Tiling code compilation artifact. For the specific location, refer to the directory structure in "Operator Package Deployment > Step 2: Taking the Default Installation Scenario as an Example" in the msopgen_usr_guide.
+            lib_path="build_out/op_host/libcust_opmaster_rt2.0.so",  # Tiling function compilation artifact. For the specific location, refer to the directory structure in "Operator Package Deployment > Step 2: Taking the Default Installation Scenario as an Example" in the msopgen_usr_guide
             # soc_version="", # Optional
         )
         blockdim = tiling_output.blockdim
         workspace_size = tiling_output.workspace_size
-        tiling_data = tiling_output.tiling_data # numpy array.
-        workspace = np.zeros(workspace_size).astype(np.uint8) # Workspace needs to be allocated by the user.
-        # Call the Kernel function.
+        tiling_data = tiling_output.tiling_data # numpy array
+        workspace = np.zeros(workspace_size).astype(np.uint8) # Workspace needs to be allocated by the user
+        # Call the Kernel function
         run_kernel(input_a, input_b, input_bias, output, workspace, tiling_data)
-    
-        # Verify the output.
+
+        # Verify the output
         alpha = 0.001
         golden = (np.matmul(input_a.astype(np.float32), input_b.astype(np.float32)) + input_bias).astype(np.float32)
         golden = np.where(golden >= 0, golden, golden * alpha)
@@ -144,9 +144,45 @@ This chapter uses the matmulleakyrelu operator project as an example to introduc
     python3 matmulleakyrelu.py
     ```
 
+> [!NOTE]
+>
+> If the script fails and displays the following error:
+>
+> ```text
+> Exception: Check kernel_binary_file /XXX/samples/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch/CustomOp/MatmulLeakyreluCustom.o permission failed.
+> ```
+>
+> This indicates that the `MatmulLeakyreluCustom.o` file was not generated automatically in the `CustomOp` directory. You need to locate the compilation result manually. Run the following command to locate the `.o` file:
+>
+> ```shell
+> find . -name "*MatmulLeakyreluCustom*"
+> ```
+>
+> The output is similar to the following:
+>
+> ```text
+> ./build_out/op_kernel/ascendc_kernels/binary/ascend910b/matmul_leakyrelu_custom/MatmulLeakyreluCustom_97ef75830e63ebe749e7c029d8d403c5.o
+> ```
+>
+> Then manually copy the `.o` file to the `CustomOp` directory by running the following command. Replace the path with the actual path:
+>
+> ```shell
+> cp ./build_out/op_kernel/ascendc_kernels/binary/ascend910b/matmul_leakyrelu_custom/MatmulLeakyreluCustom_97ef75830e63ebe749e7c029d8d403c5.o ./MatmulLeakyreluCustom.o
+> ```
+>
+> After copying the file, run the `matmulleakyrelu.py` script again to execute the operator:
+>
+> ```shell
+> python3 matmulleakyrelu.py
+> ```
+
 ### Output Description
 
-None.
+The following output indicates that the operator runs successfully:
+
+```text
+    compare success.
+```
 
 ## Auto-tuning Feature Introduction
 
@@ -154,13 +190,13 @@ None.
 
 When developing template library operators, use the interfaces provided by msKL to quickly implement Kernel launch code generation, compilation, and Kernel execution in Python scripts.
 
-When performing performance tuning on template library operators, it is often necessary to adjust the Kernel's template parameters (such as L0shape size) multiple times and compare performance results. To improve tuning efficiency, the msKL tool provides a series of autotune interfaces, enabling developers to efficiently perform code replacement, compilation, execution, and performance comparison for multiple tuning points.
+When performing performance tuning on template library operators, it is often necessary to adjust the template parameters of the Kernel (such as `L0shape` size) multiple times and compare performance results. To improve tuning efficiency, the msKL tool provides a series of autotune interfaces, enabling developers to efficiently perform code replacement, compilation, execution, and performance comparison for multiple tuning points.
 
 ### Precautions
 
-- The auto-tuning feature only supports Atlas A2 Training Series products / Atlas A2 Inference Series products.
-- A single Device supports auto-tuning using only one msKL tool, and it is not recommended to run other operator programs simultaneously.
-- Ensure that mskl is imported before acl; otherwise, you need to set environment variables before running.
+- The auto-tuning feature only supports Atlas A2 Training Series products/Atlas A2 Inference Series products.
+- A single Device supports auto-tuning using only one msKL tool, and you are advised not to run other operator programs simultaneously.
+- Ensure that `mskl` is imported before `acl`. Otherwise, you need to set environment variables before running.
 
     ```shell
     export LD_PRELOAD=${INSTALL_DIR}/lib64/libmspti.so
@@ -170,23 +206,30 @@ When performing performance tuning on template library operators, it is often ne
 
 **Auto-tuning Workflow**
 
-The auto-tuning workflow includes two types: Kernel-level autotuning and Application-level autotuning. For the specific workflow, refer to [Figure 1](#fig985071581517). For detailed operations, refer to [Kernel-level Autotuning Example](#section778122211315) and [Application-level Autotuning Example](#section14971258122).
+The auto-tuning workflow includes two types: Kernel-level autotuning and Application-level autotuning. For the detailed workflow, see [Figure 1](#fig985071581517). For detailed operations, refer to [Kernel-level Autotuning Example](#section778122211315) and [Application-level Autotuning Example](#section14971258122).
 
-**Figure 1** Auto-tuning workflow diagram <a id="fig985071581517"></a>  
-![](../figures/自动调优流程示意图.png "Auto-tuning workflow diagram")
+**Figure 1** Auto-tuning workflow diagram<a id="fig985071581517"></a>
+![](../figures/auto-tuning-workflow.png "Auto-tuning workflow diagram")
 
 **Kernel-level Auto-tuning Example <a id="section778122211315"></a>**
 
 This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/catlass-v1-dev/examples/00_basic_matmul/basic_matmul.cpp) from the catlass-v1-dev branch of the template library as an example to introduce how to use the interfaces provided by the msKL tool to implement kernel-level auto-tuning.
 
-> [!NOTE] Note  
+> [!NOTE]
+> 
 > If any exception occurs during execution, you can view debug logs and retain intermediate files by setting environment variables to facilitate problem locating.
 >
 > ```shell
 > export MSKL_LOG_LEVEL=0
 > ```
+>
+> When downloading the code sample, run the following command to specify the branch.
+>
+> ```shell
+> git clone https://gitee.com/ascend/catlass.git -b catlass-v1-dev
+> ```
 
-1. After completing the kernel operator development, the definition and implementation of the kernel function will be presented in the basic_matmul.cpp file, as shown below.
+1. After completing the kernel operator development, the definition and implementation of the kernel function will be presented in the `basic_matmul.cpp` file, as shown below.
 
     ```cpp
     // basic_matmul.cpp
@@ -204,34 +247,34 @@ This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlas
     // ...
     ```
 
-2. Refer to the appendix and create a Python script file [basic_matmul_autotune.py](#basic_matmul_autotunepy) and a build script file [jit_build.sh](#jit_buildsh) in the `examples/00_basic_matmul` directory.
+2. Refer to the appendix and create a Python script file [basic_matmul_autotune.py](#basic_matmul_autotunepy) and a build script file [jit_build.sh](#jit_buildsh) in the `examples/00_basic_matmul` directory. (The following code is already included in `basic_matmul_autotune.py`. Create the corresponding files without adding the code manually again.)
 
-    Define the Python interface for the operator's Kernel function according to the following requirements: Define the `basic_matmul` function in the Python script, and its input parameters must be consistent with the Kernel function in the C++ code.
+    Define the Python interface for the Kernel function of the operator according to the following requirements: Define the `basic_matmul` function in the Python script, and its input parameters must be consistent with the Kernel function in the C++ code.
 
     ```python
     # basic_matmul_autotune.py
     import mskl
-    
+
     def get_kernel():
         kernel_file = ".basic_matmul.cpp"
         kernel_name = "BasicMatmul"
-        build_script = "./jit_build.sh" # kernel compile script
+        build_script = "./jit_build.sh" # Kernel compile script
         config = mskl.KernelInvokeConfig(kernel_file, kernel_name)
         gen_file = mskl.Launcher(config).code_gen()
         kernel = mskl.compile(build_script=build_script, launch_src_file=gen_file)
         return kernel
-    
+
     def basic_matmul(problem_shape, a, layout_a, b, layout_b, c, layout_c):
-        # This function's input arguments must exactly match the kernel function.
+        # This function's input arguments must exactly match the kernel function
         kernel = get_kernel()
-        blockdim = 20 # use the correct aic number that matches your hardware
-        return kernel[blockdim](problem_shape, a, layout_a, b, layout_b, c, layout_c, device_id=1) # invoke the kernel
+        blockdim = 20 # Use the correct aic number that matches your hardware
+        return kernel[blockdim](problem_shape, a, layout_a, b, layout_b, c, layout_c, device_id=1) # Invoke the kernel
     ```
 
 3. Refer to the following code implementation to construct the kernel input parameters and ensure the normal execution of the `basic_matmul` function.
 
-    - If the input parameter of the operator's Kernel function is `GM_ADDR`, use the `numpy.array` type to construct the input parameter.
-    - If the input parameter of the operator Kernel function is a C++ struct object, you need to use ctypes.Structure to construct an identical struct in Python.
+    - If the input parameter of the Kernel function of the operator is `GM_ADDR`, use the `numpy.array` type to construct the input parameter.
+    - If the input parameter of the operator Kernel function is a C++ struct object, you need to use `ctypes.Structure` to construct an identical struct in Python.
 
     ```python
     # basic_matmul_autotune.py
@@ -274,7 +317,7 @@ This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlas
         b = np.random.randint(1, 2, [k, n]).astype(np.half)
         c = np.zeros([m, n]).astype(np.half)
         basic_matmul(problem_shape, a, layout_a, b, layout_b, c, layout_c)
-        # check if the output tensor c is consistent with the golden data
+        # Check if the output tensor c is consistent with the golden data
         golden = np.matmul(a, b)
         is_equal = np.array_equal(c, golden)
         result = "success" if is_equal else "failed"
@@ -288,26 +331,28 @@ This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlas
     compare success.
     ```
 
-5. Identify the parameters to be tuned in the operator code program basic_matmul.cpp.
+5. Identify the parameters to be tuned in the operator code program `basic_matmul.cpp`.
 
-    Use **// tunable** at the end of the template parameter declaration line to mark the code content after the "=" sign for replacement.
+    Use `// tunable` at the end of the template parameter declaration line to mark the code content after the "=" sign for replacement.
 
     ```cpp
     using L1TileShape = GemmShape<128, 256, 256>; // tunable
     using L0TileShape = GemmShape<128, 256, 64>; // tunable
     ```
 
-    > [!NOTE] Note  
-    > In addition to the tunable marking method, you can also use a line break and add **// tunable: Alias (L0Shape)** at the end of the code line that requires full-line replacement. The alias is used for search space indexing.
->
-    >```
+    > [!NOTE]
+    >
+    > In addition to the tunable marking method, you can also use a line break and add `// tunable: Alias (L0Shape)` at the end of the code line that requires full-line replacement. The alias is used for search space indexing.
+    >
+    > ```cpp
     > using L0TileShape =
     > MatmulShape<128, 256, 64>; // tunable: L0Shape
-    >```
+    > ```
 
 6. Define the parameter search space through the `configs` input parameter of the autotune interface. Each parameter combination will replace the marked code lines in the operator kernel code, followed by compilation, execution, and kernel performance collection. An example of search space definition can be referenced as shown below.
 
-    > [!NOTE] Note
+    > [!NOTE]
+    >
     >- Parameter replacement must be reasonable and must not cause compilation or runtime errors.
     >- The parameter replacement principles are as follows (using the first row in `configs` as an example):
     >    1. First, replace parameters marked with `// tunable: L0Shape`. The entire marked code line (`MatmulShape<128, 256, 64>`) is replaced with the value string from `configs` (`MatmulShape<128, 256, 64>`).
@@ -315,8 +360,8 @@ This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlas
     >        - In different scopes, two variables with the same name might be declared. If both variables match the replacement rule, only the first variable will be modified.
     >        - If one of the configs fails to match, the task corresponding to that config will stop and report an error. However, other successfully matched configs will proceed with parameter replacement.
 
-    ```
-    @mskl.autotune(configs=[ # add and try your own config here for a better kernel performance
+    ```python
+    @mskl.autotune(configs=[ # Add and try your own config here for a better kernel performance
         {'L1TileShape': 'GemmShape<128, 256, 256>', 'L0TileShape': 'GemmShape<128, 256, 64>'}, #0 the same config as in basic_matmul.cpp
         {'L1TileShape': 'GemmShape<128, 256, 128>', 'L0TileShape': 'GemmShape<128, 256, 64>'},
         {'L1TileShape': 'GemmShape<128, 128, 256>', 'L0TileShape': 'GemmShape<128, 128, 64>'},
@@ -329,13 +374,13 @@ This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlas
         {'L1TileShape': 'GemmShape<128, 128, 128>', 'L0TileShape': 'GemmShape<128, 128, 128>'},
         {'L1TileShape': 'GemmShape<128, 128, 256>', 'L0TileShape': 'GemmShape<128, 128, 128>'},
         {'L1TileShape': 'GemmShape<128, 128, 512>', 'L0TileShape': 'GemmShape<128, 128, 128>'},
-    ], warmup=1000, repeat=10, device_ids=[0]) # set kernel warmup 1000us
+    ], warmup=1000, repeat=10, device_ids=[0]) # Set kernel warmup 1000us
     ```
 
-7. Execute the basic_matmul_autotune.py file to run the operator, obtaining the execution time for each parameter combination and the optimal tuning parameter set. The following shows only one possible command-line output result.
+7. Execute the `basic_matmul_autotune.py` file to run the operator, obtaining the execution time for each parameter combination and the optimal tuning parameter set. The following shows only one possible CLI output result.
 
     ```python
-    # python3 basic_matmul_autotune.py 
+    # python3 basic_matmul_autotune.py
     No.0: 22.562μs, {'L1TileShape': 'GemmShape<128, 256, 256>', 'L0TileShape': 'GemmShape<128, 256, 64>'}
     No.1: 22.109μs, {'L1TileShape': 'GemmShape<128, 256, 128>', 'L0TileShape': 'GemmShape<128, 256, 64>'}
     No.2: 17.778μs, {'L1TileShape': 'GemmShape<128, 128, 256>', 'L0TileShape': 'GemmShape<128, 128, 64>'}
@@ -358,30 +403,31 @@ This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlas
 
 This chapter uses [examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/master/examples/00_basic_matmul/basic_matmul.cpp) from the master branch of the template library as an example to introduce how to use the interfaces provided by the msKL tool to implement application-level auto-tuning.
 
-> [!NOTE] Note  
+> [!NOTE]
+>
 > If any exception occurs during operation, you can view debug logs and retain intermediate files by setting environment variables to facilitate problem locating.
 >
 > ```shell
 > export MSKL_LOG_LEVEL=0
 > ```
 
-1. Refer to the [examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/master/examples/00_basic_matmul/basic_matmul.cpp) example, use the template library's Device layer API to implement the operator, and add the **// tunable** comment at the end of lines 115 and 117 respectively to replace the code content after the "=" sign.
+1. Refer to the [examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/master/examples/00_basic_matmul/basic_matmul.cpp) example, use the Device layer API of the template library to implement the operator, and add the `// tunable` comment at the end of lines 115 and 117 respectively to replace the code content after the "=" sign.
 
     ```cpp
     ...
     115 using L1TileShape = GemmShape<128, 256, 256>; // tunable
-    116   
+    116
     117 using L0TileShape = GemmShape<128, 256, 64>; // tunable
     ...
     ```
 
 2. Create the Python script file [basic_matmul_executable_autotune.py](#basic_matmul_executable_autotunepy) and the build script file [jit_build_executable.sh](#jit_build_executablesh) in the [examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/master/examples/00_basic_matmul/basic_matmul.cpp) directory.
 
-    You can modify the configs parameter passed to the autotune_v2 interface in the basic_matmul_executable_autotune.py script as needed to search for custom tiling parameter combinations.
+    You can modify the configs parameter passed to the autotune_v2 interface in the `basic_matmul_executable_autotune.py` script as needed to search for custom tiling parameter combinations.
 
 ### Output Description
 
-Run the Python script basic_matmul_executable_autotune.py to obtain the execution time for each parameter combination and the optimal tuning parameter set. The following shows only one possible command line output result.
+Run the Python script `basic_matmul_executable_autotune.py` to obtain the execution time for each parameter combination and the optimal tuning parameter set. The following shows only one possible CLI output result.
 
 ```python
 # python3 basic_matmul_executable_autotune.py
@@ -408,7 +454,7 @@ By comparison, No.9 is the optimal tuning parameter set.
 
 ## Appendix
 
-### basic_matmul_autotune.py<a id="basic_matmul_autotunepy"></a>
+### `basic_matmul_autotune.py`<a id="basic_matmul_autotunepy"></a>
 
 ```python
 import numpy as np
@@ -418,7 +464,7 @@ import mskl
 def get_kernel():
     kernel_file = "./basic_matmul.cpp"
     kernel_name = "BasicMatmul"
-    build_script = "./jit_build.sh" # kernel compile script
+    build_script = "./jit_build.sh" # Kernel compile script
     config = mskl.KernelInvokeConfig(kernel_file, kernel_name)
     gen_file = mskl.Launcher(config).code_gen()
     kernel = mskl.compile(build_script=build_script, launch_src_file=gen_file)
@@ -446,10 +492,10 @@ the code lines in "basic_matmul.cpp", e.g.
     {'L1TileShape': 'GemmShape<128, 128, 512>', 'L0TileShape': 'GemmShape<128, 128, 128>'},
 ], warmup=1000, repeat=10, device_ids=[1])
 def basic_matmul(problem_shape, a, layout_a, b, layout_b, c, layout_c):
-    # This function's input arguments must exactly match the kernel function.
+    # This function's input arguments must exactly match the kernel function
     kernel = get_kernel()
-    blockdim = 20 # use the correct aic number that matches your hardware
-    return kernel[blockdim](problem_shape, a, layout_a, b, layout_b, c, layout_c, device_id=1) # invoke the kernel
+    blockdim = 20 # Use the correct aic number that matches your hardware
+    return kernel[blockdim](problem_shape, a, layout_a, b, layout_b, c, layout_c, device_id=1) # Invoke the kernel
 
 class GemmCoord(Structure):
     _fields_ = [("m", c_uint32),
@@ -479,7 +525,7 @@ class RowMajor(Structure):
         return "Catlass::layout::"
 
 if __name__ == "__main__":
-    # prepare kernel input/output
+    # Prepare kernel input/output
     m = 256
     n = 512
     k = 1024
@@ -491,21 +537,21 @@ if __name__ == "__main__":
     b = np.random.randint(1, 2, [k, n]).astype(np.half)
     c = np.zeros([m, n]).astype(np.half)
 
-    # invoke kernel
+    # Invoke kernel
     basic_matmul(problem_shape, a, layout_a, b, layout_b, c, layout_c)
 
-    # check if the output tensor c is consistent with the golden data
+    # Check if the output tensor c is consistent with the golden data
     golden = np.matmul(a, b)
     is_equal = np.array_equal(c, golden)
     result = "success" if is_equal else "failed"
     print("compare {}.".format(result))
 ```
 
-### jit_build.sh<a id="jit_buildsh"></a>
+### `jit_build.sh`<a id="jit_buildsh"></a>
 
 ```shell
 #!/bin/bash
-# default input file
+# Default input file
 LAUNCH_SRC_FILE="_gen_launch.cpp"
 OUTPUT_LIB_FILE="_gen_module.so"
 if [ $# -ge 1 ] ; then
@@ -543,7 +589,7 @@ bisheng -O2 -fPIC -std=c++17 -xcce --cce-aicore-arch=dav-c220 \
 exit $?
 ```
 
-### basic_matmul_executable_autotune.py<a id="basic_matmul_executable_autotunepy"></a>
+### `basic_matmul_executable_autotune.py`<a id="basic_matmul_executable_autotunepy"></a>
 
 ```python
 import mskl
@@ -566,7 +612,7 @@ import mskl
 ], warmup_times=10)
 def run_executable(m, n, k, device_id):
     kernel_file = "../../00_basic_matmul/basic_matmul.cpp"
-    build_script = "jit_build_executable.sh" # executable compile script
+    build_script = "jit_build_executable.sh" # Executable compile script
     executable = mskl.compile_executable(build_script=build_script, src_file=kernel_file, use_cache=False)
     return executable(m, n, k, device_id)
 if __name__ == "__main__":
@@ -577,11 +623,11 @@ if __name__ == "__main__":
     run_executable(m, n, k, device_id)
 ```
 
-### jit_build_executable.sh<a id="jit_build_executablesh"></a>
+### `jit_build_executable.sh`<a id="jit_build_executablesh"></a>
 
 ```shell
 #!/bin/sh
-# default input file
+# Default input file
 LAUNCH_SRC_FILE="_gen_launch.cpp"
 # OUTPUT_LIB_FILE="_gen_module.so"
 OUTPUT_LIB_FILE="_gen_executable"

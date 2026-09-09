@@ -1,10 +1,10 @@
 # MindStudio Kernel Launcher API Reference
 
-## API List
+## APIs
 
 The APIs provided by the msKL tool can call the tiling function in the msOpGen project and user-defined Kernel functions. It also provides a series of autotune APIs to help developers efficiently perform code replacement, compilation, execution, and performance comparison for multiple tuning points.
 
-**Table 1** msKL API List
+**Table 1** msKL API list
 
 <a name="table346304711151"></a>
 <table><thead align="left"><tr id="row3463134731515"><th class="cellrowborder" valign="top" width="13.719999999999999%" id="mcps1.2.4.1.1"><p id="p16400184971711"><a name="p16400184971711"></a><a name="p16400184971711"></a>Category</p>
@@ -39,7 +39,7 @@ The APIs provided by the msKL tool can call the tiling function in the msOpGen p
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p08721713202710"><a name="p08721713202710"></a><a name="p08721713202710"></a>Generates Kernel delivery code based on the input template library Kernel information.</p>
 </td>
 </tr>
-<tr id="row20464124714154"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p174641247101518"><a name="p174641247101518"></a><a name="p174641247101518"></a><a href="#code_gen">compile</a></p>
+<tr id="row20464124714154"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p174641247101518"><a name="p174641247101518"></a><a name="p174641247101518"></a><a href="#compile">compile</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p246494721513"><a name="p246494721513"></a><a name="p246494721513"></a>Compiles the Kernel delivery code and returns an executable Kernel object.</p>
 </td>
@@ -59,21 +59,21 @@ The APIs provided by the msKL tool can call the tiling function in the msOpGen p
 
 ## API Details
 
-## tiling_func
+## `tiling_func`
 
 **Function**
 
 Calls the user's tiling function.
 
-> [!NOTE] Note
-> tiling_func does not support calling the GetCompileInfo interface in [Basic Data Structure and Interface Reference](https://www.hiascend.com/document/detail/en/canncommercial/83RC1/API/basicdataapi/atlasopapi_07_00001.html).
+> [!NOTE]
+> 
+> `tiling_func` does not support calling the `GetCompileInfo` interface in [Basic Data Structure and Interface Reference](https://www.hiascend.com/document/detail/en/CANNCommunityEdition/910/maintenref/basicdataapi/atlasopapi_07_00001.html).
 
 **Prototype**
 
 ```python
-def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_path: str = None,
-                inputs_info: list = None, outputs_info: list = None, attr=None,
-                soc_version: str = None, workspace: str = None) -> TilingOutput
+def tiling_func(op_type: str, inputs: list, outputs: list, lib_path: str,
+                inputs_info: list = None, outputs_info: list = None, attr=None, soc_version: str = None) -> TilingOutput
 ```
 
 **Parameters**
@@ -95,7 +95,7 @@ def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_pat
 </td>
 <td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p68900476301"><a name="p68900476301"></a><a name="p68900476301"></a>Required parameter.</p>
 </td>
-<td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="p06801243152810"><a name="p06801243152810"></a><a name="p06801243152810"></a>Must be filled in based on the implementation of the tiling function, for example, AddCustom, MatmulLeakyreluCustom, etc. This is the sole basis for the msKL tool to locate the tiling function. Refer to the lib_path parameter for the lookup logic.</p>
+<td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="p06801243152810"><a name="p06801243152810"></a><a name="p06801243152810"></a>Must be filled in based on the implementation of the tiling function, for example, AddCustom, MatmulLeakyreluCustom, and so on. This is the sole basis for the msKL tool to locate the tiling function. Refer to the lib_path parameter for the lookup logic.</p>
 <p id="p960565114599"><a name="p960565114599"></a><a name="p960565114599"></a>Data Type: str.</p>
 <div class="note" id="note097633611110"><a name="note097633611110"></a><a name="note097633611110"></a><span class="notetitle"> NOTE: </span><div class="notebody"><p id="p16976163613117"><a name="p16976163613117"></a><a name="p16976163613117"></a>If an operator of the same type (op_type) has been previously deployed in CANN, and the user modifies the tiling function and recompiles it, the operator must be redeployed in the CANN environment.</p>
 </div></div>
@@ -129,7 +129,7 @@ def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_pat
 </td>
 <td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="p78715445203"><a name="p78715445203"></a><a name="p78715445203"></a>Fills in info information in the order of the Kernel function input arguments. If a parameter is not used, pass an empty dict or None as a placeholder in the corresponding position.</p>
 <p id="p13310162672216"><a name="p13310162672216"></a><a name="p13310162672216"></a>Data Type: list. The data type of elements in the inputs_info parameter is dict or list[dict]. The description of each dict element is as follows:</p>
-<a name="ul2530132811195"></a><a name="ul2530132811195"></a><ul id="ul2530132811195"><li>ori_shape: Original dimension information of the input tensor.</li><li>shape: Dimension information of the input tensor at runtime.</li><li>dtype: Data type of the input tensor. For details, refer to "AI CPU API &gt; Data Type Description &gt; DataType" in the <a href="https://www.hiascend.com/document/detail/zh/canncommercial/83RC1/API/aicpuopapi/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU Operator Development API</a>.</li><li>ori_format: Original data layout format of the input tensor. Defaults to ND. For details, refer to "AI CPU API &gt; Data Type Description &gt; Format" in the <a href="https://www.hiascend.com/document/detail/zh/canncommercial/83RC1/API/aicpuopapi/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU Operator Development API</a>.</li><li>format: Data layout format of the input tensor. Defaults to ND. For details, refer to "AI CPU API &gt; Data Type Description &gt; Format" in the <a href="https://www.hiascend.com/document/detail/zh/canncommercial/83RC1/API/aicpuopapi/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU Operator Development API</a>.</li><li>data_path: File path of the input tensor's bin file in value dependency scenarios.</li></ul>
+<a name="ul2530132811195"></a><a name="ul2530132811195"></a><ul id="ul2530132811195"><li>ori_shape: original dimension information of the input tensor</li><li>shape: dimension information of the input tensor at runtime</li><li>dtype: data type of the input tensor. For details, refer to "AI CPU API &gt; Data Type Description &gt; DataType" in the <a href="https://www.hiascend.com/document/detail/en/CANNCommunityEdition/910/others/tbeaicpudevg/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU Operator Development API</a>.</li><li>ori_format: original data layout format of the input tensor. Defaults to ND. For details, refer to "AI CPU API &gt; Data Type Description &gt; Format" in the <a href="https://www.hiascend.com/document/detail/en/CANNCommunityEdition/910/others/tbeaicpudevg/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU Operator Development API</a>.</li><li>format: data layout format of the input tensor. Defaults to ND. For details, refer to "AI CPU API &gt; Data Type Description &gt; Format" in the <a href="https://www.hiascend.com/document/detail/en/CANNCommunityEdition/910/others/tbeaicpudevg/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU Operator Development API</a>.</li><li>data_path: file path of the bin file of the input tensor in value dependency scenarios</li></ul>
 <p id="p13712155918416"><a name="p13712155918416"></a><a name="p13712155918416"></a>Example:</p>
 <pre class="screen" id="screen3308253114112"><a name="screen3308253114112"></a><a name="screen3308253114112"></a>[{"ori_shape": [8, 2048], "shape": [8, 2048], "dtype": "float16", "ori_format": "ND", "format": "ND"},
  {"ori_shape": [8, 2048], "shape": [8, 2048], "dtype": "float16", "ori_format": "ND", "format": "ND"}]</pre>
@@ -146,8 +146,8 @@ def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_pat
 </td>
 <td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="p177915263323"><a name="p177915263323"></a><a name="p177915263323"></a>Stores output information. If a parameter is not used, pass an empty dict as a placeholder in the corresponding position.</p>
 <p id="p93662273465"><a name="p93662273465"></a><a name="p93662273465"></a>Data Type: list. The data type of elements in the outputs_info parameter is dict or list[dict]. The description of each dict element is as follows:</p>
-<a name="ul7773111912299"></a><a name="ul7773111912299"></a><ul id="ul7773111912299"><li>ori_shape: Original dimension information of the output tensor.</li></ul>
-<a name="ul35937441232"></a><a name="ul35937441232"></a><ul id="ul35937441232"><li>shape: Dimension information of the output tensor.</li><li>dtype: Data type of the output tensor. For details, refer to "AI CPU API &gt; Data Type Description &gt; DataType" in the <a href="https://www.hiascend.com/document/detail/zh/canncommercial/83RC1/API/aicpuopapi/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU Operator Development API</a>.</li><li>ori_format: Original data layout format of the output tensor. Defaults to ND. For details, refer to "AI CPU API &gt; Data Type Description &gt; Format" in the <a href="https://www.hiascend.com/document/detail/zh/canncommercial/83RC1/API/aicpuopapi/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU Operator Development API</a>.</li><li>format: Data layout format of the output tensor. Defaults to ND. For details, refer to "AI CPU API &gt; Data Type Description &gt; Format" in the <a href="https://www.hiascend.com/document/detail/zh/canncommercial/83RC1/API/aicpuopapi/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU Operator Development API</a>.</li><li>data_path: Reserved parameter, does not take effect.</li></ul>
+<a name="ul7773111912299"></a><a name="ul7773111912299"></a><ul id="ul7773111912299"><li>ori_shape: original dimension information of the output tensor</li></ul>
+<a name="ul35937441232"></a><a name="ul35937441232"></a><ul id="ul35937441232"><li>shape: dimension information of the output tensor</li><li>dtype: data type of the output tensor. For details, refer to "AI CPU API &gt; Data Type Description &gt; DataType" in the <a href="https://www.hiascend.com/document/detail/en/CANNCommunityEdition/910/others/tbeaicpudevg/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU Operator Development API</a>.</li><li>ori_format: original data layout format of the output tensor. Defaults to ND. For details, refer to "AI CPU API &gt; Data Type Description &gt; Format" in the <a href="https://www.hiascend.com/document/detail/en/CANNCommunityEdition/910/others/tbeaicpudevg/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU Operator Development API</a>.</li><li>format: data layout format of the output tensor. Defaults to ND. For details, refer to "AI CPU API &gt; Data Type Description &gt; Format" in the <a href="https://www.hiascend.com/document/detail/en/CANNCommunityEdition/910/others/tbeaicpudevg/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU Operator Development API</a>.</li><li>data_path: reserved parameter, does not take effect.</li></ul>
 <p id="p2593344172319"><a name="p2593344172319"></a><a name="p2593344172319"></a>Example:</p>
 <pre class="screen" id="screen4593204420235"><a name="screen4593204420235"></a><a name="screen4593204420235"></a>[{"shape": [8, 2048], "dtype": "float16", "format": "ND"},
  {"shape": [8, 2048], "dtype": "float16", "format": "ND"}]</pre>
@@ -175,7 +175,7 @@ def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_pat
   "a8": ["asdf", "zxcv"],
   "a9": [[1, 2, 3, 4], [5, 6, 7, 8], [5646, 2345]],
 }</pre>
-</li><li>For the list format, it is recommended. If an attr needs to pass an empty list, this format must be used (e.g., "a10" below).<a name="ul1835813329193"></a><a name="ul1835813329193"></a><ul id="ul1835813329193"><li>The values of "name" and "value" can only contain uppercase and lowercase English letters, digits, and underscores.</li><li>"dtype": Data type of the input tensor.</li></ul>
+</li><li>For the list format, it is recommended. If an attr needs to pass an empty list, this format must be used (for example, "a10" below).<a name="ul1835813329193"></a><a name="ul1835813329193"></a><ul id="ul1835813329193"><li>The values of "name" and "value" can only contain uppercase and lowercase English letters, digits, and underscores.</li><li>"dtype": data type of the input tensor</li></ul>
 <pre class="screen" id="screen5163145104812"><a name="screen5163145104812"></a><a name="screen5163145104812"></a>[
   {"name": "a1", "dtype": "int", "value": 1},
   {"name": "a2", "dtype": "bool", "value": False},
@@ -202,18 +202,8 @@ def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_pat
 </td>
 <td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p14829330143515"><a name="p14829330143515"></a><a name="p14829330143515"></a>Optional parameter.</p>
 </td>
-<td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="p16858115495219"><a name="p16858115495219"></a><a name="p16858115495219"></a>Path to the liboptiling.so file generated by compiling the msOpGen project. If this parameter is not specified, the msKL tool automatically searches for the liboptiling.so file recursively under the <strong id="b1026950296"><a name="b1026950296"></a><a name="b1026950296"></a>workspace</strong> directory (if multiple files are found, the package under the <strong id="b8137203510342"><a name="b8137203510342"></a><a name="b8137203510342"></a>_CPack_Packages</strong> or <strong id="b8137203510343"><a name="b8137203510343"></a><a name="b8137203510343"></a>op_tiling</strong> directory is preferred). If no such file is found, it falls back to the operators deployed in the CANN environment. If this parameter is explicitly configured, the path specified by this parameter is used and automatic search is skipped.</p>
+<td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="p16858115495219"><a name="p16858115495219"></a><a name="p16858115495219"></a>Path to the liboptiling.so file generated by compiling the msOpGen project. It can be found in the project directory using <strong id="b8137203510342"><a name="b8137203510342"></a><a name="b8137203510342"></a>find . -name 'liboptiling.so'</strong>. The msKL tool retrieves the user's tiling function in the order of deployed operators and then searches for <strong id="b1026950296"><a name="b1026950296"></a><a name="b1026950296"></a>.so</strong> files.</p>
 <p id="p2026182761114"><a name="p2026182761114"></a><a name="p2026182761114"></a>Data Type: str.</p>
-</td>
-</tr>
-<tr id="row198901511"><td class="cellrowborder" valign="top" width="17.16%" headers="mcps1.1.5.1.1 "><p id="p198901511"><a name="p198901511"></a><a name="p198901511"></a>workspace</p>
-</td>
-<td class="cellrowborder" valign="top" width="10.05%" headers="mcps1.1.5.1.2 "><p id="p198901512"><a name="p198901512"></a><a name="p198901512"></a>Input</p>
-</td>
-<td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p198901513"><a name="p198901513"></a><a name="p198901513"></a>Optional parameter.</p>
-</td>
-<td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="p198901514"><a name="p198901514"></a><a name="p198901514"></a>Root directory of the operator project, for example, the CustomOp directory of an msOpGen project. If this parameter is not specified, the current directory is used by default. The msKL tool automatically searches for the liboptiling.so file and the kernel .o file recursively under this directory (the <strong id="b198901515"><a name="b198901515"></a><a name="b198901515"></a>liboptiling.so</strong> file and the kernel .o file whose path contains the <strong id="b198901516"><a name="b198901516"></a><a name="b198901516"></a>kernel</strong> directory) for use by tiling_func and get_kernel_from_binary.</p>
-<p id="p198901516"><a name="p198901516"></a><a name="p198901516"></a>Data Type: str.</p>
 </td>
 </tr>
 <tr id="row331912112322"><td class="cellrowborder" valign="top" width="17.16%" headers="mcps1.1.5.1.1 "><p id="p18319161123219"><a name="p18319161123219"></a><a name="p18319161123219"></a>soc_version</p>
@@ -223,9 +213,8 @@ def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_pat
 <td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p13705103352112"><a name="p13705103352112"></a><a name="p13705103352112"></a>Optional parameter.</p>
 </td>
 <td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="zh-cn_topic_0000001821790281_p106751081205"><a name="zh-cn_topic_0000001821790281_p106751081205"></a><a name="zh-cn_topic_0000001821790281_p106751081205"></a>Configured as the type of <span id="zh-cn_topic_0000001821790281_ph667548162017"><a name="zh-cn_topic_0000001821790281_ph667548162017"></a><a name="zh-cn_topic_0000001821790281_ph667548162017"></a>Ascend AI Processor</span>.</p>
-<div class="note" id="zh-cn_topic_0000001821790281_note481620356579"><a name="zh-cn_topic_0000001821790281_note481620356579"></a><a name="zh-cn_topic_0000001821790281_note481620356579"></a><span class="notetitle"> NOTE: </span><div class="notebody"><a name="ul1553919272419"></a><a name="ul1553919272419"></a><ul id="ul1553919272419"><li>Non-<span id="zh-cn_topic_0000002015877373_ph4604666416"><a name="zh-cn_topic_0000002015877373_ph4604666416"></a><a name="zh-cn_topic_0000002015877373_ph4604666416"></a><span id="zh-cn_topic_0000002015877373_zh-cn_topic_0000001740005657_ph11939124012202"><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001740005657_ph11939124012202"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001740005657_ph11939124012202"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 Training Series Products/<a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 Inference Series Products</span></span>: Execute the <strong id="zh-cn_topic_0000002015877373_b116061067419"><a name="zh-cn_topic_0000002015877373_b116061067419"></a><a name="zh-cn_topic_0000002015877373_b116061067419"></a>npu-smi info</strong> command on the server where the <span id="zh-cn_topic_0000002015877373_ph26061361142"><a name="zh-cn_topic_0000002015877373_ph26061361142"></a><a name="zh-cn_topic_0000002015877373_ph26061361142"></a>Ascend AI Processor</span> is installed to query and obtain the <strong id="zh-cn_topic_0000002015877373_b15606662046"><a name="zh-cn_topic_0000002015877373_b15606662046"></a><a name="zh-cn_topic_0000002015877373_b15606662046"></a>Chip Name</strong> information. The actual configuration value is AscendChip Name. For example, if the <strong id="zh-cn_topic_0000002015877373_b186061865415"><a name="zh-cn_topic_0000002015877373_b186061865415"></a><a name="zh-cn_topic_0000002015877373_b186061865415"></a>Chip Name</strong> value is <em id="zh-cn_topic_0000002015877373_i1560656248"><a name="zh-cn_topic_0000002015877373_i1560656248"></a><a name="zh-cn_topic_0000002015877373_i1560656248"></a>xxxyy</em>, the actual configuration value is Ascend<em id="zh-cn_topic_0000002015877373_i9606666418"><a name="zh-cn_topic_0000002015877373_i9606666418"></a><a name="zh-cn_topic_0000002015877373_i9606666418"></a>xxxyy</em>. When Ascendxxxyy is a path in a code sample, it needs to be configured as ascend<em id="zh-cn_topic_0000002015877373_zh-cn_topic_0000002163321669_i111162923510"><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000002163321669_i111162923510"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000002163321669_i111162923510"></a>xxxyy</em>.</li><li><span id="zh-cn_topic_0000002015877373_ph31312041180"><a name="zh-cn_topic_0000002015877373_ph31312041180"></a><a name="zh-cn_topic_0000002015877373_ph31312041180"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 Training Series Products/<a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 Inference Series Products</span>: Execute the <strong id="zh-cn_topic_0000002015877373_b6114127415"><a name="zh-cn_topic_0000002015877373_b6114127415"></a><a name="zh-cn_topic_0000002015877373_b6114127415"></a>npu-smi info -t board -i </strong><em id="zh-cn_topic_0000002015877373_i611191210417"><a name="zh-cn_topic_0000002015877373_i611191210417"></a><a name="zh-cn_topic_0000002015877373_i611191210417"></a>id</em><strong id="zh-cn_topic_0000002015877373_b1612131210413"><a name="zh-cn_topic_0000002015877373_b1612131210413"></a><a name="zh-cn_topic_0000002015877373_b1612131210413"></a> -c </strong><em id="zh-cn_topic_0000002015877373_i191261213417"><a name="zh-cn_topic_0000002015877373_i191261213417"></a><a name="zh-cn_topic_0000002015877373_i191261213417"></a><a name="zh-cn_topic_0000002015877373_i191261213417"></a>chip_id</em>
-<a name="zh-cn_topic_0000002015877373_b312111217419"></a><a name="zh-cn_topic_0000002015877373_b312111217419"></a>command on the server where the Ascend AI Processor is installed to query and obtain the Chip Name and the NPU Name information. The actual configuration value is Chip Name_NPU Name. For example, if the Chip Name value is Ascendxxxyy and the NPU Name value is 1234, the actual configuration value is Ascendxxx_1234. When Ascendxxx_1234 is a path in a code sample, it needs to be configured as ascendxxx_1234.
-<a name="zh-cn_topic_0000002015877373_ul9238121944"></a><a name="zh-cn_topic_0000002015877373_ul9238121944"></a><ul id="zh-cn_topic_0000002015877373_ul9238121944"><li>id: Device ID. The NPU ID obtained from the <strong id="zh-cn_topic_0000002015877373_b723412048"><a name="zh-cn_topic_0000002015877373_b723412048"></a><a name="zh-cn_topic_0000002015877373_b723412048"></a>npu-smi info -l</strong>command is the device ID.</li><li>chip_id: Chip ID. The Chip ID obtained from the<strong id="zh-cn_topic_0000002015877373_b172310125417"><a name="zh-cn_topic_0000002015877373_b172310125417"></a><a name="zh-cn_topic_0000002015877373_b172310125417"></a>npu-smi info -m</strong>command is the chip ID.</li></ul>
+<div class="note" id="zh-cn_topic_0000001821790281_note481620356579"><a name="zh-cn_topic_0000001821790281_note481620356579"></a><a name="zh-cn_topic_0000001821790281_note481620356579"></a><span class="notetitle"> NOTE: </span><div class="notebody"><a name="ul1553919272419"></a><a name="ul1553919272419"></a><ul id="ul1553919272419"><li>Non-<span id="zh-cn_topic_0000002015877373_ph4604666416"><a name="zh-cn_topic_0000002015877373_ph4604666416"></a><a name="zh-cn_topic_0000002015877373_ph4604666416"></a><span id="zh-cn_topic_0000002015877373_zh-cn_topic_0000001740005657_ph11939124012202"><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001740005657_ph11939124012202"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001740005657_ph11939124012202"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 Training Series Products/<a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 Inference Series Products</span></span>: Execute the <strong id="zh-cn_topic_0000002015877373_b116061067419"><a name="zh-cn_topic_0000002015877373_b116061067419"></a><a name="zh-cn_topic_0000002015877373_b116061067419"></a>npu-smi info</strong> command on the server where the <span id="zh-cn_topic_0000002015877373_ph26061361142"><a name="zh-cn_topic_0000002015877373_ph26061361142"></a><a name="zh-cn_topic_0000002015877373_ph26061361142"></a>Ascend AI Processor</span> is installed to query and obtain the <strong id="zh-cn_topic_0000002015877373_b15606662046"><a name="zh-cn_topic_0000002015877373_b15606662046"></a><a name="zh-cn_topic_0000002015877373_b15606662046"></a>Chip Name</strong> information. The actual configuration value is AscendChip Name. For example, if the <strong id="zh-cn_topic_0000002015877373_b186061865415"><a name="zh-cn_topic_0000002015877373_b186061865415"></a><a name="zh-cn_topic_0000002015877373_b186061865415"></a>Chip Name</strong> value is <em id="zh-cn_topic_0000002015877373_i1560656248"><a name="zh-cn_topic_0000002015877373_i1560656248"></a><a name="zh-cn_topic_0000002015877373_i1560656248"></a>xxxyy</em>, the actual configuration value is Ascend<em id="zh-cn_topic_0000002015877373_i9606666418"><a name="zh-cn_topic_0000002015877373_i9606666418"></a><a name="zh-cn_topic_0000002015877373_i9606666418"></a>xxxyy</em>. When Ascendxxxyy is a path in a code sample, it needs to be configured as ascend<em id="zh-cn_topic_0000002015877373_zh-cn_topic_0000002163321669_i111162923510"><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000002163321669_i111162923510"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000002163321669_i111162923510"></a>xxxyy</em>.</li><li><span id="zh-cn_topic_0000002015877373_ph31312041180"><a name="zh-cn_topic_0000002015877373_ph31312041180"></a><a name="zh-cn_topic_0000002015877373_ph31312041180"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 Training Series Products/<a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000002015877373_zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 Inference Series Products</span>: Execute the <strong id="zh-cn_topic_0000002015877373_b6114127415"><a name="zh-cn_topic_0000002015877373_b6114127415"></a><a name="zh-cn_topic_0000002015877373_b6114127415"></a>npu-smi info -t board -i </strong><em id="zh-cn_topic_0000002015877373_i611191210417"><a name="zh-cn_topic_0000002015877373_i611191210417"></a><a name="zh-cn_topic_0000002015877373_i611191210417"></a>id</em><strong id="zh-cn_topic_0000002015877373_b1612131210413"><a name="zh-cn_topic_0000002015877373_b1612131210413"></a><a name="zh-cn_topic_0000002015877373_b1612131210413"></a> -c </strong><em id="zh-cn_topic_0000002015877373_i191261213417"><a name="zh-cn_topic_0000002015877373_i191261213417"></a><a name="zh-cn_topic_0000002015877373_i191261213417"></a><a name="zh-cn_topic_0000002015877373_i191261213417"></a>chip_id</em><a name="zh-cn_topic_0000002015877373_b312111217419"></a><a name="zh-cn_topic_0000002015877373_b312111217419"></a>command on the server where the Ascend AI Processor is installed to query and obtain the Chip Name and the NPU Name information. The actual configuration value is Chip Name_NPU Name. For example, if the Chip Name value is Ascendxxxyy and the NPU Name value is 1234, the actual configuration value is Ascendxxx_1234. When Ascendxxx_1234 is a path in a code sample, it needs to be configured as ascendxxx_1234.
+<a name="zh-cn_topic_0000002015877373_ul9238121944"></a><a name="zh-cn_topic_0000002015877373_ul9238121944"></a><ul id="zh-cn_topic_0000002015877373_ul9238121944"><li>id: Device ID. The NPU ID obtained from the <strong id="zh-cn_topic_0000002015877373_b723412048"><a name="zh-cn_topic_0000002015877373_b723412048"></a><a name="zh-cn_topic_0000002015877373_b723412048"></a>npu-smi info -l</strong> command is the device ID.</li><li>chip_id: Chip ID. The Chip ID obtained from the <strong id="zh-cn_topic_0000002015877373_b172310125417"><a name="zh-cn_topic_0000002015877373_b172310125417"></a><a name="zh-cn_topic_0000002015877373_b172310125417"></a>npu-smi info -m</strong> command is the chip ID.</li></ul>
 </li></ul>
 </div></div>
 </td>
@@ -256,7 +245,7 @@ def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_pat
 </tr>
 <tr id="row4396115123011"><td class="cellrowborder" valign="top" width="20.82%" headers="mcps1.1.3.1.1 "><p id="p1839614511303"><a name="p1839614511303"></a><a name="p1839614511303"></a>workspace</p>
 </td>
-<td class="cellrowborder" valign="top" width="79.17999999999999%" headers="mcps1.1.3.1.2 "><p id="p16897136163117"><a name="p16897136163117"></a><a name="p16897136163117"></a>The workspace space requested by the msKL tool for the user, with a size of workspace_size.</p>
+<td class="cellrowborder" valign="top" width="79.17999999999999%" headers="mcps1.1.3.1.2 "><p id="p16897136163117"><a name="p16897136163117"></a><a name="p16897136163117"></a>Workspace space requested by the msKL tool for the user, with a size of workspace_size.</p>
 <p id="p18971468313"><a name="p18971468313"></a><a name="p18971468313"></a>Data Type: numpy.array.</p>
 </td>
 </tr>
@@ -268,7 +257,7 @@ def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_pat
 </tr>
 <tr id="row19474105863312"><td class="cellrowborder" valign="top" width="20.82%" headers="mcps1.1.3.1.1 "><p id="p1649364315351"><a name="p1649364315351"></a><a name="p1649364315351"></a>tiling_key</p>
 </td>
-<td class="cellrowborder" valign="top" width="79.17999999999999%" headers="mcps1.1.3.1.2 "><p id="p20628155111358"><a name="p20628155111358"></a><a name="p20628155111358"></a>The tiling_key configured by the user's tiling function. If not set by the user, the msKL tool defaults it to 0.</p>
+<td class="cellrowborder" valign="top" width="79.17999999999999%" headers="mcps1.1.3.1.2 "><p id="p20628155111358"><a name="p20628155111358"></a><a name="p20628155111358"></a>tiling_key configured by the user's tiling function. If not set by the user, the msKL tool defaults it to 0.</p>
 <p id="p18947182514418"><a name="p18947182514418"></a><a name="p18947182514418"></a>Data Type: int.</p>
 </td>
 </tr>
@@ -285,15 +274,15 @@ input_a = np.random.randint(1, 10, [M, K]).astype(np.float16)
 input_b = np.random.randint(1, 10, [K, N]).astype(np.float16)
 input_bias = np.random.randint(1, 10, [N]).astype(np.float32)
 output = np.zeros([M, N]).astype(np.float32)
-# tiling data
+# Tiling data
 tiling_output = mskl.tiling_func(
     op_type="MatmulLeakyreluCustom",
     inputs=[input_a, input_b, input_bias], outputs=[output],
-    lib_path="liboptiling.so",  # Tiling code compilation artifact.
+    lib_path="liboptiling.so",  # Tiling function compilation artifact
 )
 ```
 
-## get_kernel_from_binary
+## `get_kernel_from_binary`
 
 **Function**
 
@@ -302,7 +291,7 @@ Generates an instance that can call the user's Kernel function.
 **Prototype**
 
 ```python
-def get_kernel_from_binary(kernel_binary_file: str = None, kernel_type: str = None, tiling_key: int = None) -> CompiledKernel
+def get_kernel_from_binary(kernel_binary_file: str, kernel_type: str = None, tiling_key: int = None) -> CompiledKernel
 ```
 
 **Parameters**
@@ -322,9 +311,9 @@ def get_kernel_from_binary(kernel_binary_file: str = None, kernel_type: str = No
 </td>
 <td class="cellrowborder" valign="top" width="10.07%" headers="mcps1.1.5.1.2 "><p id="p1239865692418"><a name="p1239865692418"></a><a name="p1239865692418"></a>Input</p>
 </td>
-<td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p224816370358"><a name="p224816370358"></a><a name="p224816370358"></a>Optional parameter.</p>
+<td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p224816370358"><a name="p224816370358"></a><a name="p224816370358"></a>Required parameter.</p>
 </td>
-<td class="cellrowborder" valign="top" width="65.25%" headers="mcps1.1.5.1.4 "><p id="p858655320395"><a name="p858655320395"></a><a name="p858655320395"></a>Path to the operator's kernel.o file. If this parameter is not specified, the msKL tool automatically searches for <strong id="b23211229105614"><a name="b23211229105614"></a><a name="b23211229105614"></a>*.o</strong> files whose path contains the <strong id="b23211229105616"><a name="b23211229105616"></a><a name="b23211229105616"></a>kernel</strong> directory recursively under the tiling_func <strong id="b23211229105617"><a name="b23211229105617"></a><a name="b23211229105617"></a>workspace</strong> directory. If multiple .o files are found, the target kernel .o file is automatically selected based on <strong id="b23211229105618"><a name="b23211229105618"></a><a name="b23211229105618"></a>op_type → device soc → the same-directory JSON (dtype/format/shape)</strong>.</p>
+<td class="cellrowborder" valign="top" width="65.25%" headers="mcps1.1.5.1.4 "><p id="p858655320395"><a name="p858655320395"></a><a name="p858655320395"></a>Path to the kernel.o file of the operator. It can be found by executing the <strong id="b23211229105614"><a name="b23211229105614"></a><a name="b23211229105614"></a>find . -name '*.o'</strong> command in the project directory.</p>
 <p id="p960565114599"><a name="p960565114599"></a><a name="p960565114599"></a>Data Type: str.</p>
 </td>
 </tr>
@@ -345,7 +334,7 @@ def get_kernel_from_binary(kernel_binary_file: str = None, kernel_type: str = No
 </td>
 <td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p19248143720357"><a name="p19248143720357"></a><a name="p19248143720357"></a>Optional parameter.</p>
 </td>
-<td class="cellrowborder" valign="top" width="65.25%" headers="mcps1.1.5.1.4 "><p id="p4854114711404"><a name="p4854114711404"></a><a name="p4854114711404"></a>The tiling_key used when calling the user's Kernel function. If this parameter is not configured, the msKL tool will use the result of the most recent call to tiling_func.</p>
+<td class="cellrowborder" valign="top" width="65.25%" headers="mcps1.1.5.1.4 "><p id="p4854114711404"><a name="p4854114711404"></a><a name="p4854114711404"></a>tiling_key used when calling the user's Kernel function. If this parameter is not configured, the msKL tool will use the result of the most recent call to tiling_func.</p>
 <p id="p7992520172918"><a name="p7992520172918"></a><a name="p7992520172918"></a>Data Type: int.</p>
 </td>
 </tr>
@@ -356,7 +345,7 @@ def get_kernel_from_binary(kernel_binary_file: str = None, kernel_type: str = No
 
 An executable Kernel object.
 
-**Table 1** Kernel Input Argument Introduction
+**Table 1** Kernel input argument introduction
 
 <a name="table8662130195715"></a>
 <table><thead align="left"><tr id="row8662163015575"><th class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.2.4.1.1"><p id="p6204175135717"><a name="p6204175135717"></a><a name="p6204175135717"></a>Parameter Name</p>
@@ -411,6 +400,7 @@ An executable Kernel object.
 </table>
 
 > [!NOTE]
+>
 > The Kernel object type is CompiledKernel, which supports invoking the Kernel as follows: kernel[blockdim](arg1, arg2, ..., timeout=-1, device_id=0, repeat=1). During actual invocation, ensure that the input arguments of the CompiledKernel function are consistent with those when invoking the Kernel.
 
 **Sample**
@@ -419,7 +409,7 @@ An executable Kernel object.
 
     ```python
     def run_kernel(input_a, input_b, input_bias, output, workspace, tiling_data):
-        kernel_binary_file = "MatmulLeakyreluCustom.o"   # The names of .o files may vary slightly across different hardware and operating systems.
+        kernel_binary_file = "MatmulLeakyreluCustom.o"   # The names of .o files may vary slightly across different hardware and operating systems
         kernel = get_kernel_from_binary(kernel_binary_file)
         return kernel(input_a, input_b, input_bias, output, workspace, tiling_data)
     ```
@@ -428,12 +418,12 @@ An executable Kernel object.
 
     ```python
     def run_kernel(input_a, input_b, input_bias, output, workspace, tiling_data, tiling_key, blockdim):
-        kernel_binary_file = "MatmulLeakyreluCustom.o"    # The names of .o files may vary slightly across different hardware and operating systems.
+        kernel_binary_file = "MatmulLeakyreluCustom.o"    # The names of .o files may vary slightly across different hardware and operating systems
         kernel = get_kernel_from_binary(kernel_binary_file, kernel_type='mix', tiling_key=tiling_key)
-        return kernel[blockdim](input_a, input_b, input_bias, output, workspace, tiling_data, device_id=1, timeout=-1) # When running simulation, you need to manually set the timeout parameter to -1.
+        return kernel[blockdim](input_a, input_b, input_bias, output, workspace, tiling_data, device_id=1, timeout=-1) # When running simulation, you need to manually set the timeout parameter to -1
     ```
 
-## autotune
+## `autotune`
 
 **Function**
 
@@ -476,7 +466,7 @@ def autotune(configs: List[Dict], warmup: int = 300, repeat: int = 1, device_ids
 </td>
 <td class="cellrowborder" valign="top" width="65.25%" headers="mcps1.1.5.1.4 "><p id="p7623626182018"><a name="p7623626182018"></a><a name="p7623626182018"></a>Device warm-up time before performance collection. Generally, a longer warm-up time results in more stable operator performance.</p>
 <p id="p6392151820207"><a name="p6392151820207"></a><a name="p6392151820207"></a>Unit: microseconds.</p>
-<p id="p4807856193812"><a name="p4807856193812"></a><a name="p4807856193812"></a>Default Value: 1000, with a value range of integers from 1 to 100000.</p>
+<p id="p4807856193812"><a name="p4807856193812"></a><a name="p4807856193812"></a>Default Value: 300, with a value range of integers from 1 to 100000.</p>
 </td>
 </tr>
 <tr id="zh-cn_topic_0000001693276536_row7909131293411"><td class="cellrowborder" valign="top" width="17.16%" headers="mcps1.1.5.1.1 "><p id="p18541126143820"><a name="p18541126143820"></a><a name="p18541126143820"></a>repeat</p>
@@ -485,7 +475,7 @@ def autotune(configs: List[Dict], warmup: int = 300, repeat: int = 1, device_ids
 </td>
 <td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p14394131818368"><a name="p14394131818368"></a><a name="p14394131818368"></a>Optional Parameter.</p>
 </td>
-<td class="cellrowborder" valign="top" width="65.25%" headers="mcps1.1.5.1.4 "><p id="p1644464921615"><a name="p1644464921615"></a><a name="p1644464921615"></a>Number of repetitions. The average running time over multiple repetitions is taken as the operator's execution time.</p>
+<td class="cellrowborder" valign="top" width="65.25%" headers="mcps1.1.5.1.4 "><p id="p1644464921615"><a name="p1644464921615"></a><a name="p1644464921615"></a>Number of repetitions. The average running time over multiple repetitions is taken as the execution time of the operator.</p>
 <p id="p553112623811"><a name="p553112623811"></a><a name="p553112623811"></a>Default Value: 1, with a value range of integers from 1 to 10000.</p>
 </td>
 </tr>
@@ -522,7 +512,7 @@ def basic_matmul(problem_shape, a, layout_a, b, layout_b, c, layout_c):
     return kernel[blockdim](problem_shape, a, layout_a, b, layout_b, c, layout_c)
 ```
 
-## code_gen
+## `code_gen`
 
 **Function**
 
@@ -531,7 +521,7 @@ Generates the Kernel code delivery based on the input template library Kernel in
 **Prototype**
 
 ```py
-gen_file = mskl.Launcher(config).code_gen()
+def code_gen(self, gen_file)
 ```
 
 **Parameters**
@@ -569,7 +559,7 @@ The File Path of the generated code.
 
 ```py
 config = mskl.KernelInvokeConfig(kernel_file, kernel_name)
-gen_file = mskl.Launcher(config).code_gen()
+mskl.Launcher(config).code_gen(gen_file)
 ```
 
 **Related Class/Structure Definitions**
@@ -581,7 +571,7 @@ class KernelInvokeConfig:
     ...
     def __init__(self, kernel_src_file : str, kernel_name : str):
         pass
-# The user can only pass a parameter of type KernelInvokeConfig.
+# The user can only pass a parameter of type KernelInvokeConfig
 class Launcher:
     def __init__(self, config: KernelInvokeConfig):
       ...
@@ -592,7 +582,7 @@ class Launcher:
         ...
 ```
 
-## compile
+## `compile`
 
 **Function**
 
@@ -601,7 +591,10 @@ Compiles the Kernel code delivery and returns an executable Kernel object.
 **Prototype**
 
 ```py
-kernel = compile(build_script, gen_file)
+def compile(build_script: str,
+            launch_src_file: str,
+            output_bin_path: str = "_gen_module.so",
+            use_cache: bool = False) -> CompiledKernel
 ```
 
 **Parameters**
@@ -627,7 +620,7 @@ kernel = compile(build_script, gen_file)
 <p id="p83481217117"><a name="p83481217117"></a><a name="p83481217117"></a>Data Type: str.</p>
 </td>
 </tr>
-<tr id="row21578635315"><td class="cellrowborder" valign="top" width="17.16%" headers="mcps1.1.5.1.1 "><p id="p91571169532"><a name="p91571169532"></a><a name="p91571169532"></a>gen_file</p>
+<tr id="row21578635315"><td class="cellrowborder" valign="top" width="17.16%" headers="mcps1.1.5.1.1 "><p id="p91571169532"><a name="p91571169532"></a><a name="p91571169532"></a>launch_src_file</p>
 </td>
 <td class="cellrowborder" valign="top" width="10.07%" headers="mcps1.1.5.1.2 "><p id="p149601220152718"><a name="p149601220152718"></a><a name="p149601220152718"></a>Input</p>
 </td>
@@ -727,7 +720,7 @@ kernel[blockdim](arg1, arg2, ..., device_id=0)
 </tbody>
 </table>
 
-## autotune_v2
+## `autotune_v2`
 
 **Function**
 
@@ -791,12 +784,12 @@ None.
 ], warmup_times=10)
 def run_executable(m, n, k, device_id):
     src_file = "./basic_matmul.cpp"
-    build_script = "./jit_build_executable.sh" # executable compile script
+    build_script = "./jit_build_executable.sh" # Executable compile script
     executable = mskl.compile_executable(build_script=build_script, src_file=src_file, use_cache=False)
     return executable(m, n, k, device_id)
 ```
 
-## compile_executable
+## `compile_executable`
 
 **Function**
 
@@ -805,7 +798,10 @@ Compiles code and returns an executable object.
 **Prototype**
 
 ```py
-executable = compile_executable(build_script, src_file)
+def compile_executable(build_script: str,
+                       src_file: str,
+                       output_bin_path: str = "_gen_executable",
+                       use_cache: bool = False) -> CompiledExecutable
 ```
 
 **Parameters**
