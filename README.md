@@ -41,7 +41,7 @@ msKL具有调用msOpGen算子工程和基于Ascend C模板库进行自动调优�
 
 ## 📦 安装指南
 
-介绍工具的环境依赖与安装方法，请参见《[msKL 安装指南](docs/zh/install_guide/mskl_install_guide.md)》。
+msKL工具支持在线安装、离线安装以及源码安装，请参见《[msKL 安装指南](docs/zh/install_guide/mskl_install_guide.md)》。
 
 ## 📘 使用指南
 

@@ -426,7 +426,7 @@ ImportError: libascend_hal.so: cannot open shared object file
     cat $ASCEND_HOME_PATH/version.cfg
     ```
 
-2. 对照[版本说明](../release_notes/release_notes.md)中的配套关系表，确认 CANN 版本与 msKL 版本匹配：
+2. 对照[版本说明](https://gitcode.com/Ascend/mskl/releases)中的配套关系表，确认 CANN 版本与 msKL 版本匹配：
     - msKL 26.0.0 推荐 CANN 9.0.0 及以上
     - msKL 8.3.0 要求 CANN 8.2.RC1 及以上
 
