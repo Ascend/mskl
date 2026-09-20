@@ -365,7 +365,7 @@ $ python3 build.py
     python3 --version
     ```
 
-2. 参照《[算子工具开发环境安装指导](https://gitcode.com/Ascend/msot/blob/master/docs/zh/common/dev_env_setup.md)》完成完整的环境配置。
+2. 参照《[算子工具开发环境安装指导](https://gitcode.com/Ascend/msot/blob/26.2.0/docs/zh/common/dev_env_setup.md)》完成完整的环境配置。
 
 3. 确认 CANN 环境变量已正确设置：
 

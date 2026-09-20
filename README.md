@@ -64,7 +64,7 @@ msKL工具支持在线安装、离线安装以及源码安装，请参见《[msK
 
 ## 🛠️ 贡献指南
 
-欢迎参与项目贡献，请参见《[贡献指南](./docs/zh/contributing/contributing_guide.md)》。  
+欢迎参与项目贡献，请参见《[贡献指南](./docs/zh/contributing/contributing_guide.md)》。
 
 ## ⚖️ 相关说明
 

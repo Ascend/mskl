@@ -7,7 +7,7 @@
 使用 msKL 工具可以利用其提供的接口在 Python 脚本中快速实现 Kernel 下发的代码生成、编译及运行。
 本文档基于入门教程中开发的简易加法算子，演示 msKL 工具的核心功能，帮助初学者直观感受其为算子开发过程带来的高效性与便捷性。
 
-本章节以您已完成<a href="https://gitcode.com/Ascend/msot/blob/master/docs/zh/quick_start/op_tool_quick_start.md" target="_blank">《算子开发工具链快速入门》</a>的全流程操作为前提；若尚未体验，建议先完成该指南以获得更佳的学习效果。
+本章节以您已完成<a href="https://gitcode.com/Ascend/msot/blob/26.2.0/docs/zh/quick_start/op_tool_quick_start.md" target="_blank">《算子开发工具链快速入门》</a>的全流程操作为前提；若尚未体验，建议先完成该指南以获得更佳的学习效果。
 
 ## 2. 操作步骤
 
@@ -19,7 +19,7 @@
 #### 2.1.1 安装 CANN 容器环境
 
 ✅ **请严格按以下指南完成环境安装：**  
-👉 **<a href="https://gitcode.com/Ascend/msot/blob/master/docs/zh/quick_start/installation_guide.md" target="_blank">《昇腾 AI 算子开发工具链学习环境安装指南》</a>**
+👉 **<a href="https://gitcode.com/Ascend/msot/blob/26.2.0/docs/zh/quick_start/installation_guide.md" target="_blank">《昇腾 AI 算子开发工具链学习环境安装指南》</a>**
 
 > ⏱️ **外网可达环境下预计耗时：约 3 分钟**  
 > 安装完成后，您将获得一个预装所有算子工具、示例代码和依赖库的标准化容器环境。
@@ -37,7 +37,7 @@
 
 ### 2.2【前提】算子工程准备完成
 
-按照<a href="https://gitcode.com/Ascend/msot/blob/master/docs/zh/quick_start/op_tool_quick_start.md#23开发构建算子工程msopgen" target="_blank">《算子开发工具链快速入门》</a>中 2.3 节操作，完成算子工程准备。
+按照<a href="https://gitcode.com/Ascend/msot/blob/26.2.0/docs/zh/quick_start/op_tool_quick_start.md#23开发构建算子工程msopgen" target="_blank">《算子开发工具链快速入门》</a>中 2.3 节操作，完成算子工程准备。
 
 ### 2.3 【轻量调用】Python 脚本中 Kernel 轻量化调用（msKL）
 
