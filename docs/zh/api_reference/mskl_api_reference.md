@@ -66,7 +66,7 @@ msKL工具提供的接口可以调用msOpGen工程中的tiling函数以及用户
 调用用户的tiling函数。
 
 > [!NOTE]
-> tiling_func不支持调用《[基础数据结构和接口参考](https://www.hiascend.com/document/detail/zh/canncommercial/83RC1/API/basicdataapi/atlasopapi_07_00001.html)》中的GetCompileInfo接口。
+> tiling_func不支持调用《[基础数据结构和接口参考](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/latest/maintenref/basicdataapi/docs/zh/api/basic_data_structure_and_interface_list.md)》中的GetCompileInfo接口。
 
 **函数原型**
 
@@ -129,7 +129,7 @@ def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_pat
 </td>
 <td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="p78715445203"><a name="p78715445203"></a><a name="p78715445203"></a>按Kernel函数入参顺序填写info信息，不使用某个参数的情况，对应位置请传入空dict或者None占位。</p>
 <p id="p13310162672216"><a name="p13310162672216"></a><a name="p13310162672216"></a>数据类型为list，inputs_info参数中元素的数据类型为dict或list[dict]，每个dict的元素说明如下：</p>
-<a name="ul2530132811195"></a><a name="ul2530132811195"></a><ul id="ul2530132811195"><li>ori_shape：输入tensor的原始维度信息。</li><li>shape：输入tensor运行时的维度信息。</li><li>dtype：输入tensor的数据类型，具体请参见《<a href="https://www.hiascend.com/document/detail/zh/canncommercial/83RC1/API/aicpuopapi/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU算子开发接口</a>》的“AI CPU API &gt; 数据类型描述 &gt; DataType”。</li><li>ori_format：输入tensor的原始数据排布格式，默认为ND，具体请参见《<a href="https://www.hiascend.com/document/detail/zh/canncommercial/83RC1/API/aicpuopapi/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU算子开发接口</a>》的“AI CPU API &gt; 数据类型描述 &gt; Format”。</li><li>format：输入tensor的数据排布格式，默认为ND，具体请参见《<a href="https://www.hiascend.com/document/detail/zh/canncommercial/83RC1/API/aicpuopapi/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU算子开发接口</a>》的“AI CPU API &gt; 数据类型描述 &gt; Format”。</li><li>data_path：值依赖场景下，输入tensor的bin文件路径。</li></ul>
+<a name="ul2530132811195"></a><a name="ul2530132811195"></a><ul id="ul2530132811195"><li>ori_shape：输入tensor的原始维度信息。</li><li>shape：输入tensor运行时的维度信息。</li><li>dtype：输入tensor的数据类型，具体请参见《<a href="https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/latest/others/tbeaicpudevg/atlascpuapi_10_0084.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU算子开发接口</a>》的“AI CPU API &gt; 数据类型描述 &gt; DataType”。</li><li>ori_format：输入tensor的原始数据排布格式，默认为ND，具体请参见《<a href="https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/latest/others/tbeaicpudevg/atlascpuapi_10_0085.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU算子开发接口</a>》的“AI CPU API &gt; 数据类型描述 &gt; Format”。</li><li>format：输入tensor的数据排布格式，默认为ND，具体请参见《<a href="https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/latest/others/tbeaicpudevg/atlascpuapi_10_0085.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU算子开发接口</a>》的“AI CPU API &gt; 数据类型描述 &gt; Format”。</li><li>data_path：值依赖场景下，输入tensor的bin文件路径。</li></ul>
 <p id="p13712155918416"><a name="p13712155918416"></a><a name="p13712155918416"></a>举例如下：</p>
 <pre class="screen" id="screen3308253114112"><a name="screen3308253114112"></a><a name="screen3308253114112"></a>[{"ori_shape": [8, 2048], "shape": [8, 2048], "dtype": "float16", "ori_format": "ND", "format": "ND"},
  {"ori_shape": [8, 2048], "shape": [8, 2048], "dtype": "float16", "ori_format": "ND", "format": "ND"}]</pre>
@@ -147,7 +147,7 @@ def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_pat
 <td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="p177915263323"><a name="p177915263323"></a><a name="p177915263323"></a>存放输出的信息，不使用某个参数的情况，对应位置请传入空dict占位。</p>
 <p id="p93662273465"><a name="p93662273465"></a><a name="p93662273465"></a>数据类型为list，outputs_info参数中元素的数据类型为dict或list[dict]，每个dict的元素说明如下：</p>
 <a name="ul7773111912299"></a><a name="ul7773111912299"></a><ul id="ul7773111912299"><li>ori_shape：输出tensor的原始维度信息。</li></ul>
-<a name="ul35937441232"></a><a name="ul35937441232"></a><ul id="ul35937441232"><li>shape：输出tensor的维度信息。</li><li>dtype：输出tensor的数据类型，具体请参见《<a href="https://www.hiascend.com/document/detail/zh/canncommercial/83RC1/API/aicpuopapi/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU算子开发接口</a>》的“AI CPU API &gt; 数据类型描述 &gt; DataType”。</li><li>ori_format：输出tensor的原始数据排布格式，默认为ND，具体请参见《<a href="https://www.hiascend.com/document/detail/zh/canncommercial/83RC1/API/aicpuopapi/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU算子开发接口</a>》的“AI CPU API &gt; 数据类型描述 &gt; Format”。</li><li>format：输出tensor的数据排布格式，默认为ND，具体请参见《<a href="https://www.hiascend.com/document/detail/zh/canncommercial/83RC1/API/aicpuopapi/opdevapi_07_0000.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU算子开发接口</a>》的“AI CPU API &gt; 数据类型描述 &gt; Format”。</li><li>data_path：保留参数，不生效。</li></ul>
+<a name="ul35937441232"></a><a name="ul35937441232"></a><ul id="ul35937441232"><li>shape：输出tensor的维度信息。</li><li>dtype：输出tensor的数据类型，具体请参见《<a href="https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/latest/others/tbeaicpudevg/atlascpuapi_10_0084.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU算子开发接口</a>》的“AI CPU API &gt; 数据类型描述 &gt; DataType”。</li><li>ori_format：输出tensor的原始数据排布格式，默认为ND，具体请参见《<a href="https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/latest/others/tbeaicpudevg/atlascpuapi_10_0085.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU算子开发接口</a>》的“AI CPU API &gt; 数据类型描述 &gt; Format”。</li><li>format：输出tensor的数据排布格式，默认为ND，具体请参见《<a href="https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/latest/others/tbeaicpudevg/atlascpuapi_10_0085.html" target="_blank" rel="noopener noreferrer">TBE&amp;AI CPU算子开发接口</a>》的“AI CPU API &gt; 数据类型描述 &gt; Format”。</li><li>data_path：保留参数，不生效。</li></ul>
 <p id="p2593344172319"><a name="p2593344172319"></a><a name="p2593344172319"></a>举例如下：</p>
 <pre class="screen" id="screen4593204420235"><a name="screen4593204420235"></a><a name="screen4593204420235"></a>[{"shape": [8, 2048], "dtype": "float16", "format": "ND"},
  {"shape": [8, 2048], "dtype": "float16", "format": "ND"}]</pre>
@@ -411,7 +411,7 @@ def get_kernel_from_binary(kernel_binary_file: str = None, kernel_type: str = No
 
 > [!NOTE]
 >
-> Kernel对象类型为CompiledKernel，支持如下方式调用Kernel：kernel[blockdim](arg1, arg2, ..., timeout=-1, device_id=0, repeat=1)，实际调用时，需保证CompiledKernel函数的入参和调用Kernel时的入参一致。
+> Kernel对象类型为CompiledKernel，支持如下方式调用Kernel：`kernel[blockdim](arg1, arg2, ..., timeout=-1, device_id=0, repeat=1)`，实际调用时，需保证CompiledKernel函数的入参和调用Kernel时的入参一致。
 
 **调用示例**
 
@@ -667,7 +667,7 @@ def compile(build_script: str,
 
 **返回值说明**
 
-可运行的Kernel对象，类型：CompiledKernel，支持如下方式调用kernel：kernel[blockdim](arg1, arg2, ..., timeout=-1, device_id=0, repeat=1)，其中arg1、arg2、...是Kernel的入参。
+可运行的Kernel对象，类型：CompiledKernel，支持如下方式调用kernel：`kernel[blockdim](arg1, arg2, ..., timeout=-1, device_id=0, repeat=1)`，其中arg1、arg2、...是Kernel的入参。
 
 **调用示例**
 
