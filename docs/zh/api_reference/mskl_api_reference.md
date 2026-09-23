@@ -411,7 +411,7 @@ def get_kernel_from_binary(kernel_binary_file: str = None, kernel_type: str = No
 
 > [!NOTE]
 >
-> Kernel对象类型为CompiledKernel，支持如下方式调用Kernel：kernel[blockdim](arg1, arg2, ..., timeout=-1, device_id=0, repeat=1)，实际调用时，需保证CompiledKernel函数的入参和调用Kernel时的入参一致。
+> Kernel对象类型为CompiledKernel，支持如下方式调用`Kernel：kernel[blockdim](arg1, arg2, ..., timeout=-1, device_id=0, repeat=1)`，实际调用时，需保证CompiledKernel函数的入参和调用Kernel时的入参一致。
 
 **调用示例**
 
@@ -667,7 +667,7 @@ def compile(build_script: str,
 
 **返回值说明**
 
-可运行的Kernel对象，类型：CompiledKernel，支持如下方式调用kernel：kernel[blockdim](arg1, arg2, ..., timeout=-1, device_id=0, repeat=1)，其中arg1、arg2、...是Kernel的入参。
+可运行的Kernel对象，类型：CompiledKernel，支持如下方式调用kernel：`kernel[blockdim](arg1, arg2, ..., timeout=-1, device_id=0, repeat=1)`，其中arg1、arg2、...是Kernel的入参。
 
 **调用示例**
 
