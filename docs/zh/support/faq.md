@@ -124,10 +124,10 @@ AssertionError
 1. 安装缺失的依赖包：
 
     ```shell
-    pip3 install numpy sympy scipy attrs psutil decorator packaging
+    pip3 install numpy packaging
     ```
 
-2. 注意 numpy 版本需 ≤ 1.26.4，若版本过高需降级：
+2. 注意 numpy 版本需 ≤ 1.26.4（numpy 2.x 存在 C-ABI 断裂，CANN 的 Python 扩展基于 numpy 1.x 编译，使用 2.x 会导致导入失败；1.26.4 是 numpy 1.x 的最后一个版本），若版本过高需降级：
 
     ```shell
     pip3 install 'numpy<=1.26.4'

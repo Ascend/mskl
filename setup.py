@@ -42,5 +42,8 @@ setup(
             'dist_dir': 'output',
         }
     },
+    # numpy 2.x 引入 C-ABI 断裂，CANN 的 Python 扩展（如 acl.so）基于 numpy 1.x 编译，
+    # 使用 2.x 会因 ABI 不兼容导致导入失败；1.26.4 是 numpy 1.x 的最后一个版本，故限制 <= 1.26.4。
+    install_requires=['numpy<=1.26.4'],
     python_requires='>=3.6',
 )

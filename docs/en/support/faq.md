@@ -124,10 +124,10 @@ Necessary Python dependency packages are missing, or the dependency package vers
 1. Install the missing dependency packages:
 
     ```shell
-    pip3 install numpy sympy scipy attrs psutil decorator packaging
+    pip3 install numpy packaging
     ```
 
-2. Note that the `numpy` version must be ≤ 1.26.4. If the version is too high, downgrade it:
+2. Note that the `numpy` version must be ≤ 1.26.4 (numpy 2.x introduces a C-ABI break, while CANN Python extensions are compiled against numpy 1.x, so using 2.x will cause import failures; 1.26.4 is the last numpy 1.x release). If the version is too high, downgrade it:
 
     ```shell
     pip3 install 'numpy<=1.26.4'
