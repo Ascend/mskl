@@ -4,7 +4,7 @@
 
 ## 1. Contribution Workflow and Code Style Guide
 
-Before participating in development, please familiarize yourself with the contribution workflow and related guidelines. For details, see [Contribution Workflow and Code Style Guide](https://gitcode.com/Ascend/msot/blob/master/docs/en/common/contribute_workflow.md).
+Before participating in development, please familiarize yourself with the contribution workflow and related guidelines. For details, see [Contribution Workflow and Code Style Guide](https://atomgit.com/Ascend/msot/blob/26.2.0/docs/en/common/contribute_workflow.md).
 
 ## 2. Development Guide
 

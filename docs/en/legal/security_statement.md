@@ -24,28 +24,6 @@ Enable **address space layout randomization** (ASLR) (level 2) in the system. Ru
 
  2. Users need to properly control permissions during installation and usage. Users are advised to configure permissions by referring to the file permission requirements.
 
-    **File Permissions**
-
-    | Type                               | Maximum Linux Permission Reference |
-    | ---------------------------------- | ---------------------------------- |
-    | User home directory                | 750 (`rwxr-x---`)                  |
-    | Program files (including script files, library files, and so on) | 550 (`r-xr-x---`)                  |
-    | Program file directory             | 550 (`r-xr-x---`)                  |
-    | Configuration files                | 640 (`rw-r-----`)                  |
-    | Configuration file directory       | 750 (`rwxr-x---`)                  |
-    | Log files (completed or archived)  | 440 (`r--r-----`)                  |
-    | Log files (currently recording)    | 640 (`rw-r-----`)                  |
-    | Log file directory                 | 750 (`rwxr-x---`)                  |
-    | Debug files                        | 640 (`rw-r-----`)                  |
-    | Debug file directory               | 750 (`rwxr-x---`)                  |
-    | Temporary file directory           | 750 (`rwxr-x---`)                  |
-    | Maintenance and upgrade file directory | 770 (`rwxrwx---`)                  |
-    | Business data files                | 640 (`rw-r-----`)                  |
-    | Business data file directory       | 750 (`rwxr-x---`)                  |
-    | Key components, private keys, certificates, and ciphertext file directory | 700 (`rwx------`)                  |
-    | Key components, private keys, certificates, and encrypted ciphertext | 600 (`rw-------`)                  |
-    | Encryption and decryption interfaces and scripts | 500 (`r-x------`)                  |
-
 ## Vulnerability Security Statement
 
 Please refer to the [MindStudio Vulnerability Mechanism Description](./vulnerability_handling_procedure.md).
@@ -56,7 +34,9 @@ During tool usage, some code-line-related functions will access customer operato
 
 ## Build Security
 
-This project supports source code compilation and installation. During compilation, dependent third-party libraries are downloaded and build shell scripts are executed. Temporary program files and compilation directories are generated during the build process. Users may implement File Access Control on files within the source code directory as needed to reduce security risks. During the build process, users may modify build scripts as necessary to avoid related security risks, and should pay attention to the security of the build results.
+- This project supports source code compilation and installation. During compilation, dependent third-party libraries are downloaded and build shell scripts are executed. Temporary program files and compilation directories are generated during the build process. Users may implement File Access Control on files within the source code directory as needed to reduce security risks. During the build process, users may modify build scripts as necessary to avoid related security risks, and should pay attention to the security of the build results.
+
+- This repository provides VS Code and devcontainer configurations for development and debugging. Use them only to develop and debug this repository in a secure debugging environment. Review the configuration security and adjust it to your actual requirements.
 
 ## Runtime Security
 

@@ -60,7 +60,7 @@ The device is on an intranet, or the firewall blocks access to external networks
 
 **Solution**
 
-1. Switch to offline installation: download the offline installation package on a machine with internet access, and then transfer it to the target device. See the MindStudio [Download](https://www.hiascend.com/en/developer/software/mindstudio/download) page on the Ascend community, and select the corresponding CANN version and "Offline Installation".
+1. Switch to offline installation: download the offline installation package on a machine with internet access, and then transfer it to the target device. See the MindStudio [Download](https://www.hiascend.com/developer/software/mindstudio/download) page on the Ascend community, and select the corresponding CANN version and "Offline Installation".
 2. If you only need the uninstall script, download it in an environment with internet access, and then copy it to the target device and run it.
 
 ---
@@ -365,7 +365,7 @@ $ python3 build.py
     python3 --version
     ```
 
-2. Complete the full environment configuration by following the [Operator Tool Development Environment Installation Guide](https://gitcode.com/Ascend/msot/blob/master/docs/en/common/dev_env_setup.md).
+2. Complete the full environment configuration by following the [Operator Tool Development Environment Installation Guide](https://atomgit.com/Ascend/msot/blob/26.2.0/docs/en/common/dev_env_setup.md).
 
 3. Confirm that the CANN environment variables are correctly set:
 
@@ -426,7 +426,7 @@ or
     cat $ASCEND_HOME_PATH/version.cfg
     ```
 
-2. Check the compatibility table in the [release notes](../release_notes/release_notes.md) to confirm that the CANN version matches the msKL version:
+2. Check the compatibility table in the [release notes](https://atomgit.com/Ascend/mskl/releases) to confirm that the CANN version matches the msKL version:
     - msKL 26.0.0: CANN 9.0.0 or later recommended
     - msKL 8.3.0: CANN 8.2.RC1 or later required
 

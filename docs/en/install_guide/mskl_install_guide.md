@@ -1,4 +1,4 @@
-# MindStudio Kernel Launcher Installation Guide
+# msKL Installation Guide
 
 <br>
 
@@ -26,43 +26,59 @@ If you need to use features from the latest code or modify the source code to en
 
 #### 2.3.1 Environment Preparation
 
-Configure the environment according to the following document: [Operator Tool Development Environment Setup Guide](https://gitcode.com/Ascend/msot/blob/master/docs/en/common/dev_env_setup.md).
+All source code compilation uses the standard MindStudio build environment.
 
-#### 2.3.2 Building the Wheel Package
+- For daily development or when you use a released image, see the [MindStudio Tool Development Environment Installation Guide](https://atomgit.com/Ascend/msot/blob/26.2.0/docs/en/common/dev_env_setup.md).
+- If you need to reproduce the environment from a base operating system, perform source build verification, or run unit test verification, you must refer to the [MindStudio Unified Build Image Creation Guide](https://atomgit.com/Ascend/msot/blob/26.2.0/docs/en/common/docker_image_build_guide.md) to build the environment image on site from the openEuler base image.
 
-- Clone this repository.
+The source code compilation and unit test commands in the rest of this document are all run in the container of the specified image or of the environment image built on site. The CANN software package version, GCC version, and Python version are subject to the *Unified Build Image Creation Guide*, and this repository does not maintain them separately.
 
-    ```sh
-    git clone https://gitcode.com/Ascend/mskl.git
-    ```
+After the image is built, you must use the `ctr_in.py` command provided in Chapter 7 of the *Unified Build Image Creation Guide* to start and enter the container in an interactive terminal. Do not use a plain `docker run` to create a container, and do not use `docker exec <container_name> bash -c '<command>'` to replace the interactive environment. Otherwise, the initialization of the Python, GCC, and CANN environments may be skipped.
 
-- Build the package.
+After you enter the interactive container shell opened by `ctr_in.py`, run the following command to clone this repository:
 
-    ```sh
-    cd mskl
-    python3 build.py
-    ```
-
-- Build output: `./output/mindstudio_kl-xxxxx.whl`
-
-#### 2.3.3 Installing the Wheel Package
-
-```sh
-cd output
-pip3 install mindstudio_kl-xxxxx.whl
+```bash
+cd ~
+git clone https://atomgit.com/Ascend/mskl.git -b 26.2.0
 ```
 
-When the output information contains the following, it indicates that the software package has been installed successfully.
+#### 2.3.2 Compilation
 
-```text
-Successfully install mindstudio-kl-xxx
+Stay in the same interactive container shell opened by `ctr_in.py`, and run the following command in the repository root directory to automatically download dependencies and build:
+
+```bash
+cd ~/mskl
+python3 build.py
+```
+
+After the build succeeds, the installation package is generated in the `artifacts/` directory.
+
+#### 2.3.3 Unit Tests (Optional)
+
+This step is not required for installation. If you need to verify the basic functions of the code, you can run the unit tests:
+
+```bash
+cd ~/mskl
+python3 build.py test
+```
+
+If the return code of the command is 0 and no test case fails, the unit tests pass.
+
+#### 2.3.4 Installation
+
+##### 2.3.4.1 Installation Package
+
+Run the following command to install:
+
+```bash
+pip install mindstudio_kl-xxxxx.whl
 ```
 
 ## 3. Installation Verification
 
 After installation, run the following command to verify whether the tool was installed successfully:
 
-```shell
+```bash
 python3 -c "import mskl; print('All is OK')"
 ```
 
@@ -75,14 +91,14 @@ You can uninstall it by following these steps:
 1. Download the script.
 
    ```bash
-   curl -O https://inst.obs.cn-north-4.myhuaweicloud.com/26.1.0/ms_install.py
+   curl -O https://inst.obs.cn-north-4.myhuaweicloud.com/26.2.0/ms_install.py
    ```
 
    > [!NOTE]
    >
    > - An internet connection is required for downloading. If the environment does not allow internet access or is offline, download the script in an environment with internet access first, and then copy it to the target device.
    > - If the command does not respond or errors such as connection failure or SSL certificate issues occur, see [FAQ](https://www.hiascend.com/developer/blog/details/02176213671719317003).
-   > - The version number 26.0.0 may change as the software evolves. Replace it with the actual version number when you use the command.
+   > - The version number 26.1.0 may change as the software evolves. Replace it with the actual version number when you use the command.
 
 2. Execute the uninstallation.
 
@@ -102,4 +118,4 @@ You can uninstall it by following these steps:
 
 Upgrading means "uninstall first, then install". Directly execute the installation command, and the tool will automatically uninstall the old version and guide you through the overwrite installation.
 
-You can use the `pip3 show mindstudio-kl` command to view the version information in the current environment and then select the version to upgrade to. When upgrading, pay attention to the version compatibility. For details, see the [Version Description](https://gitcode.com/Ascend/release-management/blob/master/MindStudio/master/release_notes_en.md).
+You can use the `pip3 show mindstudio-kl` command to view the version information in the current environment and then select the version to upgrade to. When upgrading, pay attention to the version compatibility. For details, see the [Version Description](https://atomgit.com/Ascend/release-management/blob/master/MindStudio/26.2.0/release_notes.md).

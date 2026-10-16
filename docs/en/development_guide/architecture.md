@@ -187,7 +187,7 @@ mskl.utils ← independent (commonly depended on by launcher and optune)
 
 ## 6. Build and Test
 
-- **Build and package:** Run `python build.py`. `output/mindstudio_kl-{version}-py3-none-any.whl` is generated.
+- **Build and package:** Run `python3 build.py`. `output/mindstudio_kl-{version}-py3-none-any.whl` is generated.
 - **Install:** Run `pip3 install output/mindstudio_kl-*.whl`.
-- **Run unit tests:** Run `python build.py test`. The full unit test suite is executed with `pytest`.
+- **Run unit tests:** Run `python3 build.py test`. The full unit test suite is executed with `pytest`.
 - **Test framework:** `pytest`, with configuration in `test/pytest.ini`
