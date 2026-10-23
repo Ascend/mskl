@@ -98,7 +98,6 @@ You can uninstall it by following these steps:
    >
    > - An internet connection is required for downloading. If the environment does not allow internet access or is offline, download the script in an environment with internet access first, and then copy it to the target device.
    > - If the command does not respond or errors such as connection failure or SSL certificate issues occur, see [FAQ](https://www.hiascend.com/developer/blog/details/02176213671719317003).
-   > - The version number 26.1.0 may change as the software evolves. Replace it with the actual version number when you use the command.
 
 2. Execute the uninstallation.
 

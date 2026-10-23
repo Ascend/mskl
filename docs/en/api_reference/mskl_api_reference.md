@@ -530,7 +530,7 @@ Generates the Kernel code delivery based on the input template library Kernel in
 
 **Prototype**
 
-```py
+```python
 def code_gen(self, gen_file)
 ```
 
@@ -567,7 +567,7 @@ The File Path of the generated code.
 
 **Sample**
 
-```py
+```python
 config = mskl.KernelInvokeConfig(kernel_file, kernel_name)
 mskl.Launcher(config).code_gen(gen_file)
 ```
@@ -600,7 +600,7 @@ Compiles the Kernel code delivery and returns an executable Kernel object.
 
 **Prototype**
 
-```py
+```python
 def compile(build_script: str,
             launch_src_file: str,
             output_bin_path: str = "_gen_module.so",
@@ -671,7 +671,7 @@ A runnable Kernel object, type: `CompiledKernel`, supports invoking the kernel a
 
 **Sample**
 
-```py
+```python
 kernel = compile(build_script, gen_file)
 kernel[blockdim](arg1, arg2, ..., device_id=0)
 ```
@@ -807,7 +807,7 @@ Compiles code and returns an executable object.
 
 **Prototype**
 
-```py
+```python
 def compile_executable(build_script: str,
                        src_file: str,
                        output_bin_path: str = "_gen_executable",

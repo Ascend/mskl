@@ -190,7 +190,7 @@ The following output indicates that the operator runs successfully:
 
 When developing template library operators, use the interfaces provided by msKL to quickly implement Kernel launch code generation, compilation, and Kernel execution in Python scripts.
 
-When performing performance tuning on template library operators, it is often necessary to adjust the template parameters of the Kernel (such as `L0shape` size) multiple times and compare performance results. To improve tuning efficiency, the msKL tool provides a series of autotune interfaces, enabling developers to efficiently perform code replacement, compilation, execution, and performance comparison for multiple tuning points.
+When performing performance tuning on template library operators, it is often necessary to adjust the template parameters of the Kernel (such as `L0Shape` size) multiple times and compare performance results. To improve tuning efficiency, the msKL tool provides a series of autotune interfaces, enabling developers to efficiently perform code replacement, compilation, execution, and performance comparison for multiple tuning points.
 
 ### Precautions
 

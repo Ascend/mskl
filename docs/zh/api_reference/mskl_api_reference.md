@@ -567,7 +567,7 @@ def code_gen(self, gen_file)
 
 **调用示例**
 
-```py
+```python
 config = mskl.KernelInvokeConfig(kernel_file, kernel_name)
 mskl.Launcher(config).code_gen(gen_file)
 ```
