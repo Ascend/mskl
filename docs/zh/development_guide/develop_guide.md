@@ -56,7 +56,21 @@ python3 build.py test
 
 > **判定标准：** 运行的用例数与 `passed` 的用例数一致即为通过。若存在 `failed` 用例，请根据日志定位失败原因。
 
-### 3.2 清理测试环境
+### 3.2 代码行覆盖率统计
+
+依赖 `coverage` 与 `pytest`，在项目根目录执行：
+
+```bash
+bash test/generate_coverage.sh
+```
+
+脚本仅统计 `mskl` 产品代码的行覆盖率，报告输出到 `build_ut/coverage` 目录（文本报告、XML、HTML 及 `report.tar.gz`）。默认行覆盖率门限为 80%，低于门限时脚本返回非 0；可通过 `COVERAGE_THRESHOLD` 调整门限：
+
+```bash
+COVERAGE_THRESHOLD=85 bash test/generate_coverage.sh
+```
+
+### 3.3 清理测试环境
 
 删除 UT 构建目录后重新执行测试：
 
