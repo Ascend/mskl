@@ -3,16 +3,16 @@
 <div align="center">
 <p><b><span style="font-size:24px;">昇腾 AI 算子轻量化调用工具</span></b></p>
 
- [![License](https://badgen.net/badge/快速入门/QuickStart/blue)](docs/zh/quick_start/mskl_quick_start.md) 
- [![License](https://badgen.net/badge/精确搜索/ReadTheDocs/blue)](https://mindstudio-operator-tools-docs.readthedocs.io/zh-cn/latest/) 
- [![License](https://badgen.net/badge/AI问答/DeepWiki/blue)](https://deepwiki.com/mindstudio-docs/master) 
- [![License](https://badgen.net/badge/AI问答/ZRead/blue)](https://zread.ai/mindstudio-docs/master) 
- [![License](https://badgen.net/badge/昇腾社区/Community/blue)](https://www.hiascend.com/cn/developer/software/mindstudio) 
- [![License](https://badgen.net/badge/报告问题/Issues/blue)](https://gitcode.com/Ascend/mskl/issues) 
+ [![License](https://badgen.net/badge/快速入门/QuickStart/blue)](docs/zh/quick_start/mskl_quick_start.md)
+ [![License](https://badgen.net/badge/精确搜索/ReadTheDocs/blue)](https://mindstudio-operator-tools-docs.readthedocs.io/zh-cn/latest/)
+ [![License](https://badgen.net/badge/AI问答/DeepWiki/blue)](https://deepwiki.com/mindstudio-docs/master)
+ [![License](https://badgen.net/badge/AI问答/ZRead/blue)](https://zread.ai/mindstudio-docs/master)
+ [![License](https://badgen.net/badge/昇腾社区/Community/blue)](https://www.hiascend.com/cn/developer/software/mindstudio)
+ [![License](https://badgen.net/badge/报告问题/Issues/blue)](https://gitcode.com/Ascend/mskl/issues)
 
 </div>
 
-简体中文 | [English](README_EN.md) 
+简体中文 | [English](README_EN.md)
 
 ## ✨ 最新消息
 
@@ -68,10 +68,10 @@ msKL工具支持在线安装、离线安装以及源码安装，请参见《[msK
 
 ## ⚖️ 相关说明
 
-🔹《[版本说明](https://gitcode.com/Ascend/mskl/releases)》  
-🔹《[许可证声明](./docs/zh/legal/license_notice.md)》  
-🔹《[安全声明](./docs/zh/legal/security_statement.md)》  
-🔹《[免责声明](./docs/zh/legal/disclaimer.md)》   
+🔹《[版本说明](https://gitcode.com/Ascend/mskl/releases)》<br>
+🔹《[许可证声明](./docs/zh/legal/license_notice.md)》<br>
+🔹《[安全声明](./docs/zh/legal/security_statement.md)》<br>
+🔹《[免责声明](./docs/zh/legal/disclaimer.md)》
 
 ## 🤝 建议与交流
 
@@ -83,10 +83,6 @@ msKL工具支持在线安装、离线安装以及源码安装，请参见《[msK
 
 ## 🙏 致谢
 
-本工具由华为公司的下列部门联合贡献：    
-🔹 昇腾计算MindStudio开发部  
-🔹 昇腾计算生态使能部  
-🔹 华为云昇腾云服务  
-🔹 2012编译器实验室  
-🔹 2012马尔科夫实验室  
-感谢来自社区的每一个 PR，欢迎贡献！
+本工具由华为技术有限公司与开发者联合贡献。
+
+感谢来自社区的每一个PR，欢迎贡献。

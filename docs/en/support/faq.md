@@ -426,7 +426,7 @@ or
     cat $ASCEND_HOME_PATH/version.cfg
     ```
 
-2. Check the compatibility table in the [release notes](../release_notes/release_notes.md) to confirm that the CANN version matches the msKL version:
+2. Check the compatibility table in the [release notes](https://gitcode.com/Ascend/mskl/releases) to confirm that the CANN version matches the msKL version:
     - msKL 26.0.0: CANN 9.0.0 or later recommended
     - msKL 8.3.0: CANN 8.2.RC1 or later required
 

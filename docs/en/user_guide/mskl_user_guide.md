@@ -11,7 +11,7 @@ MindStudio Kernel Performance Prediction (kernel invocation tool, msKL) provides
 
 **Environment Preparation**
 
-Before developing operators, you need to install the driver firmware, CANN Toolkit software package, and the ops operator package. Refer to the *[CANN Software Installation Guide](https://www.hiascend.com/en/cann/download)*. This section does not provide installation examples. After configuring the relevant environment variables, you can directly use the lightweight kernel invocation function.
+Before developing operators, you need to install the driver firmware, CANN Toolkit software package, and the ops operator package. Refer to the *[CANN Software Installation Guide](https://www.hiascend.com/cann/download)*. This section does not provide installation examples. After configuring the relevant environment variables, you can directly use the lightweight kernel invocation function.
 
 - To use the [auto-tuning](#auto-tuning-feature-introduction) function, you need to download the Ascend C Template Library from the [sample](https://gitcode.com/cann/catlass).
 - For secondary development, ensure that the input data is trusted and secure.
@@ -64,9 +64,9 @@ This chapter uses the MatmulLeakyRelu operator project as an example to introduc
 - Refer to [Preparation Before Use](#preparation-before-use) to configure the relevant environment variables.
 - Click the [sample](https://gitee.com/ascend/samples/tree/master/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch) to obtain the sample project in preparation for operator detection.
 
-    > [!NOTE]
+    > [!NOTE] Note
     >
-    >- This sample project uses the Atlas A2 Training Series/Atlas A2 Inference Series as an example.
+    >- This sample project uses Atlas A2 products as an example.
     >- When downloading the code sample, you need to run the following command to specify the branch version.
     >
     >   ```shell
@@ -144,7 +144,7 @@ This chapter uses the MatmulLeakyRelu operator project as an example to introduc
     python3 matmulleakyrelu.py
     ```
 
-> [!NOTE]
+> [!NOTE] Note
 >
 > If the script fails and displays the following error:
 >
@@ -194,7 +194,7 @@ When performing performance tuning on template library operators, it is often ne
 
 ### Precautions
 
-- The auto-tuning feature only supports Atlas A2 Training Series products/Atlas A2 Inference Series products.
+- The auto-tuning feature only supports Atlas A2 products.
 - A single Device supports auto-tuning using only one msKL tool, and you are advised not to run other operator programs simultaneously.
 - Ensure that `mskl` is imported before `acl`. Otherwise, you need to set environment variables before running.
 
@@ -213,10 +213,9 @@ The auto-tuning workflow includes two types: Kernel-level autotuning and Applica
 
 **Kernel-level Auto-tuning Example <a id="section778122211315"></a>**
 
-This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/catlass-v1-dev/examples/00_basic_matmul/basic_matmul.cpp) from the catlass-v1-dev branch of the template library as an example to introduce how to use the interfaces provided by the msKL tool to implement kernel-level auto-tuning.
+This chapter uses the [examples/00_basic_matmul](https://gitcode.com/cann/catlass/blob/v1.0.0/examples/00_basic_matmul/basic_matmul.cpp) from template library v1.0.0 as an example to introduce how to use the interfaces provided by the msKL tool to implement kernel-level auto-tuning.
 
-> [!NOTE]
-> 
+> [!NOTE] Note
 > If any exception occurs during execution, you can view debug logs and retain intermediate files by setting environment variables to facilitate problem locating.
 >
 > ```shell
@@ -226,7 +225,7 @@ This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlas
 > When downloading the code sample, run the following command to specify the branch.
 >
 > ```shell
-> git clone https://gitee.com/ascend/catlass.git -b catlass-v1-dev
+> git clone https://gitcode.com/cann/catlass.git -b v1.0.0
 > ```
 
 1. After completing the kernel operator development, the definition and implementation of the kernel function will be presented in the `basic_matmul.cpp` file, as shown below.
@@ -340,7 +339,7 @@ This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlas
     using L0TileShape = GemmShape<128, 256, 64>; // tunable
     ```
 
-    > [!NOTE]
+    > [!NOTE] Note
     >
     > In addition to the tunable marking method, you can also use a line break and add `// tunable: Alias (L0Shape)` at the end of the code line that requires full-line replacement. The alias is used for search space indexing.
     >
@@ -351,7 +350,7 @@ This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlas
 
 6. Define the parameter search space through the `configs` input parameter of the autotune interface. Each parameter combination will replace the marked code lines in the operator kernel code, followed by compilation, execution, and kernel performance collection. An example of search space definition can be referenced as shown below.
 
-    > [!NOTE]
+    > [!NOTE] Note
     >
     >- Parameter replacement must be reasonable and must not cause compilation or runtime errors.
     >- The parameter replacement principles are as follows (using the first row in `configs` as an example):
@@ -401,9 +400,9 @@ This chapter uses the [examples/00_basic_matmul](https://gitee.com/ascend/catlas
 
 **Application-level Auto-tuning Example<a id="section14971258122"></a>**
 
-This chapter uses [examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/master/examples/00_basic_matmul/basic_matmul.cpp) from the master branch of the template library as an example to introduce how to use the interfaces provided by the msKL tool to implement application-level auto-tuning.
+This chapter uses [examples/00_basic_matmul](https://gitcode.com/cann/catlass/blob/v1.3.1/examples/00_basic_matmul/basic_matmul.cpp) from template library v1.3.1 as an example to introduce how to use the interfaces provided by the msKL tool to implement application-level auto-tuning.
 
-> [!NOTE]
+> [!NOTE] Note
 >
 > If any exception occurs during operation, you can view debug logs and retain intermediate files by setting environment variables to facilitate problem locating.
 >
@@ -411,17 +410,17 @@ This chapter uses [examples/00_basic_matmul](https://gitee.com/ascend/catlass/bl
 > export MSKL_LOG_LEVEL=0
 > ```
 
-1. Refer to the [examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/master/examples/00_basic_matmul/basic_matmul.cpp) example, use the Device layer API of the template library to implement the operator, and add the `// tunable` comment at the end of lines 115 and 117 respectively to replace the code content after the "=" sign.
+1. Refer to the [examples/00_basic_matmul](https://gitcode.com/cann/catlass/blob/v1.3.1/examples/00_basic_matmul/basic_matmul.cpp) example, use the Device layer API of the template library to implement the operator, and add the `// tunable` comment at the end of lines 87 and 89 respectively to replace the code content after the "=" sign.
 
     ```cpp
     ...
-    115 using L1TileShape = GemmShape<128, 256, 256>; // tunable
-    116
-    117 using L0TileShape = GemmShape<128, 256, 64>; // tunable
+    87 using L1TileShape = GemmShape<128, 256, 256>; // tunable
+    88
+    89 using L0TileShape = GemmShape<128, 256, 64>; // tunable
     ...
     ```
 
-2. Create the Python script file [basic_matmul_executable_autotune.py](#basic_matmul_executable_autotunepy) and the build script file [jit_build_executable.sh](#jit_build_executablesh) in the [examples/00_basic_matmul](https://gitee.com/ascend/catlass/blob/master/examples/00_basic_matmul/basic_matmul.cpp) directory.
+2. Create the Python script file [basic_matmul_executable_autotune.py](#basic_matmul_executable_autotunepy) and the build script file [jit_build_executable.sh](#jit_build_executablesh) in the [examples/00_basic_matmul](https://gitcode.com/cann/catlass/blob/v1.3.1/examples/00_basic_matmul/basic_matmul.cpp) directory.
 
     You can modify the configs parameter passed to the autotune_v2 interface in the `basic_matmul_executable_autotune.py` script as needed to search for custom tiling parameter combinations.
 
@@ -472,7 +471,7 @@ def get_kernel():
 
 """
 To enable the autotune feature, it is required to add the "// tunable" marker to
-the code lines in "basic_matmul.cpp", e.g.
+the code lines in "basic_matmul.cpp", for example
     ...
     51    using L1TileShape = GemmShape<128, 256, 256>; // tunable
     52    using L0TileShape = GemmShape<128, 256, 64>; // tunable
@@ -611,7 +610,7 @@ import mskl
     {'L1TileShape': 'GemmShape<64, 64, 1024>', 'L0TileShape': 'GemmShape<64, 64, 256>'},
 ], warmup_times=10)
 def run_executable(m, n, k, device_id):
-    kernel_file = "../../00_basic_matmul/basic_matmul.cpp"
+    kernel_file = "basic_matmul.cpp"
     build_script = "jit_build_executable.sh" # Executable compile script
     executable = mskl.compile_executable(build_script=build_script, src_file=kernel_file, use_cache=False)
     return executable(m, n, k, device_id)
@@ -655,11 +654,11 @@ bisheng -O2 -std=c++17 -xcce --cce-aicore-arch=dav-c220 \
     -I$ASCEND_HOME_PATH/include \
     -I$ASCEND_HOME_PATH/include/experiment/runtime \
     -I$ASCEND_HOME_PATH/include/experiment/msprof \
-    -I../../../include \
-    -I../../common \
+    -I../../include \
+    -I../common \
     -L${ASCEND_HOME_PATH}/lib64 \
     -Wno-macro-redefined -Wno-ignored-attributes \
-    -lruntime -lstdc++ -lascendcl -lm -ltiling_api -lplatform -lc_sec -ldl -lnnopbase \
+    -lruntime -lstdc++ -lascendcl -lm -ltiling_api -lplatform -lc_sec -ldl -lnnopbase -lunified_dlog \
     $LAUNCH_SRC_FILE -o $OUTPUT_LIB_FILE
 exit $?
 ```
