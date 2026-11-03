@@ -213,7 +213,6 @@ stages:
 
       PreSmoke_mskl:
         name: PreSmoke_mskl
-        continue-on-error: true
         if: ${{ jobs.Detect_file_changes.outputs.need_build == 'yes' }}
         uses: .gitcode/workflows/.presmoke.yml
         with:
