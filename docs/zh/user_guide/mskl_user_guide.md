@@ -25,7 +25,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 - 下载代码样例时，需执行以下命令指定分支版本。
 
     ```shell
-    git clone https://gitee.com/ascend/samples.git -b v1.9-8.3.RC1
+    git clone https://gitcode.com/cann/cann-learning-hub.git -b 8.5.0
     ```
 
 ## 调用msOpGen算子工程功能介绍
@@ -57,12 +57,12 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
 ### 使用示例
 
-本章节以MatmulLeakyRelu算子工程为例，介绍如何利用msKL工具提供的tiling_func和get_kernel_from_binary接口调用msOpGen工程中的tiling函数以及用户自定义的Kernel函数，其他类型的算子操作均可参考此流程进行操作。
+本章节以MatmulSinh算子工程为例，介绍如何利用msKL工具提供的tiling_func和get_kernel_from_binary接口调用msOpGen工程中的tiling函数以及用户自定义的Kernel函数，其他类型的算子操作均可参考此流程进行操作。
 
 **环境准备**<a id="环境准备"></a>
 
 - 请参考[使用前准备](#使用前准备)，完成相关环境变量的配置。
-- 点击[链接](https://gitee.com/ascend/samples/tree/master/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch)获取样例工程，为进行算子检测做准备。
+- 点击[链接](https://gitcode.com/cann/cann-learning-hub/tree/master/tutorials/ascendc_operator_development/05_fused_operator_development/answer/05.05_answer)获取样例工程，为进行算子检测做准备。
 
     > [!NOTE]
     >
@@ -70,56 +70,71 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
     >- 下载代码样例时，需执行以下命令指定分支版本。
     >
     >   ```shell
-    >   git clone https://gitee.com/ascend/samples.git -b v1.9-8.3.RC1
+    >   git clone https://gitcode.com/cann/cann-learning-hub.git -b 8.5.0
     >   ```
 
 **具体操作**
 
-1. 参见[环境准备](#环境准备)中的样例工程，运行`${git_clone_path}/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch`目录下的`install.sh`脚本，生成自定义算子工程，并进行Host侧和Kernel侧的算子实现。
+1. 参见[环境准备](#环境准备)中的样例工程，进入MatmulSinh融合算子工程目录，请确保CMakePresets.json中ASCEND_CANN_PACKAGE_PATH已正确指向您的 CANN 安装路径，编译算子工程。
 
     ```shell
-    bash install.sh -v Ascendxxxyy    # xxxyy为用户实际使用的具体芯片类型
+    cd ${git_clone_path}/tutorials/ascendc_operator_development/05_fused_operator_development/answer/05.05_answer/
+    bash build.sh
     ```
 
-2. 切换至自定义算子工程目录。
+2. 确认编译产物位置。
 
-    ```shell
-    cd CustomOp
-    ```
+    编译成功后，需找到以下两个产物：
 
-3. 编辑算子拉起脚本matmulleakyrelu.py。
+    - **Kernel .o 文件**（供 `get_kernel_from_binary` 使用）：
+
+      ```shell
+      find build_out -name "*.o" | grep -i matmul_sinh
+      ```
+
+      预期路径类似：`build_out/op_kernel/ascendc_kernels/binary/ascend910b/matmul_sinh/MatmulSinh_xxxx.o`
+
+    - **Tiling .so 文件**（供 `tiling_func` 的 `lib_path` 参数使用）：
+
+      ```shell
+      find build_out -name "libcust_opmaster_rt2.0.so"
+      ```
+
+      预期路径：`build_out/op_host/libcust_opmaster_rt2.0.so`
+
+3. 编辑算子拉起脚本matmul_sinh_mskl.py。
 
     ```python
     import numpy as np
     import mskl
     # 这个函数的入参必须和Kernel函数的入参一致
     def run_kernel(input_a, input_b, input_bias, output, workspace, tiling_data):
-        kernel_binary_file = "MatmulLeakyreluCustom.o"    #不同的硬件和操作系统展示的.o文件的名称稍有不同，具体路径请参考《msopgen_usr_guide》中的“查看算子仿真图”章节里“参数说明”表 -reloc参数
+        kernel_binary_file = "MatmulSinh.o"    #不同的硬件和操作系统展示的.o文件的名称稍有不同，具体路径请参考《msopgen_usr_guide》中的"查看算子仿真图"章节里"参数说明"表 -reloc参数
         kernel = mskl.get_kernel_from_binary(kernel_binary_file, 'mix')
         return kernel(input_a, input_b, input_bias, output, workspace, tiling_data)
 
     if __name__ == "__main__":
         # input/output tensor
         M = 1024
-        N = 640
-        K = 256
-        input_a = np.random.randint(1, 10, [M, K]).astype(np.float16)
-        input_b = np.random.randint(1, 10, [K, N]).astype(np.float16)
+        N = 2048
+        K = 512
+        input_a = np.random.randint(1, 10, [M, K]).astype(np.float32)
+        input_b = np.random.randint(1, 10, [K, N]).astype(np.float32)
         input_bias = np.random.randint(1, 10, [N]).astype(np.float32)
         output = np.zeros([M, N]).astype(np.float32)
         # shape info
-        inputs_info = [{"shape": [M, K], "dtype": "float16", "format": "ND"},
-                       {"shape": [K, N], "dtype": "float16", "format": "ND"},
+        inputs_info = [{"shape": [M, K], "dtype": "float32", "format": "ND"},
+                       {"shape": [K, N], "dtype": "float32", "format": "ND"},
                        {"shape": [N], "dtype": "float32", "format": "ND"}]
         outputs_info = [{"shape": [M, N], "dtype": "float32", "format": "ND"}]
         attr = {}
         # 调用tiling函数
         tiling_output = mskl.tiling_func(
-            op_type="MatmulLeakyreluCustom",
+            op_type="MatmulSinh",
             inputs_info=inputs_info, outputs_info=outputs_info, # 可选
             inputs=[input_a, input_b, input_bias], outputs=[output],
             attr=attr, # 可选
-            lib_path="build_out/op_host/libcust_opmaster_rt2.0.so",  # tiling函数编译产物，具体位置可参考《msopgen_usr_guide》中的“算子包部署>步骤2以默认安装场景为例”中的目录结构
+            lib_path="build_out/op_host/libcust_opmaster_rt2.0.so",  # tiling函数编译产物，具体位置可参考《msopgen_usr_guide》中的"算子包部署>步骤2以默认安装场景为例"中的目录结构
             # soc_version="", # 可选
         )
         blockdim = tiling_output.blockdim
@@ -130,10 +145,9 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
         run_kernel(input_a, input_b, input_bias, output, workspace, tiling_data)
 
         # 校验输出
-        alpha = 0.001
-        golden = (np.matmul(input_a.astype(np.float32), input_b.astype(np.float32)) + input_bias).astype(np.float32)
-        golden = np.where(golden >= 0, golden, golden * alpha)
-        is_equal = np.array_equal(output, golden)
+        matmul_result = np.matmul(input_a, input_b) + input_bias
+        golden = np.sinh(matmul_result)
+        is_equal = np.allclose(output, golden, atol=1e-3)
         result = "success" if is_equal else "failed"
         print("compare {}.".format(result))
     ```
@@ -141,7 +155,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 4. 运行脚本。
 
     ```shell
-    python3 matmulleakyrelu.py
+    python3 matmul_sinh_mskl.py
     ```
 
 > [!NOTE]
@@ -149,31 +163,31 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 > 若脚本执行失败，报如下错误：
 >
 > ```text
-> Exception: Check kernel_binary_file /XXX/samples/operator/ascendc/0_introduction/12_matmulleakyrelu_frameworklaunch/CustomOp/MatmulLeakyreluCustom.o permission failed.
+> Exception: Check kernel_binary_file /XXX/cann-learning-hub/tutorials/ascendc_operator_development/05_fused_operator_development/answer/05.05_answer/MatmulSinh.o permission failed.
 > ```
 >
-> 则说明 CustomOp 目录下没有自动生成 MatmulLeakyreluCustom.o 文件，需要手动寻找一下编译结果。执行以下命令寻找.o文件位置：
+> 则说明工程目录下没有自动生成 MatmulSinh.o 文件，需要手动寻找一下编译结果。执行以下命令寻找.o文件位置：
 >
 > ```shell
-> find . -name "*MatmulLeakyreluCustom*"
+> find . -name "*MatmulSinh*"
 > ```
 >
 > 得到的结果类似如下：
 >
 > ```text
-> ./build_out/op_kernel/ascendc_kernels/binary/ascend910b/matmul_leakyrelu_custom/MatmulLeakyreluCustom_97ef75830e63ebe749e7c029d8d403c5.o
+> ./build_out/op_kernel/ascendc_kernels/binary/ascend910b/matmul_sinh/MatmulSinh_02253ef43494f144146a94a0b934d1e3.o
 > ```
 >
-> 此时需要将该.o文件手动拷贝到 CustomOp 目录，执行以下命令（请替换成实际路径）：
+> 此时需要将该.o文件手动拷贝到工程目录，执行以下命令（请替换成实际路径）：
 >
 > ```shell
-> cp ./build_out/op_kernel/ascendc_kernels/binary/ascend910b/matmul_leakyrelu_custom/MatmulLeakyreluCustom_97ef75830e63ebe749e7c029d8d403c5.o ./MatmulLeakyreluCustom.o
+> cp ./build_out/op_kernel/ascendc_kernels/binary/ascend910b/matmul_sinh/MatmulSinh_02253ef43494f144146a94a0b934d1e3.o ./MatmulSinh.o
 > ```
 >
-> 拷贝完成后，再执行 matmulleakyrelu.py 脚本运行算子：
+> 拷贝完成后，再执行 matmul_sinh_mskl.py 脚本运行算子：
 >
 > ```shell
-> python3 matmulleakyrelu.py
+> python3 matmul_sinh_mskl.py
 > ```
 
 ### 输出说明
@@ -340,7 +354,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
     ```
 
     > [!NOTE]
-    > 
+    >
     > 除tunable标识的方法之外，还可以通过换行，在需要整行替换的代码行末尾使用**// tunable: 别名（L0Shape）**方式标记。其中，别名用于搜索空间索引。
     >
     > ```cpp
@@ -351,7 +365,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 6. 通过autotune接口的configs入参定义参数搜索空间，每一类参数组合会替换算子Kernel代码中被标记的代码行，然后进行编译、运行并完成Kernel性能采集。搜索空间定义示例可参考如下所示。
 
     > [!NOTE]
-    > 
+    >
     >- 参数替换需合理，不能造成编译或运行错误。
     >- 参数替换原则如下（以configs中的第一行为例）：
     >    1. 先替换// tunable: L0Shape方式标记的参数，将标记代码行（MatmulShape<128, 256, 64>）整行替换为configs中的value字符串（MatmulShape<128, 256, 64>）。
@@ -403,7 +417,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 本章节以模板库v1.3.1版本的[examples/00_basic_matmul](https://gitcode.com/cann/catlass/blob/v1.3.1/examples/00_basic_matmul/basic_matmul.cpp)为例，介绍如何利用msKL工具提供的接口实现对应用级的自动调优。
 
 > [!NOTE]
-> 
+>
 > 在运行过程中出现任何异常，可通过设置环境变量的方式来查看debug日志以及保留中间文件，便于问题定位。
 >
 > ```shell
