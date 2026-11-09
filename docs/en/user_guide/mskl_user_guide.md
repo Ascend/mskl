@@ -13,7 +13,7 @@ MindStudio Kernel Performance Prediction (kernel invocation tool, msKL) provides
 
 Before developing operators, you need to install the driver firmware, CANN Toolkit software package, and the ops operator package. Refer to the *[CANN Software Installation Guide](https://www.hiascend.com/cann/download)*. This section does not provide installation examples. After configuring the relevant environment variables, you can directly use the lightweight kernel invocation function.
 
-- To use the [auto-tuning](#auto-tuning-feature-introduction) function, you need to download the Ascend C Template Library from the [sample](https://atomgit.com/cann/catlass).
+- To use the [auto-tuning](#auto-tuning-feature-introduction) function, you need to download the Ascend C Template Library from the [sample](https://gitcode.com/cann/catlass).
 - For secondary development, ensure that the input data is trusted and secure.
 
 **Constraints**
@@ -213,7 +213,7 @@ The auto-tuning workflow includes two types: Kernel-level autotuning and Applica
 
 **Kernel-level Auto-tuning Example <a id="section778122211315"></a>**
 
-This chapter uses the [examples/00_basic_matmul](https://atomgit.com/cann/catlass/blob/v1.0.0/examples/00_basic_matmul/basic_matmul.cpp) from template library v1.0.0 as an example to introduce how to use the interfaces provided by the msKL tool to implement kernel-level auto-tuning.
+This chapter uses the [examples/00_basic_matmul](https://gitcode.com/cann/catlass/blob/v1.0.0/examples/00_basic_matmul/basic_matmul.cpp) from template library v1.0.0 as an example to introduce how to use the interfaces provided by the msKL tool to implement kernel-level auto-tuning.
 
 > [!NOTE] Note
 > If any exception occurs during execution, you can view debug logs and retain intermediate files by setting environment variables to facilitate problem locating.
@@ -225,7 +225,7 @@ This chapter uses the [examples/00_basic_matmul](https://atomgit.com/cann/catlas
 > When downloading the code sample, run the following command to specify the branch.
 >
 > ```shell
-> git clone https://atomgit.com/cann/catlass.git -b v1.0.0
+> git clone https://gitcode.com/cann/catlass.git -b v1.0.0
 > ```
 
 1. After completing the kernel operator development, the definition and implementation of the kernel function will be presented in the `basic_matmul.cpp` file, as shown below.
@@ -400,7 +400,7 @@ This chapter uses the [examples/00_basic_matmul](https://atomgit.com/cann/catlas
 
 **Application-level Auto-tuning Example<a id="section14971258122"></a>**
 
-This chapter uses [examples/00_basic_matmul](https://atomgit.com/cann/catlass/blob/v1.3.1/examples/00_basic_matmul/basic_matmul.cpp) from template library v1.3.1 as an example to introduce how to use the interfaces provided by the msKL tool to implement application-level auto-tuning.
+This chapter uses [examples/00_basic_matmul](https://gitcode.com/cann/catlass/blob/v1.3.1/examples/00_basic_matmul/basic_matmul.cpp) from template library v1.3.1 as an example to introduce how to use the interfaces provided by the msKL tool to implement application-level auto-tuning.
 
 > [!NOTE] Note
 >
@@ -410,7 +410,7 @@ This chapter uses [examples/00_basic_matmul](https://atomgit.com/cann/catlass/bl
 > export MSKL_LOG_LEVEL=0
 > ```
 
-1. Refer to the [examples/00_basic_matmul](https://atomgit.com/cann/catlass/blob/v1.3.1/examples/00_basic_matmul/basic_matmul.cpp) example, use the Device layer API of the template library to implement the operator, and add the `// tunable` comment at the end of lines 87 and 89 respectively to replace the code content after the "=" sign.
+1. Refer to the [examples/00_basic_matmul](https://gitcode.com/cann/catlass/blob/v1.3.1/examples/00_basic_matmul/basic_matmul.cpp) example, use the Device layer API of the template library to implement the operator, and add the `// tunable` comment at the end of lines 87 and 89 respectively to replace the code content after the "=" sign.
 
     ```cpp
     ...
@@ -420,7 +420,7 @@ This chapter uses [examples/00_basic_matmul](https://atomgit.com/cann/catlass/bl
     ...
     ```
 
-2. Create the Python script file [basic_matmul_executable_autotune.py](#basic_matmul_executable_autotunepy) and the build script file [jit_build_executable.sh](#jit_build_executablesh) in the [examples/00_basic_matmul](https://atomgit.com/cann/catlass/blob/v1.3.1/examples/00_basic_matmul/basic_matmul.cpp) directory.
+2. Create the Python script file [basic_matmul_executable_autotune.py](#basic_matmul_executable_autotunepy) and the build script file [jit_build_executable.sh](#jit_build_executablesh) in the [examples/00_basic_matmul](https://gitcode.com/cann/catlass/blob/v1.3.1/examples/00_basic_matmul/basic_matmul.cpp) directory.
 
     You can modify the configs parameter passed to the autotune_v2 interface in the `basic_matmul_executable_autotune.py` script as needed to search for custom tiling parameter combinations.
 

@@ -365,7 +365,7 @@ $ python3 build.py
     python3 --version
     ```
 
-2. Complete the full environment configuration by following the [Operator Tool Development Environment Installation Guide](https://atomgit.com/Ascend/msot/blob/26.2.0/docs/en/common/dev_env_setup.md).
+2. Complete the full environment configuration by following the [Operator Tool Development Environment Installation Guide](https://gitcode.com/Ascend/msot/blob/26.2.0/docs/en/common/dev_env_setup.md).
 
 3. Confirm that the CANN environment variables are correctly set:
 
@@ -426,7 +426,7 @@ or
     cat $ASCEND_HOME_PATH/version.cfg
     ```
 
-2. Check the compatibility table in the [release notes](https://atomgit.com/Ascend/mskl/releases) to confirm that the CANN version matches the msKL version:
+2. Check the compatibility table in the [release notes](https://gitcode.com/Ascend/mskl/releases) to confirm that the CANN version matches the msKL version:
     - msKL 26.0.0: CANN 9.0.0 or later recommended
     - msKL 8.3.0: CANN 8.2.RC1 or later required
 

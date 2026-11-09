@@ -7,7 +7,7 @@
 Using the msKL tool, you can leverage its provided interfaces to quickly implement code generation, compilation, and execution for Kernel launch within a Python script.
 This document demonstrates the core functionality of the msKL tool based on the simple addition operator developed in the introductory tutorial, helping beginners intuitively experience the efficiency and convenience it brings to the operator development process.
 
-This chapter assumes that you have completed the full workflow in the <a href="https://atomgit.com/Ascend/msot/blob/26.2.0/docs/en/quick_start/op_tool_quick_start.md" target="_blank">Operator Development Toolchain Quick Start</a>. If you have not yet done so, you are advised to complete the guide first for a better learning experience.
+This chapter assumes that you have completed the full workflow in the <a href="https://gitcode.com/Ascend/msot/blob/26.2.0/docs/en/quick_start/op_tool_quick_start.md" target="_blank">Operator Development Toolchain Quick Start</a>. If you have not yet done so, you are advised to complete the guide first for a better learning experience.
 
 ## 2. Procedure
 
@@ -19,7 +19,7 @@ This tutorial **supports only** standardized CANN container environments. It is 
 #### 2.1.1 Installing the CANN Container Environment
 
 ✅ **Strictly follow the guide below to complete environment installation:**
-👉 **<a href="https://atomgit.com/Ascend/msot/blob/26.2.0/docs/en/quick_start/installation_guide.md" target="_blank">Ascend AI Operator Development Toolchain Learning Environment Installation Guide</a>**
+👉 **<a href="https://gitcode.com/Ascend/msot/blob/26.2.0/docs/en/quick_start/installation_guide.md" target="_blank">Ascend AI Operator Development Toolchain Learning Environment Installation Guide</a>**
 
 > ⏱️ **Estimated time with external network access: approximately 3 minutes**
 > After installation, you will have a standardized container environment preinstalled with all operator tools, sample code, and dependent libraries.
@@ -37,7 +37,7 @@ Before starting the formal tutorial, **copy the entire script below** and paste 
 
 ### 2.2 [Prerequisite] Operator Project Preparation Completed
 
-Follow the instructions in Section 2.3 of <a href="https://atomgit.com/Ascend/msot/blob/26.2.0/docs/en/quick_start/op_tool_quick_start.md#23-developing-and-building-the-operator-project-msopgen" target="_blank">Operator Development Toolchain Quick Start</a> to prepare the operator project.
+Follow the instructions in Section 2.3 of <a href="https://gitcode.com/Ascend/msot/blob/26.2.0/docs/en/quick_start/op_tool_quick_start.md#23-developing-and-building-the-operator-project-msopgen" target="_blank">Operator Development Toolchain Quick Start</a> to prepare the operator project.
 
 ### 2.3 [Lightweight Call] Lightweight Kernel Call in Python Scripts (msKL)
 

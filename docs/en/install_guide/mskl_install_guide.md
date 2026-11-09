@@ -28,8 +28,8 @@ If you need to use features from the latest code or modify the source code to en
 
 All source code compilation uses the standard MindStudio build environment.
 
-- For daily development or when you use a released image, see the [MindStudio Tool Development Environment Installation Guide](https://atomgit.com/Ascend/msot/blob/26.2.0/docs/en/common/dev_env_setup.md).
-- If you need to reproduce the environment from a base operating system, perform source build verification, or run unit test verification, you must refer to the [MindStudio Unified Build Image Creation Guide](https://atomgit.com/Ascend/msot/blob/26.2.0/docs/en/common/docker_image_build_guide.md) to build the environment image on site from the openEuler base image.
+- For daily development or when you use a released image, see the [MindStudio Tool Development Environment Installation Guide](https://gitcode.com/Ascend/msot/blob/26.2.0/docs/en/common/dev_env_setup.md).
+- If you need to reproduce the environment from a base operating system, perform source build verification, or run unit test verification, you must refer to the [MindStudio Unified Build Image Creation Guide](https://gitcode.com/Ascend/msot/blob/26.2.0/docs/en/common/docker_image_build_guide.md) to build the environment image on site from the openEuler base image.
 
 The source code compilation and unit test commands in the rest of this document are all run in the container of the specified image or of the environment image built on site. The CANN software package version, GCC version, and Python version are subject to the *Unified Build Image Creation Guide*, and this repository does not maintain them separately.
 
@@ -39,7 +39,7 @@ After you enter the interactive container shell opened by `ctr_in.py`, run the f
 
 ```bash
 cd ~
-git clone https://atomgit.com/Ascend/mskl.git -b 26.2.0
+git clone https://gitcode.com/Ascend/mskl.git -b 26.2.0
 ```
 
 #### 2.3.2 Compilation
@@ -117,4 +117,4 @@ You can uninstall it by following these steps:
 
 Upgrading means "uninstall first, then install". Directly execute the installation command, and the tool will automatically uninstall the old version and guide you through the overwrite installation.
 
-You can use the `pip3 show mindstudio-kl` command to view the version information in the current environment and then select the version to upgrade to. When upgrading, pay attention to the version compatibility. For details, see the [Version Description](https://atomgit.com/Ascend/release-management/blob/master/MindStudio/26.2.0/release_notes.md).
+You can use the `pip3 show mindstudio-kl` command to view the version information in the current environment and then select the version to upgrade to. When upgrading, pay attention to the version compatibility. For details, see the [Version Description](https://gitcode.com/Ascend/release-management/blob/master/MindStudio/26.2.0/release_notes_en.md).
