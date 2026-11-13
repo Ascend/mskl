@@ -107,26 +107,10 @@ class BuildManager:
 
         self._execute_command([sys.executable, "-m", "pip", "install", "numpy"], env=env)
 
-        report_dir = unit_test_build_dir / "report"
-        test_cmd = [
-            "coverage3",
-            "run",
-            "--branch",
-            "--source=" + str(self.project_root),
-            "-m",
-            "pytest",
-            str(self.project_root / "test" / "launcher"),
-            str(self.project_root / "test" / "op_tune"),
-            "--junitxml=" + str(report_dir / "final.xml"),
-            "-W",
-            "ignore::DeprecationWarning",
-        ]
-
+        # 复用统一覆盖率脚本：执行 UT、生成报告并校验行覆盖率门禁（默认 80%）。
+        env.setdefault("COVERAGE_THRESHOLD", "80")
         logging.info("============ start to execute Python code UT test ============")
-        self._execute_command(test_cmd, env=env)
-        self._execute_command(["coverage3", "xml", "-o", str(report_dir / "coverage.xml")], env=env)
-        self._execute_command(["coverage3", "html", "-d", str(report_dir)], env=env)
-        self._execute_command(["coverage3", "report", "-m"], env=env)
+        self._execute_command(["bash", str(self.project_root / "test" / "generate_coverage.sh")], env=env)
 
     def _run_product_build(self):
         output_dir = self.project_root / "output"
