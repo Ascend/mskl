@@ -2,7 +2,7 @@
 
 ## 简介
 
-MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调用msOpGen算子工程和基于Ascend C模板库进行自动调优的功能，具体介绍如下：
+MindStudio Kernel Launcher（算子调用工具，msKL）具有调用msOpGen算子工程和基于Ascend C模板库进行自动调优的功能，具体介绍如下：
 
 - [调用msOpGen算子工程功能介绍](#调用msopgen算子工程功能介绍)：msKL工具提供的tiling_func和get_kernel_from_binary接口，可以直接调用msOpGen算子工程。
 - [自动调优功能介绍](#自动调优功能介绍)：msKL提供模板库Kernel下发代码生成、编译、运行的能力，同时提供Kernel内代码替换并自动调优的能力。
@@ -13,7 +13,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
 进行算子开发之前，需要安装驱动固件和CANN Toolkit软件包以及ops算子包，请参见《[CANN 软件安装指南](https://www.hiascend.com/cann/download)》。本节不再给出安装示例。完成相关环境变量的配置后，可直接使用Kernel轻量化调用的功能。
 
-- 若要使用[自动调优](#自动调优功能介绍)功能，需要下载[链接](https://gitcode.com/cann/catlass)中的Ascend C模板库。
+- 若要使用[自动调优功能](#自动调优功能介绍)，需要下载[catlass代码仓库](https://gitcode.com/cann/catlass)中的Ascend C模板库。
 - 二次开发请保证输入数据可信安全。
 
 **约束**
@@ -62,7 +62,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 **环境准备**<a id="环境准备"></a>
 
 - 请参考[使用前准备](#使用前准备)，完成相关环境变量的配置。
-- 点击[链接](https://gitcode.com/cann/cann-learning-hub/tree/master/tutorials/ascendc_operator_development/05_fused_operator_development/answer/05.05_answer)获取样例工程，为进行算子检测做准备。
+- 点击[05.05_answer样例工程](https://gitcode.com/cann/cann-learning-hub/tree/master/tutorials/ascendc_operator_development/05_fused_operator_development/answer/05.05_answer)获取对应的样例工程，为进行算子检测做准备。
 
     > [!NOTE]
     >
@@ -75,7 +75,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
 **具体操作**
 
-1. 参见[环境准备](#环境准备)中的样例工程，进入MatmulSinh融合算子工程目录，请确保CMakePresets.json中ASCEND_CANN_PACKAGE_PATH已正确指向您的 CANN 安装路径，编译算子工程。
+1. 参见[环境准备](#环境准备)中的样例工程，进入MatmulSinh融合算子工程目录，请确保CMakePresets.json中ASCEND_CANN_PACKAGE_PATH已正确指向您的CANN安装路径，编译算子工程。
 
     ```shell
     cd ${git_clone_path}/tutorials/ascendc_operator_development/05_fused_operator_development/answer/05.05_answer/
@@ -86,7 +86,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
     编译成功后，需找到以下两个产物：
 
-    - **Kernel .o 文件**（供 `get_kernel_from_binary` 使用）：
+    - **Kernel .o文件**（供 `get_kernel_from_binary` 使用）：
 
       ```shell
       find build_out -name "*.o" | grep -i matmul_sinh
@@ -94,7 +94,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
       预期路径类似：`build_out/op_kernel/ascendc_kernels/binary/ascend910b/matmul_sinh/MatmulSinh_xxxx.o`
 
-    - **Tiling .so 文件**（供 `tiling_func` 的 `lib_path` 参数使用）：
+    - **Tiling .so文件**（供 `tiling_func` 的 `lib_path` 参数使用）：
 
       ```shell
       find build_out -name "libcust_opmaster_rt2.0.so"
@@ -166,7 +166,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 > Exception: Check kernel_binary_file /XXX/cann-learning-hub/tutorials/ascendc_operator_development/05_fused_operator_development/answer/05.05_answer/MatmulSinh.o permission failed.
 > ```
 >
-> 则说明工程目录下没有自动生成 MatmulSinh.o 文件，需要手动寻找一下编译结果。执行以下命令寻找.o文件位置：
+> 则说明工程目录下没有自动生成 MatmulSinh.o文件，需要手动寻找一下编译结果。执行以下命令寻找.o文件位置：
 >
 > ```shell
 > find . -name "*MatmulSinh*"
@@ -174,7 +174,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 >
 > 得到的结果类似如下：
 >
-> ```text
+> ```output
 > ./build_out/op_kernel/ascendc_kernels/binary/ascend910b/matmul_sinh/MatmulSinh_02253ef43494f144146a94a0b934d1e3.o
 > ```
 >
@@ -184,7 +184,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 > cp ./build_out/op_kernel/ascendc_kernels/binary/ascend910b/matmul_sinh/MatmulSinh_02253ef43494f144146a94a0b934d1e3.o ./MatmulSinh.o
 > ```
 >
-> 拷贝完成后，再执行 matmul_sinh_mskl.py 脚本运行算子：
+> 拷贝完成后，再执行matmul_sinh_mskl.py脚本运行算子：
 >
 > ```shell
 > python3 matmul_sinh_mskl.py
@@ -194,7 +194,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
 输出如下结果，说明算子运行正常：
 
-```text
+```output
     compare success.
 ```
 
@@ -204,7 +204,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
 在进行模板库算子开发时，利用msKL提供的接口在Python脚本中快速实现Kernel下发代码生成、编译及运行Kernel。
 
-在对模板库算子进行性能调优时，通常需要对Kernel的模板参数（比如L0shape大小）进行多次调整并对比性能结果。为提升调优效率，msKL工具提供了autotune系列接口支持开发者可以高效地针对多个调优点进行代码替换、编译、运行以及性能对比。
+在对模板库算子进行性能调优时，通常需要对Kernel的模板参数（比如L0Shape大小）进行多次调整并对比性能结果。为提升调优效率，msKL工具提供了autotune系列接口支持开发者可以高效地针对多个调优点进行代码替换、编译、运行以及性能对比。
 
 ### 注意事项
 
@@ -220,9 +220,9 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
 
 **自动调优流程**
 
-自动调优流程包括Kernel级自动调优和应用级自动调优两种，具体流程请参见[图1](#fig985071581517)，具体操作请参见[Kernel级自动调优样例](#section778122211315)和[应用级自动调优样例](#section14971258122)。
+自动调优流程包括Kernel级自动调优和应用级自动调优两种，具体流程请参见[图 1](#fig985071581517)，具体操作请参见[Kernel级自动调优样例](#section778122211315)和[应用级自动调优样例](#section14971258122)。
 
-**图 1**  自动调优流程示意图<a id="fig985071581517"></a>
+**图 1** 自动调优流程示意图<a id="fig985071581517"></a>
 ![](../figures/自动调优流程示意图.png "自动调优流程示意图")
 
 **Kernel级自动调优样例<a id="section778122211315"></a>**
@@ -260,7 +260,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
     // ...
     ```
 
-2. 参考附录，在examples/00_basic_matmul目录中创建Python脚本文件[basic_matmul_autotune.py](#basic_matmul_autotunepy)与编译脚本文件[jit_build.sh](#jit_buildsh)。(下述代码已经在basic_matmul_autotune.py中写好，开发者创建对应文件即可，无需再手动补充一遍)
+2. 参考附录，在examples/00_basic_matmul目录中创建Python脚本文件[basic_matmul_autotune.py](#basic_matmul_autotunepy)与编译脚本文件[jit_build.sh](#jit_buildsh)。（下述代码已经在basic_matmul_autotune.py中写好，开发者创建对应文件即可，无需再手动补充一遍）
 
     按照如下要求，定义算子Kernel函数的Python接口：在Python脚本中定义basic_matmul函数，其入参需与C++代码中的Kernel函数保持一致。
 
@@ -269,7 +269,7 @@ MindStudio Kernel Performance Prediction（算子调用工具，msKL）具有调
     import mskl
 
     def get_kernel():
-        kernel_file = ".basic_matmul.cpp"
+        kernel_file = "./basic_matmul.cpp"
         kernel_name = "BasicMatmul"
         build_script = "./jit_build.sh" # kernel compile script
         config = mskl.KernelInvokeConfig(kernel_file, kernel_name)

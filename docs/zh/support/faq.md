@@ -60,7 +60,7 @@ curl: (7) Failed to connect to ... port 443: Connection refused
 
 **解决方案**
 
-1. 改用离线安装方式：在可联网的机器上下载离线安装包，再传输至目标设备。请参见昇腾社区 MindStudio [下载](https://www.hiascend.com/developer/software/mindstudio/download) 页面，选择对应的 CANN 版本和"离线安装"。
+1. 改用离线安装方式：在可联网的机器上下载离线安装包，再传输至目标设备。请参见昇腾社区 MindStudio [下载](https://www.hiascend.com/developer/software/mindstudio/download) 页面，选择对应的CANN版本和“离线安装”。
 2. 若仅需下载卸载脚本，可在可联网环境下载后拷贝到目标设备执行。
 
 ---
@@ -158,7 +158,7 @@ PermissionError: Path /any_path/_gen_module.so cannot have write permission of g
 
 先使用 `umask -S` 命令查询权限配置，再使用 `umask 0022` 命令调整权限配置。
 
-```sh
+```shell
 $ umask -S
 $ umask 0022
 u=rwx,g=rx,o=rx

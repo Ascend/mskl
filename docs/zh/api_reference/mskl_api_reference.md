@@ -4,7 +4,7 @@
 
 msKL工具提供的接口可以调用msOpGen工程中的tiling函数以及用户自定义的Kernel函数，同时提供了autotune系列接口支持开发者高效地针对多个调优点进行代码替换、编译、运行以及性能对比。
 
-**表 1**  msKL工具接口列表
+**表 1** msKL工具接口列表
 
 <a name="table346304711151"></a>
 <table><thead align="left"><tr id="row3463134731515"><th class="cellrowborder" valign="top" width="13.719999999999999%" id="mcps1.2.4.1.1"><p id="p16400184971711"><a name="p16400184971711"></a><a name="p16400184971711"></a>分类</p>
@@ -95,7 +95,7 @@ def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_pat
 </td>
 <td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p68900476301"><a name="p68900476301"></a><a name="p68900476301"></a>必选参数。</p>
 </td>
-<td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="p06801243152810"><a name="p06801243152810"></a><a name="p06801243152810"></a>需根据tiling函数的实现填写，例如AddCustom、 MatmulLeakyreluCustom等。msKL工具查找tiling函数的唯一依据，查找逻辑请参见lib_path参数。</p>
+<td class="cellrowborder" valign="top" width="65.27%" headers="mcps1.1.5.1.4 "><p id="p06801243152810"><a name="p06801243152810"></a><a name="p06801243152810"></a>需根据tiling函数的实现填写，例如AddCustom、MatmulLeakyreluCustom等。msKL工具查找tiling函数的唯一依据，查找逻辑请参见lib_path参数。</p>
 <p id="p960565114599"><a name="p960565114599"></a><a name="p960565114599"></a>数据类型：str。</p>
 <div class="note" id="note097633611110"><a name="note097633611110"></a><a name="note097633611110"></a><span class="notetitle"> 说明： </span><div class="notebody"><p id="p16976163613117"><a name="p16976163613117"></a><a name="p16976163613117"></a>若CANN中曾经部署过相同类型的算子（op_type），用户修改了tiling函数并重新编译，则需要在CANN环境中重新部署该算子。</p>
 </div></div>
@@ -151,7 +151,7 @@ def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_pat
 <p id="p2593344172319"><a name="p2593344172319"></a><a name="p2593344172319"></a>举例如下：</p>
 <pre class="screen" id="screen4593204420235"><a name="screen4593204420235"></a><a name="screen4593204420235"></a>[{"shape": [8, 2048], "dtype": "float16", "format": "ND"},
  {"shape": [8, 2048], "dtype": "float16", "format": "ND"}]</pre>
-<div class="note" id="note103734543279"><a name="note103734543279"></a><a name="note103734543279"></a><span class="notetitle"> 说明： </span><div class="notebody"><p id="p4177193217280"><a name="p4177193217280"></a><a name="p4177193217280"></a>该输入参数和inputs存在约束关系：</p>
+<div class="note" id="note103734543279"><a name="note103734543279"></a><a name="note103734543279"></a><span class="notetitle"> 说明： </span><div class="notebody"><p id="p4177193217280"><a name="p4177193217280"></a><a name="p4177193217280"></a>该输入参数和outputs存在约束关系：</p>
 <a name="ul71771332122810"></a><a name="ul71771332122810"></a><ul id="ul71771332122810"><li>outputs为tensor时，outputs_info必须是dict。</li><li>outputs为list[tensor]时，outputs_info必须是list[dict]。</li><li>outputs为None时，outputs_info每个元素至少包含[shape, dtype]。</li></ul>
 </div></div>
 </td>
@@ -249,7 +249,7 @@ def tiling_func(op_type: str, inputs: list = None, outputs: list = None, lib_pat
 </tr>
 <tr id="row9473258193319"><td class="cellrowborder" valign="top" width="20.82%" headers="mcps1.1.3.1.1 "><p id="p1847318589338"><a name="p1847318589338"></a><a name="p1847318589338"></a>workspace_size</p>
 </td>
-<td class="cellrowborder" valign="top" width="79.17999999999999%" headers="mcps1.1.3.1.2 "><p id="p9719951019"><a name="p9719951019"></a><a name="p9719951019"></a>该值为用户自行申请的workspace大小加上 msKL工具预留的78,643,200Byte。</p>
+<td class="cellrowborder" valign="top" width="79.17999999999999%" headers="mcps1.1.3.1.2 "><p id="p9719951019"><a name="p9719951019"></a><a name="p9719951019"></a>该值为用户自行申请的workspace大小加上msKL工具预留的78,643,200Byte。</p>
 <p id="p15483103110375"><a name="p15483103110375"></a><a name="p15483103110375"></a>数据类型：int。</p>
 </td>
 </tr>
@@ -323,7 +323,7 @@ def get_kernel_from_binary(kernel_binary_file: str = None, kernel_type: str = No
 </td>
 <td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p224816370358"><a name="p224816370358"></a><a name="p224816370358"></a>可选参数。</p>
 </td>
-<td class="cellrowborder" valign="top" width="65.25%" headers="mcps1.1.5.1.4 "><p id="p858655320395"><a name="p858655320395"></a><a name="p858655320395"></a>算子kernel.o路径。若不配置该参数，msKL工具会自动在tiling_func的<strong id="b23211229105614"><a name="b23211229105614"></a><a name="b23211229105614"></a>workspace</strong>目录下递归搜索路径包含<strong id="b23211229105616"><a name="b23211229105616"></a><a name="b23211229105616"></a>kernel</strong>目录的<strong id="b23211229105617"><a name="b23211229105617"></a><a name="b23211229105617"></a>*.o</strong>文件；若搜索到多个，则按<strong id="b23211229105618"><a name="b23211229105618"></a><a name="b23211229105618"></a>算子名(op_type) → 设备soc → 同目录json(dtype/format/shape)</strong>自动选取目标kernel .o文件。</p>
+<td class="cellrowborder" valign="top" width="65.25%" headers="mcps1.1.5.1.4 "><p id="p858655320395"><a name="p858655320395"></a><a name="p858655320395"></a>算子kernel.o路径。若不配置该参数，msKL工具会自动在tiling_func的<strong id="b23211229105614"><a name="b23211229105614"></a><a name="b23211229105614"></a>workspace</strong>目录下递归搜索路径包含<strong id="b23211229105616"><a name="b23211229105616"></a><a name="b23211229105616"></a>kernel</strong>目录的<strong id="b23211229105617"><a name="b23211229105617"></a><a name="b23211229105617"></a>*.o</strong>文件；若搜索到多个，则按<strong id="b23211229105618"><a name="b23211229105618"></a><a name="b23211229105618"></a>算子名(op_type) → 设备SoC → 同目录json(dtype/format/shape)</strong>自动选取目标kernel .o文件。</p>
 <p id="p960565114599"><a name="p960565114599"></a><a name="p960565114599"></a>数据类型：str。</p>
 </td>
 </tr>
@@ -333,7 +333,7 @@ def get_kernel_from_binary(kernel_binary_file: str = None, kernel_type: str = No
 </td>
 <td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.1.5.1.3 "><p id="p17248203712356"><a name="p17248203712356"></a><a name="p17248203712356"></a>可选参数。</p>
 </td>
-<td class="cellrowborder" valign="top" width="65.25%" headers="mcps1.1.5.1.4 "><p id="p1464205919597"><a name="p1464205919597"></a><a name="p1464205919597"></a>算子类型。可设置为vec、 cube或mix。</p>
+<td class="cellrowborder" valign="top" width="65.25%" headers="mcps1.1.5.1.4 "><p id="p1464205919597"><a name="p1464205919597"></a><a name="p1464205919597"></a>算子类型。可设置为vec、cube或mix。</p>
 <p id="p4807856193812"><a name="p4807856193812"></a><a name="p4807856193812"></a>若不配置该参数，msKL工具可能会获取失败。因此，建议手动赋值。</p>
 <p id="p16255183291"><a name="p16255183291"></a><a name="p16255183291"></a>数据类型：str。</p>
 </td>
@@ -355,7 +355,7 @@ def get_kernel_from_binary(kernel_binary_file: str = None, kernel_type: str = No
 
 可运行的Kernel对象。
 
-**表 1**  Kernel入参介绍
+**表 2** Kernel入参介绍
 
 <a name="table8662130195715"></a>
 <table><thead align="left"><tr id="row8662163015575"><th class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.2.4.1.1"><p id="p6204175135717"><a name="p6204175135717"></a><a name="p6204175135717"></a>参数名</p>
@@ -379,9 +379,9 @@ def get_kernel_from_binary(kernel_binary_file: str = None, kernel_type: str = No
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p1166219306572"><a name="p1166219306572"></a><a name="p1166219306572"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 "><p id="p188921897918"><a name="p188921897918"></a><a name="p188921897918"></a>camodel仿真场景需要默认设置较长超时时间，设置为-1时表示不限制。</p>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 "><p id="p188921897918"><a name="p188921897918"></a><a name="p188921897918"></a>CAModel仿真场景需要默认设置较长超时时间，设置为-1时表示不限制。</p>
 <p id="p20887821121219"><a name="p20887821121219"></a><a name="p20887821121219"></a>数据类型：int。</p>
-<p id="p9662123095717"><a name="p9662123095717"></a><a name="p9662123095717"></a>单位: ms，默认值为300000。</p>
+<p id="p9662123095717"><a name="p9662123095717"></a><a name="p9662123095717"></a>单位：ms，默认值为300000。</p>
 </td>
 </tr>
 <tr id="row1770213117585"><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p11702181115584"><a name="p11702181115584"></a><a name="p11702181115584"></a>repeat</p>
@@ -530,7 +530,7 @@ def basic_matmul(problem_shape, a, layout_a, b, layout_b, c, layout_c):
 
 **函数原型**
 
-```py
+```python
 def code_gen(self, gen_file)
 ```
 
@@ -567,7 +567,7 @@ def code_gen(self, gen_file)
 
 **调用示例**
 
-```py
+```python
 config = mskl.KernelInvokeConfig(kernel_file, kernel_name)
 mskl.Launcher(config).code_gen(gen_file)
 ```
@@ -600,7 +600,7 @@ class Launcher:
 
 **函数原型**
 
-```py
+```python
 def compile(build_script: str,
             launch_src_file: str,
             output_bin_path: str = "_gen_module.so",
@@ -671,12 +671,12 @@ def compile(build_script: str,
 
 **调用示例**
 
-```py
+```python
 kernel = compile(build_script, gen_file)
 kernel[blockdim](arg1, arg2, ..., device_id=0)
 ```
 
-**表 1**  CompiledKernel可选入参介绍
+**表 3** CompiledKernel可选入参介绍
 
 <a name="table8662130195715"></a>
 <table><thead align="left"><tr id="row8662163015575"><th class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.2.4.1.1"><p id="p6204175135717"><a name="p6204175135717"></a><a name="p6204175135717"></a>参数名</p>
@@ -700,7 +700,7 @@ kernel[blockdim](arg1, arg2, ..., device_id=0)
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p1166219306572"><a name="p1166219306572"></a><a name="p1166219306572"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 "><p id="p188921897918"><a name="p188921897918"></a><a name="p188921897918"></a>camodel仿真场景需要默认设置较长超时时间，设置为-1时表示不限制。</p>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 "><p id="p188921897918"><a name="p188921897918"></a><a name="p188921897918"></a>CAModel仿真场景需要默认设置较长超时时间，设置为-1时表示不限制。</p>
 <p id="p20887821121219"><a name="p20887821121219"></a><a name="p20887821121219"></a>数据类型：int。</p>
 <p id="p9662123095717"><a name="p9662123095717"></a><a name="p9662123095717"></a>单位: ms，默认值为300000。</p>
 </td>
@@ -807,7 +807,7 @@ def run_executable(m, n, k, device_id):
 
 **函数原型**
 
-```py
+```python
 def compile_executable(build_script: str,
                        src_file: str,
                        output_bin_path: str = "_gen_executable",

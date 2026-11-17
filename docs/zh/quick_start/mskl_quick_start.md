@@ -1,32 +1,32 @@
-# msKL 算子 Kernel 轻量化调用快速入门
+# msKL算子Kernel轻量化调用快速入门
 
 <br>
 
 ## 1. 概述
 
-使用 msKL 工具可以利用其提供的接口在 Python 脚本中快速实现 Kernel 下发的代码生成、编译及运行。
-本文档基于入门教程中开发的简易加法算子，演示 msKL 工具的核心功能，帮助初学者直观感受其为算子开发过程带来的高效性与便捷性。
+使用msKL工具可以利用其提供的接口在Python脚本中快速实现Kernel下发的代码生成、编译及运行。
+本文档基于入门教程中开发的简易加法算子，演示msKL工具的核心功能，帮助初学者直观感受其为算子开发过程带来的高效性与便捷性。
 
-本章节以您已完成<a href="https://gitcode.com/Ascend/msot/blob/master/docs/zh/quick_start/op_tool_quick_start.md" target="_blank">《算子开发工具链快速入门》</a>的全流程操作为前提；若尚未体验，建议先完成该指南以获得更佳的学习效果。
+本章节以您已完成《[算子开发工具链快速入门](https://gitcode.com/Ascend/msot/blob/master/docs/zh/quick_start/op_tool_quick_start.md)》的全流程操作为前提；若尚未体验，建议先完成该指南以获得更佳的学习效果。
 
 ## 2. 操作步骤
 
 ### 2.1【环境】必备环境准备（强制前置 ⚠️）
 
-🛑 **本节为强制前置步骤！跳过将导致后续操作大量出现失败。**  
+🛑 **本节为强制前置步骤！跳过将导致后续操作出现大量失败。**  
 本教程**仅支持**标准化 CANN 容器环境，不兼容裸机、虚拟机或其他非标准容器部署。
 
-#### 2.1.1 安装 CANN 容器环境
+#### 2.1.1 安装CANN容器环境
 
 ✅ **请严格按以下指南完成环境安装：**  
-👉 **<a href="https://gitcode.com/Ascend/msot/blob/master/docs/zh/quick_start/installation_guide.md" target="_blank">《昇腾 AI 算子开发工具链学习环境安装指南》</a>**
+👉 **《[昇腾 AI 算子开发工具链学习环境安装指南](https://gitcode.com/Ascend/msot/blob/master/docs/zh/quick_start/installation_guide.md)》**
 
-> ⏱️ **外网可达环境下预计耗时：约 3 分钟**  
+> ⏱️ **外网可达环境下预计耗时：约3分钟**  
 > 安装完成后，您将获得一个预装所有算子工具、示例代码和依赖库的标准化容器环境。
 
 #### 2.1.2 执行环境自检脚本（必须通过！）
 
-在如下正式体验前，请**全文复制下方整段脚本**，粘贴到终端执行，只有输出全部显示为 [PASS] 才能继续：
+在正式体验前，请**全文复制下方整段脚本**，粘贴到终端执行，只有输出全部显示为 [PASS] 才能继续：
 
 ```bash
 # 1. 容器环境检查
@@ -37,21 +37,28 @@
 
 ### 2.2【前提】算子工程准备完成
 
-按照<a href="https://gitcode.com/Ascend/msot/blob/master/docs/zh/quick_start/op_tool_quick_start.md#23开发构建算子工程msopgen" target="_blank">《算子开发工具链快速入门》</a>中 2.3 节操作，完成算子工程准备。
+按照<a href="https://gitcode.com/Ascend/msot/blob/master/docs/zh/quick_start/op_tool_quick_start.md#23开发构建算子工程msopgen" target="_blank">《算子开发工具链快速入门》</a>中2.3节操作，完成算子工程准备。
 
-### 2.3 【轻量调用】Python 脚本中 Kernel 轻量化调用（msKL）
+### 2.3【轻量调用】Python脚本中Kernel轻量化调用（msKL）
 
-> [!NOTE]   
-> **知识点：mskl 接口调用机制简介**   
+> [!NOTE]
 >
-> 1. `mskl.tiling_func` 接口   
->通过此接口，开发者可指定 Tiling 动态库（.so 文件）与算子类型（op_type），精准调用目标 Tiling 函数；同时，通过传入 inputs_shape、attr 等参数，可灵活构造 TilingContext，实现无需依赖 ACLNN 框架的轻量化 Tiling 调用。   
-> Tiling 函数的执行结果包含 blockdim（核函数启动数量）、workspace（工作空间内存）以及序列化的 tiling_data 结构体数据，既可用于 Tiling 逻辑验证，也可作为后续 Kernel 调用的必要输入。      
-> 2. `mskl.get_kernel_from_binary` 接口   
->通过此接口，开发者可指定算子的 Kernel 二进制文件（.o 文件）及其函数签名参数，实现 Kernel 的快速加载与调用。
-> Kernel 所需的输入/输出张量可直接传入 numpy.array，执行完成后，可立即读取输出张量内容，用于精度比对或功能验证。   
-> 3. 与其他算子工具链无缝集成   
-> 开发者仅需通过工具命令直接启动 mskl Python 脚本即可，例如：`mskl python3 mskl_demo.py`
+> **知识点：msKL接口调用机制简介**   
+>
+> 1. `mskl.tiling_func`接口
+>
+>       通过此接口，开发者可指定Tiling动态库（.so文件）与算子类型（op_type），精准调用目标Tiling函数；同时，通过传入inputs_shape、attr等参数，可灵活构造TilingContext，实现无需依赖ACLNN框架的轻量化Tiling调用。
+>
+>       Tiling函数的执行结果包含blockdim（核函数启动数量）、workspace（工作空间内存）以及序列化的tiling_data结构体数据，既可用于Tiling逻辑验证，也可作为后续Kernel调用的必要输入。
+>
+> 2. `mskl.get_kernel_from_binary`接口
+>
+>       通过此接口，开发者可指定算子的Kernel二进制文件（.o文件）及其函数签名参数，实现Kernel的快速加载与调用。
+>Kernel所需的输入/输出张量可直接传入numpy.array，执行完成后，可立即读取输出张量内容，用于精度比对或功能验证。
+>
+> 3. 与其他算子工具链无缝集成
+>
+>       开发者仅需通过工具命令直接启动mskl Python脚本即可，例如：`mskl python3 mskl_demo.py`
 
 #### 2.3.1 开发 Python 调用脚本
 
@@ -117,9 +124,10 @@ if __name__ == "__main__":
 #### 2.3.2 对脚本进行适配
 
 > [!NOTE]
-> 以下命令依赖 `$ASCEND_HOME_PATH` 环境变量，该变量指向 CANN 安装路径（通常在安装 CANN 后通过 `source set_env.sh` 配置）。若未设置，请先执行 `source ${CANN安装路径}/set_env.sh`。
+> 
+> 以下命令依赖`$ASCEND_HOME_PATH`环境变量，该变量指向CANN安装路径（通常在安装CANN后通过`source set_env.sh`配置）。若未设置，请先执行`source ${CANN安装路径}/set_env.sh`。
 
-执行如下命令，将查询到的 .o 文件绝对路径填入`mskl_demo.py`的 `KERNEL_BINARY_PATH` 变量中：
+执行如下命令，将查询到的.o文件绝对路径填入`mskl_demo.py`的`KERNEL_BINARY_PATH`变量中：
 
 ```shell
 find $ASCEND_HOME_PATH -name *AddCustom*o
@@ -133,8 +141,9 @@ find $ASCEND_HOME_PATH -path */customize/* -name liboptiling.so
 
 #### 2.3.3 执行脚本，调用算子
 
-> [!CAUTION]    
-> 请在成功部署算子到 CANN 后再调用，否则会报错。
+> [!CAUTION]
+>
+> 请在成功部署算子到CANN后再调用，否则会报错。
 
 ```shell
 python3 mskl_demo.py
@@ -142,7 +151,7 @@ python3 mskl_demo.py
 
 如果执行成功，输出如下：
 
-```text
+```output
 root@ubuntu122:~/ot_demo/workspace/src/AddCustom# python3 mskl_demo.py 
 [INFO ] Load tiling library /usr/local/Ascend/cann-8.5.0/opp/vendors/customize/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so
 [INFO ] Set kernel_type as vec, you can change this value by input [kernel_type] in [mskl.get_kernel_from_binary] manually.
