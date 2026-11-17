@@ -30,9 +30,9 @@ Before starting the formal tutorial, **copy the entire script below** and paste 
 
 ```bash
 # 1. Container environment check
-[ -f /.dockerenv ] && [ -n "$ASCEND_HOME_PATH" ] && [ -n "$ATB_HOME_PATH" ] && echo -e "\033[32m[PASS] CANN 容器环境 OK \033[0m" || echo -e "\033[31m[FAIL] 非标容器或未进入容器！\033[0m"
+[ -f /.dockerenv ] && [ -n "$ASCEND_HOME_PATH" ] && [ -n "$ATB_HOME_PATH" ] && echo -e "\033[32m[PASS] CANN container environment OK \033[0m" || echo -e "\033[31m[FAIL] Non-standard container or container not entered!\033[0m"
 # 2. Sample code repository check
-[ -d ~/ot_demo/msot/example/quick_start ] && echo -e "\033[32m[PASS] 示例代码仓 OK\033[0m" || echo -e "\033[31m[FAIL] 代码仓缺失\033[0m"
+[ -d ~/ot_demo/msot/example/quick_start ] && echo -e "\033[32m[PASS] Sample code repository OK\033[0m" || echo -e "\033[31m[FAIL] Code repository missing\033[0m"
 ```
 
 ### 2.2 [Prerequisite] Operator Project Preparation Completed

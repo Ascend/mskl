@@ -56,7 +56,21 @@ When all tests pass, the output is similar to the following example:
 
 > **Pass criteria:** The tests pass when the number of cases run matches the number of cases reported as `passed`. If any case is reported as `failed`, locate the cause of the failure from the logs.
 
-### 3.2 Cleaning the Test Environment
+### 3.2 Code Line Coverage Statistics
+
+This feature depends on `coverage` and `pytest`. Run the following command in the project root directory:
+
+```bash
+bash test/generate_coverage.sh
+```
+
+The script counts only the line coverage of the `mskl` product code. The report is output to the `build_ut/coverage` directory (text report, XML, HTML, and `report.tar.gz`). The default line coverage threshold is 80%. The script returns a non-zero value when the coverage is below the threshold. You can change the threshold with `COVERAGE_THRESHOLD`:
+
+```bash
+COVERAGE_THRESHOLD=85 bash test/generate_coverage.sh
+```
+
+### 3.3 Cleaning the Test Environment
 
 Delete the UT build directory and run the tests again:
 
